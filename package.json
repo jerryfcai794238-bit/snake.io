@@ -1,0 +1,12 @@
+{
+  "name": "snake.io-demo",
+  "version": "1.4.0",
+  "description": "Snake.io Demo based on GDD v1.4.0",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx -y serve -p 3000 ./"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
