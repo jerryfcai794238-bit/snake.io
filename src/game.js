@@ -18,6 +18,11 @@ export class Game {
         this.timer = CONFIG.SOLO_TIME;
         this.lastSecond = 0;
         this.bestScore = localStorage.getItem('snake_best') || 0;
+        
+        this.matchStats = {
+            cuts: 0,
+            startTime: 0
+        };
     }
     init() {
         this.snakes = [];
@@ -28,6 +33,8 @@ export class Game {
         this.effects = [];
         this.timer = CONFIG.SOLO_TIME;
         this.isGameOver = false;
+        this.matchStats.cuts = 0;
+        this.matchStats.startTime = Date.now();
         
         // Terrains (S-shaped winding river)
         const rx = (Math.random() - 0.5) * CONFIG.WORLD_SIZE * 0.1;
@@ -73,16 +80,75 @@ export class Game {
         }
     }
 
+    calculateBestStartAngle(x, y) {
+        let bestAngle = 0;
+        let maxDist = -1;
+        const halfSize = CONFIG.WORLD_SIZE / 2;
+
+        // Sample 8 directions
+        for (let i = 0; i < 8; i++) {
+            const angle = (i * Math.PI * 2) / 8;
+            const dx = Math.cos(angle);
+            const dy = Math.sin(angle);
+            
+            // Distance to wall
+            let distToWall = Infinity;
+            if (dx > 0) distToWall = Math.min(distToWall, (halfSize - x) / dx);
+            if (dx < 0) distToWall = Math.min(distToWall, (-halfSize - x) / dx);
+            if (dy > 0) distToWall = Math.min(distToWall, (halfSize - y) / dy);
+            if (dy < 0) distToWall = Math.min(distToWall, (-halfSize - y) / dy);
+
+            // Distance to nearest stone
+            let distToStone = Infinity;
+            for (const s of this.stones) {
+                // Ray-Sphere intersection simplified: 
+                // just check distance along the ray to the sphere center or boundary
+                const sdx = s.x - x;
+                const sdy = s.y - y;
+                const dot = sdx * dx + sdy * dy;
+                if (dot > 0) {
+                    const perpDistSq = (sdx*sdx + sdy*sdy) - dot*dot;
+                    if (perpDistSq < s.radius*s.radius) {
+                        const distToCenter = Math.sqrt(sdx*sdx + sdy*sdy);
+                        distToStone = Math.min(distToStone, distToCenter - s.radius);
+                    }
+                }
+            }
+
+            const totalDist = Math.min(distToWall, distToStone);
+            if (totalDist > maxDist) {
+                maxDist = totalDist;
+                bestAngle = angle;
+            }
+        }
+        return bestAngle;
+    }
+
     start(mode) {
         this.mode = mode;
         this.isPlaying = true;
         this.lastSecond = Date.now();
-        this.player = new Snake('player', 'You', CONFIG.COLORS.PLAYER, 0, 500);
+        
+        // Random spawn points within safe zone
+        const margin = 100;
+        const spawnPlayer = {
+            x: (Math.random() - 0.5) * (CONFIG.WORLD_SIZE - margin * 2),
+            y: (Math.random() - 0.5) * (CONFIG.WORLD_SIZE - margin * 2)
+        };
+        const anglePlayer = this.calculateBestStartAngle(spawnPlayer.x, spawnPlayer.y);
+        this.player = new Snake('player', 'You', CONFIG.COLORS.PLAYER, spawnPlayer.x, spawnPlayer.y, false, anglePlayer);
         this.snakes = [this.player];
+
         if (mode === 'duel') {
-            this.snakes.push(new Snake('ai', 'Bot', CONFIG.COLORS.AI, 0, -500, true));
+            const spawnAI = {
+                x: (Math.random() - 0.5) * (CONFIG.WORLD_SIZE - margin * 2),
+                y: (Math.random() - 0.5) * (CONFIG.WORLD_SIZE - margin * 2)
+            };
+            const angleAI = this.calculateBestStartAngle(spawnAI.x, spawnAI.y);
+            this.snakes.push(new Snake('ai', 'Bot', CONFIG.COLORS.AI, spawnAI.x, spawnAI.y, true, angleAI));
         }
-        for(let i = 0; i < 500; i++) this.spawnResource();
+        
+        for(let i = 0; i < 400; i++) this.spawnResource();
     }
 
     spawnResource() {
@@ -191,7 +257,7 @@ export class Game {
 
         this.checkCollisions();
         
-        if (this.food.length < 250) this.spawnResource();
+        if (this.food.length < 150) this.spawnResource();
     }
 
     checkCollisions() {
@@ -251,6 +317,8 @@ export class Game {
     }
 
     cut(snake, idx) {
+        if (snake.id === 'ai') this.matchStats.cuts++;
+        
         const legacy = snake.points.slice(idx);
         snake.points = snake.points.slice(0, idx);
         snake.length = snake.points.length * 2;
@@ -275,7 +343,11 @@ export class Game {
     kill(snake) {
         snake.isDead = true;
         this.spark(snake.head.x, snake.head.y, snake.color);
-        if (snake === this.player) this.endGame();
+        
+        // End game if player dies OR if AI dies in Duel mode
+        if (snake === this.player || (this.mode === 'duel' && snake.id === 'ai')) {
+            this.endGame();
+        }
     }
 
     spark(x, y, color) {

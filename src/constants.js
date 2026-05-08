@@ -1,5 +1,5 @@
 export const CONFIG = {
-    WORLD_SIZE: 1500,
+    WORLD_SIZE: 1200,
     FPS: 60,
     
     // Snake Stats (GDD v2.1.3)

@@ -1,7 +1,7 @@
 import { CONFIG } from './constants.js';
 
 export class Snake {
-    constructor(id, name, color, x, y, isAI = false) {
+    constructor(id, name, color, x, y, isAI = false, startAngle = null) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -12,7 +12,7 @@ export class Snake {
         this.length = 50;
         this.targetLength = 50;
         this.radius = CONFIG.HEAD_RADIUS;
-        this.angle = Math.random() * Math.PI * 2;
+        this.angle = startAngle !== null ? startAngle : Math.random() * Math.PI * 2;
         
         this.energy = 10;
         this.isDashing = false;

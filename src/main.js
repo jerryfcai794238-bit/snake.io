@@ -73,8 +73,27 @@ class Main {
         // Corrected check: only trigger ONCE when game over happens
         const gameOverDiv = document.getElementById('game-over');
         if (this.game.isGameOver && gameOverDiv.classList.contains('hidden')) {
+            const status = this.game.player.isDead ? 'DEFEAT' : 'VICTORY';
+            const title = document.getElementById('game-over-title');
+            title.innerText = status;
+            title.style.color = status === 'VICTORY' ? 'var(--neon-gold)' : 'var(--neon-pink)';
+
+            // Calculate Stats
+            const duration = Math.floor((Date.now() - this.game.matchStats.startTime) / 1000);
+            const mins = Math.floor(duration / 60).toString().padStart(2, '0');
+            const secs = (duration % 60).toString().padStart(2, '0');
+
+            document.getElementById('stat-length').innerText = Math.max(0, Math.floor(this.game.player.length - 50));
+            document.getElementById('stat-time').innerText = `${mins}:${secs}`;
+            document.getElementById('stat-cuts').innerText = this.game.matchStats.cuts;
+
+            // Best Score
+            if (this.game.player.length > this.game.bestScore) {
+                this.game.bestScore = Math.floor(this.game.player.length);
+                localStorage.setItem('snake_best', this.game.bestScore);
+            }
+
             gameOverDiv.classList.remove('hidden');
-            document.getElementById('final-score').innerText = Math.floor(this.game.player.length - 50);
         }
 
         requestAnimationFrame((t) => this.loop(t));
