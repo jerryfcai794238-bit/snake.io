@@ -12,9 +12,7 @@ class Main {
         this.lastTime = performance.now();
         this.initEvents();
         
-        // Initial UI
         document.getElementById('best-score').innerText = this.game.bestScore;
-        
         this.loop(performance.now());
     }
 
@@ -38,7 +36,7 @@ class Main {
 
     backToLobby() {
         this.game.isPlaying = false;
-        this.game.isGameOver = false; // Reset state!
+        this.game.isGameOver = false;
         document.getElementById('lobby').classList.remove('hidden');
         document.getElementById('hud-top').classList.add('hidden');
         document.getElementById('hud-bottom').classList.add('hidden');
@@ -49,7 +47,7 @@ class Main {
     loop(timestamp) {
         let dt = (timestamp - this.lastTime) / 1000;
         this.lastTime = timestamp;
-        if (dt > 0.1) dt = 0.016; // Cap DT to prevent spikes
+        if (dt > 0.1) dt = 0.016;
 
         if (this.game.isPlaying && !this.game.isGameOver) {
             this.game.update(this.input, dt);
@@ -60,7 +58,6 @@ class Main {
             player: this.game.player,
             snakes: this.game.snakes.filter(s => !s.isDead),
             food: this.game.food,
-            orbs: this.game.energyOrbs,
             stones: this.game.stones,
             terrains: this.game.terrains,
             effects: this.game.effects
@@ -70,29 +67,20 @@ class Main {
             this.renderer.render(state);
         }
 
-        // Corrected check: only trigger ONCE when game over happens
         const gameOverDiv = document.getElementById('game-over');
         if (this.game.isGameOver && gameOverDiv.classList.contains('hidden')) {
-            const status = this.game.player.isDead ? 'DEFEAT' : 'VICTORY';
             const title = document.getElementById('game-over-title');
-            title.innerText = status;
-            title.style.color = status === 'VICTORY' ? 'var(--neon-gold)' : 'var(--neon-pink)';
+            title.innerText = 'MATCH OVER';
+            title.style.color = 'var(--neon-gold)';
 
-            // Calculate Stats
-            const duration = Math.floor((Date.now() - this.game.matchStats.startTime) / 1000);
+            document.getElementById('stat-score').innerText = Math.floor(this.game.player.totalEaten);
+            document.getElementById('stat-length').innerText = Math.floor(this.game.player.length);
+            
+            const duration = 90 - this.game.timer; 
             const mins = Math.floor(duration / 60).toString().padStart(2, '0');
             const secs = (duration % 60).toString().padStart(2, '0');
-
-            document.getElementById('stat-length').innerText = Math.max(0, Math.floor(this.game.player.length - 50));
             document.getElementById('stat-time').innerText = `${mins}:${secs}`;
-            document.getElementById('stat-cuts').innerText = this.game.matchStats.cuts;
-
-            // Best Score
-            if (this.game.player.length > this.game.bestScore) {
-                this.game.bestScore = Math.floor(this.game.player.length);
-                localStorage.setItem('snake_best', this.game.bestScore);
-            }
-
+            
             gameOverDiv.classList.remove('hidden');
         }
 
@@ -101,34 +89,22 @@ class Main {
 
     updateHUD() {
         const p = this.game.player;
-        document.getElementById('current-length').innerText = Math.max(0, Math.floor(p.length - 50));
+        document.getElementById('current-length').innerText = Math.floor(p.length);
+        document.getElementById('total-score').innerText = Math.floor(p.totalEaten);
         
-        // Leaderboard
-        const sortedSnakes = [...this.game.snakes]
-            .filter(s => !s.isDead)
-            .sort((a, b) => b.length - a.length);
-            
-        const lbHtml = sortedSnakes.map((s, i) => `
-            <div class="lb-item ${s.id === 'player' ? 'player' : 'ai'}">
-                <span>${i+1}. ${s.name}</span>
-                <span>${Math.max(0, Math.floor(s.length - 50))}</span>
-            </div>
-        `).join('');
-        document.getElementById('leaderboard').innerHTML = lbHtml;
-
         const m = Math.floor(this.game.timer / 60);
         const s = this.game.timer % 60;
         document.getElementById('timer').innerText = `${m}:${s.toString().padStart(2, '0')}`;
         
-        const bar = document.getElementById('energy-fill');
-        const container = document.getElementById('energy-container');
-        bar.style.width = `${p.energy}%`;
-        
-        if (p.isDashing) container.classList.add('dashing');
-        else container.classList.remove('dashing');
-        
-        if (p.energy < 10) container.style.borderColor = 'rgba(255,0,0,0.5)';
-        else container.style.borderColor = 'rgba(255,255,255,0.05)';
+        // Respawn Overlay
+        const overlay = document.getElementById('respawn-overlay');
+        const respawnData = this.game.respawnQueue.find(item => item.snake === p);
+        if (respawnData) {
+            overlay.classList.remove('hidden');
+            document.getElementById('respawn-sec').innerText = Math.ceil(respawnData.time / 1000);
+        } else {
+            overlay.classList.add('hidden');
+        }
     }
 }
 

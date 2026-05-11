@@ -39,8 +39,9 @@
                 <span class="label">LENGTH</span>
                 <span id="current-length">0</span>
             </div>
-            <div id="leaderboard">
-                <!-- List items will be injected here -->
+            <div class="hud-item">
+                <span class="label">SCORE</span>
+                <span id="total-score">0</span>
             </div>
             <div class="hud-item">
                 <span class="label">TIME</span>
@@ -53,11 +54,8 @@
 
         <!-- HUD Bottom -->
         <div id="hud-bottom" class="hidden">
-            <div id="energy-container">
-                <div class="segments">
-                    <div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div>
-                </div>
-                <div id="energy-fill"></div>
+            <div id="respawn-overlay" class="hidden">
+                <div class="respawn-timer">REVIVING IN <span id="respawn-sec">3</span>...</div>
             </div>
             <div id="joystick-zone">
                 <div id="joystick-base">
@@ -72,6 +70,10 @@
                 <h1 id="game-over-title">DEFEAT</h1>
                 
                 <div class="settlement-card">
+                    <div class="stat-row">
+                        <span class="stat-label">TOTAL SCORE</span>
+                        <span id="stat-score" class="stat-value">0</span>
+                    </div>
                     <div class="stat-row">
                         <span class="stat-label">FINAL LENGTH</span>
                         <span id="stat-length" class="stat-value">0</span>

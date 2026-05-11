@@ -15,10 +15,9 @@ export class Renderer {
     }
 
     render(state) {
-        const { player, snakes, food, orbs, stones, terrains, effects } = state;
+        const { player, snakes, food, stones, terrains, effects } = state;
         const ctx = this.ctx;
         
-        // Camera Update (Fixed Zoom)
         this.camera.x = player.head.x;
         this.camera.y = player.head.y;
         this.camera.zoom = 0.85;
@@ -32,7 +31,7 @@ export class Renderer {
         this.drawTerrains(terrains);
         this.drawGrid();
         this.drawStones(stones);
-        this.drawResources(food, orbs);
+        this.drawResources(food);
         this.drawEffects(effects);
         
         snakes.forEach(s => this.drawSnake(s));
@@ -50,20 +49,23 @@ export class Renderer {
         for(let y = -CONFIG.WORLD_SIZE/2; y <= CONFIG.WORLD_SIZE/2; y += 100) {
             ctx.beginPath(); ctx.moveTo(-CONFIG.WORLD_SIZE/2, y); ctx.lineTo(CONFIG.WORLD_SIZE/2, y); ctx.stroke();
         }
-        ctx.strokeStyle = 'darkred'; ctx.lineWidth = 15;
+        // Boundary matches Stone Border (Red)
+        ctx.strokeStyle = CONFIG.COLORS.BOUNDARY; 
+        ctx.lineWidth = 15;
         ctx.strokeRect(-CONFIG.WORLD_SIZE/2, -CONFIG.WORLD_SIZE/2, CONFIG.WORLD_SIZE, CONFIG.WORLD_SIZE);
     }
 
     drawTerrains(terrains) {
         const ctx = this.ctx;
         terrains.forEach(t => {
-            ctx.fillStyle = t.type === 'river' ? 'rgba(0,120,255,0.15)' : 'rgba(200,240,255,0.1)';
+            // Enhanced Colors
+            ctx.fillStyle = t.type === 'river' ? 'rgba(0,100,255,0.25)' : 'rgba(100, 255, 255, 0.35)';
             ctx.beginPath();
             ctx.arc(t.x, t.y, t.radius, 0, Math.PI * 2);
             ctx.fill();
             
-            ctx.strokeStyle = t.type === 'river' ? 'rgba(0,180,255,0.3)' : 'rgba(255,255,255,0.2)';
-            ctx.lineWidth = 2;
+            ctx.strokeStyle = t.type === 'river' ? 'rgba(0,180,255,0.6)' : 'rgba(180, 255, 255, 0.9)';
+            ctx.lineWidth = 3;
             ctx.stroke();
         });
     }
@@ -71,26 +73,31 @@ export class Renderer {
     drawStones(stones) {
         const ctx = this.ctx;
         stones.forEach(s => {
+            // Red Border Stone
             ctx.fillStyle = CONFIG.COLORS.STONE;
             ctx.beginPath(); ctx.arc(s.x, s.y, s.radius, 0, Math.PI*2); ctx.fill();
-            ctx.strokeStyle = '#444'; ctx.lineWidth = 3; ctx.stroke();
+            
+            ctx.strokeStyle = CONFIG.COLORS.STONE_BORDER; 
+            ctx.lineWidth = 4; 
+            ctx.stroke();
+            
+            // Subtle highlight
+            ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+            ctx.beginPath();
+            ctx.arc(s.x - s.radius*0.3, s.y - s.radius*0.3, s.radius*0.2, 0, Math.PI * 2);
+            ctx.stroke();
         });
     }
 
-    drawResources(food, orbs) {
+    drawResources(food) {
         const ctx = this.ctx;
         food.forEach(f => {
-            // Unified Neon Gold (#ffcc00) for all food
-            ctx.fillStyle = '#ffcc00';
-            if (f.value > 1) {
-                ctx.shadowBlur = 10; ctx.shadowColor = '#ffcc00';
-            }
+            // All food is yellow (#FFD700)
+            ctx.fillStyle = CONFIG.COLORS.FOOD;
+            ctx.shadowBlur = f.value >= 10 ? 15 : 5; 
+            ctx.shadowColor = CONFIG.COLORS.FOOD;
+            
             ctx.beginPath(); ctx.arc(f.x, f.y, f.size, 0, Math.PI*2); ctx.fill();
-            ctx.shadowBlur = 0;
-        });
-        orbs.forEach(o => {
-            ctx.fillStyle = CONFIG.COLORS.ENERGY; ctx.shadowBlur = 10; ctx.shadowColor = CONFIG.COLORS.ENERGY;
-            ctx.beginPath(); ctx.arc(o.x, o.y, o.size + Math.sin(Date.now()/200)*2, 0, Math.PI*2); ctx.fill();
             ctx.shadowBlur = 0;
         });
     }
@@ -101,7 +108,11 @@ export class Renderer {
         ctx.save();
         ctx.lineCap = 'round'; ctx.lineJoin = 'round';
         ctx.lineWidth = snake.radius * 2; ctx.strokeStyle = snake.color;
-        if (snake.isDashing) { ctx.shadowBlur = 20; ctx.shadowColor = snake.color; ctx.lineWidth *= 1.1; }
+        if (snake.isDashing) { 
+            ctx.shadowBlur = 20; 
+            ctx.shadowColor = snake.color; 
+            ctx.lineWidth *= 1.1; 
+        }
         
         ctx.beginPath();
         ctx.moveTo(snake.points[0].x, snake.points[0].y);

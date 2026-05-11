@@ -5,7 +5,6 @@ export class Game {
     constructor() {
         this.snakes = [];
         this.food = [];
-        this.energyOrbs = [];
         this.stones = [];
         this.terrains = [];
         this.effects = [];
@@ -19,109 +18,76 @@ export class Game {
         this.lastSecond = 0;
         this.bestScore = localStorage.getItem('snake_best') || 0;
         
-        this.matchStats = {
-            cuts: 0,
-            startTime: 0
-        };
+        this.respawnQueue = []; // [{snake, time}]
     }
+
     init() {
         this.snakes = [];
         this.food = [];
-        this.energyOrbs = [];
         this.stones = [];
         this.terrains = [];
         this.effects = [];
+        this.respawnQueue = [];
         this.timer = CONFIG.SOLO_TIME;
         this.isGameOver = false;
-        this.matchStats.cuts = 0;
-        this.matchStats.startTime = Date.now();
         
-        // Terrains (S-shaped winding river)
-        const rx = (Math.random() - 0.5) * CONFIG.WORLD_SIZE * 0.1;
-        const ry = (Math.random() - 0.5) * CONFIG.WORLD_SIZE * 0.1;
-        for (let i = 0; i < 8; i++) {
+        const size = CONFIG.WORLD_SIZE;
+
+        // 1. Rivers (Reduced by 30%)
+        const numRivers = 1; 
+        for (let r = 0; r < numRivers; r++) {
+            const rx = (Math.random() - 0.5) * size * 0.5;
+            const ry = (Math.random() - 0.5) * size * 0.5;
+            for (let i = 0; i < 5; i++) {
+                this.terrains.push({
+                    type: 'river',
+                    x: rx + i * 120,
+                    y: ry + Math.sin(i * 0.5) * 100,
+                    radius: 60 + Math.random() * 20
+                });
+            }
+        }
+
+        // 2. Ice Patches (Reduced by 30% -> 2-4)
+        const numIce = Math.floor(Math.random() * 3) + 2;
+        for (let i = 0; i < numIce; i++) {
             this.terrains.push({
-                type: 'river',
-                x: rx + i * 110,
-                y: ry + Math.sin(i * 0.9) * 100,
-                radius: 70 
+                type: 'ice',
+                x: (Math.random() - 0.5) * size * 0.8,
+                y: (Math.random() - 0.5) * size * 0.8,
+                radius: 80 + Math.random() * 60
             });
         }
 
-        this.terrains.push({ 
-            type: 'ice', 
-            x: (Math.random() - 0.5) * CONFIG.WORLD_SIZE * 0.3, 
-            y: (Math.random() - 0.5) * CONFIG.WORLD_SIZE * 0.3, 
-            radius: 200 
-        });
-        
-        // Stones
-        let attempts = 0;
-        const minGap = 45; 
-        const margin = 80;
-        const spawnRange = CONFIG.WORLD_SIZE - margin * 2;
-        while(this.stones.length < 10 && attempts < 100) {
-            attempts++;
+        // 3. Stones (Reduced by 30% -> 8-14)
+        const numStones = Math.floor(Math.random() * 7) + 8;
+        const minGap = 80; 
+        for (let i = 0; i < numStones; i++) {
             const s = {
-                x: (Math.random() - 0.5) * spawnRange,
-                y: (Math.random() - 0.5) * spawnRange,
-                radius: 20 + Math.random() * 35
+                x: (Math.random() - 0.5) * size * 0.9,
+                y: (Math.random() - 0.5) * size * 0.9,
+                radius: 25 + Math.random() * 30
             };
             const tooClose = this.stones.some(other => {
                 const d = Math.sqrt((s.x - other.x)**2 + (s.y - other.y)**2);
                 return d < (s.radius + other.radius + minGap);
             });
-            
-            // Safe zone check for Player/AI spawn
-            const nearPlayer = Math.sqrt(s.x**2 + (s.y - 500)**2) < s.radius + 150;
-            const nearAI = Math.sqrt(s.x**2 + (s.y + 500)**2) < s.radius + 150;
-            
-            if (!tooClose && !nearPlayer && !nearAI) this.stones.push(s);
+            const nearCenter = Math.sqrt(s.x**2 + s.y**2) < 200;
+            if (!tooClose && !nearCenter) this.stones.push(s);
         }
     }
 
-    calculateBestStartAngle(x, y) {
-        let bestAngle = 0;
-        let maxDist = -1;
-        const halfSize = CONFIG.WORLD_SIZE / 2;
-
-        // Sample 8 directions
-        for (let i = 0; i < 8; i++) {
-            const angle = (i * Math.PI * 2) / 8;
-            const dx = Math.cos(angle);
-            const dy = Math.sin(angle);
-            
-            // Distance to wall
-            let distToWall = Infinity;
-            if (dx > 0) distToWall = Math.min(distToWall, (halfSize - x) / dx);
-            if (dx < 0) distToWall = Math.min(distToWall, (-halfSize - x) / dx);
-            if (dy > 0) distToWall = Math.min(distToWall, (halfSize - y) / dy);
-            if (dy < 0) distToWall = Math.min(distToWall, (-halfSize - y) / dy);
-
-            // Distance to nearest stone
-            let distToStone = Infinity;
-            for (const s of this.stones) {
-                // Ray-Sphere intersection simplified: 
-                // just check distance along the ray to the sphere center or boundary
-                const sdx = s.x - x;
-                const sdy = s.y - y;
-                const dot = sdx * dx + sdy * dy;
-                if (dot > 0) {
-                    const perpDistSq = (sdx*sdx + sdy*sdy) - dot*dot;
-                    if (perpDistSq < s.radius*s.radius) {
-                        const distToCenter = Math.sqrt(sdx*sdx + sdy*sdy);
-                        distToStone = Math.min(distToStone, distToCenter - s.radius);
-                    }
-                }
-            }
-
-            const totalDist = Math.min(distToWall, distToStone);
-            if (totalDist > maxDist) {
-                maxDist = totalDist;
-                bestAngle = angle;
-            }
+    getSafeSpawnPoint() {
+        const margin = 100;
+        let x, y, safe = false;
+        let attempts = 0;
+        while (!safe && attempts < 50) {
+            x = (Math.random() - 0.5) * (CONFIG.WORLD_SIZE - margin * 2);
+            y = (Math.random() - 0.5) * (CONFIG.WORLD_SIZE - margin * 2);
+            safe = !this.stones.some(s => Math.sqrt((x - s.x)**2 + (y - s.y)**2) < s.radius + 100);
+            attempts++;
         }
-        return bestAngle;
+        return { x, y };
     }
 
     start(mode) {
@@ -129,86 +95,62 @@ export class Game {
         this.isPlaying = true;
         this.lastSecond = Date.now();
         
-        // Random spawn points within safe zone
-        const margin = 100;
-        const spawnPlayer = {
-            x: (Math.random() - 0.5) * (CONFIG.WORLD_SIZE - margin * 2),
-            y: (Math.random() - 0.5) * (CONFIG.WORLD_SIZE - margin * 2)
-        };
-        const anglePlayer = this.calculateBestStartAngle(spawnPlayer.x, spawnPlayer.y);
-        this.player = new Snake('player', 'You', CONFIG.COLORS.PLAYER, spawnPlayer.x, spawnPlayer.y, false, anglePlayer);
+        const pPos = this.getSafeSpawnPoint();
+        this.player = new Snake('player', 'You', CONFIG.COLORS.PLAYER, pPos.x, pPos.y, false);
         this.snakes = [this.player];
 
         if (mode === 'duel') {
-            const spawnAI = {
-                x: (Math.random() - 0.5) * (CONFIG.WORLD_SIZE - margin * 2),
-                y: (Math.random() - 0.5) * (CONFIG.WORLD_SIZE - margin * 2)
-            };
-            const angleAI = this.calculateBestStartAngle(spawnAI.x, spawnAI.y);
-            this.snakes.push(new Snake('ai', 'Bot', CONFIG.COLORS.AI, spawnAI.x, spawnAI.y, true, angleAI));
+            const aPos = this.getSafeSpawnPoint();
+            this.snakes.push(new Snake('ai', 'Bot', CONFIG.COLORS.AI, aPos.x, aPos.y, true));
         }
         
-        for(let i = 0; i < 400; i++) this.spawnResource();
+        // Initial food count reduced by 30% (340 -> 238)
+        for(let i = 0; i < 238; i++) this.spawnResource();
     }
 
     spawnResource() {
-        let x, y, isNear = false, currentTerrainType = null;
-        const margin = 40;
-        const safeSize = CONFIG.WORLD_SIZE - margin * 2;
+        let x, y, isNearStone = false, terrainType = null;
+        const size = CONFIG.WORLD_SIZE;
         
-        if (Math.random() < 0.4) {
+        const rand = Math.random();
+        if (rand < 0.4 && this.terrains.length > 0) {
             const t = this.terrains[Math.floor(Math.random() * this.terrains.length)];
             const angle = Math.random() * Math.PI * 2;
             const dist = Math.random() * t.radius;
             x = t.x + Math.cos(angle) * dist;
             y = t.y + Math.sin(angle) * dist;
-            currentTerrainType = t.type;
-        } else if (Math.random() < 0.4) {
+            terrainType = t.type;
+        } else if (rand < 0.7 && this.stones.length > 0) {
             const stone = this.stones[Math.floor(Math.random() * this.stones.length)];
             const angle = Math.random() * Math.PI * 2;
-            const dist = stone.radius + 15 + Math.random() * 40;
+            const dist = stone.radius + 10 + Math.random() * 50;
             x = stone.x + Math.cos(angle) * dist;
             y = stone.y + Math.sin(angle) * dist;
-            isNear = true;
+            isNearStone = true;
         } else {
-            x = (Math.random() - 0.5) * safeSize;
-            y = (Math.random() - 0.5) * safeSize;
+            x = (Math.random() - 0.5) * (size - 80);
+            y = (Math.random() - 0.5) * (size - 80);
         }
 
-        // Final boundary check
-        if (Math.abs(x) > CONFIG.WORLD_SIZE/2 - 20 || Math.abs(y) > CONFIG.WORLD_SIZE/2 - 20) return;
-
-        // Inside stone check
+        // Boundary/Stone check
+        if (Math.abs(x) > size/2 - 20 || Math.abs(y) > size/2 - 20) return;
         for (const s of this.stones) {
-            const d = (x - s.x)**2 + (y - s.y)**2;
-            if (d < s.radius**2) return; 
+            if ((x - s.x)**2 + (y - s.y)**2 < s.radius**2) return; 
         }
 
-        // Slightly increased Energy Orb density
-        const orbChance = currentTerrainType === 'ice' ? 0.1 : (currentTerrainType === 'river' ? 0.08 : 0.05);
-        
-        if (Math.random() < orbChance) {
-            this.energyOrbs.push({ x, y, size: 8, value: CONFIG.ENERGY_ORB_VALUE });
+        // Food Quality Logic (2/5/10)
+        let type = 'SMALL';
+        if (isNearStone || terrainType === 'river') {
+            type = Math.random() < 0.3 ? 'LARGE' : 'MEDIUM';
+        } else if (terrainType === 'ice') {
+            type = 'MEDIUM';
         } else {
-            // Refined Risk/Reward Loot Matrix
-            let size = 4, value = 1.5;
-            const roll = Math.random();
-
-            if (currentTerrainType === 'ice') {
-                size = 3; value = 2; // Small but rewarding
-            } else if (currentTerrainType === 'river') {
-                size = 4.5; value = 3.5; // Medium
-            } else if (isNear) {
-                // Stones: 60% Big, 40% Normal
-                if (roll < 0.6) { size = 9; value = 12; } 
-                else { size = 4.5; value = 2; }
-            } else {
-                // Open Areas: 10% Surprise Big, 90% Normal
-                if (roll < 0.1) { size = 9; value = 12; }
-                else { size = 4.5; value = 1.5; }
-            }
-            this.food.push({ x, y, size, value });
+            if (Math.random() < 0.05) type = 'LARGE';
+            else if (Math.random() < 0.2) type = 'MEDIUM';
         }
+
+        const foodData = CONFIG.FOOD_TYPES[type];
+        this.food.push({ x, y, size: foodData.size, value: foodData.value });
     }
 
     update(input, dt) {
@@ -220,6 +162,15 @@ export class Game {
             this.timer--;
             this.lastSecond = now;
             if (this.timer <= 0) this.endGame();
+        }
+
+        // Respawn Queue
+        for (let i = this.respawnQueue.length - 1; i >= 0; i--) {
+            this.respawnQueue[i].time -= dt * 1000;
+            if (this.respawnQueue[i].time <= 0) {
+                this.respawn(this.respawnQueue[i].snake);
+                this.respawnQueue.splice(i, 1);
+            }
         }
 
         // VFX
@@ -235,10 +186,9 @@ export class Game {
             let speedMod = 1.0;
             let currentTerrain = null;
             this.terrains.forEach(t => {
-                const d = (snake.head.x - t.x)**2 + (snake.head.y - t.y)**2;
-                if (d < t.radius**2) {
+                if ((snake.head.x - t.x)**2 + (snake.head.y - t.y)**2 < t.radius**2) {
                     currentTerrain = t.type;
-                    if (t.type === 'river') speedMod = 0.75; // 25% slowdown
+                    if (t.type === 'river') speedMod = 0.75;
                 }
             });
 
@@ -249,7 +199,6 @@ export class Game {
                 snakes: this.snakes, 
                 stones: this.stones,
                 food: this.food, 
-                orbs: this.energyOrbs,
                 terrain: currentTerrain,
                 speedMod: speedMod
             });
@@ -257,7 +206,7 @@ export class Game {
 
         this.checkCollisions();
         
-        if (this.food.length < 150) this.spawnResource();
+        if (this.food.length < 100) this.spawnResource();
     }
 
     checkCollisions() {
@@ -271,44 +220,45 @@ export class Game {
 
             // Stones
             this.stones.forEach(s => {
-                const d = (snake.head.x - s.x)**2 + (snake.head.y - s.y)**2;
-                if (d < (snake.radius + s.radius)**2) this.kill(snake);
+                if ((snake.head.x - s.x)**2 + (snake.head.y - s.y)**2 < (snake.radius + s.radius)**2) {
+                    this.kill(snake);
+                }
             });
 
-            // Resources
-            this.food.forEach((f, i) => {
+            // Food
+            for (let i = this.food.length - 1; i >= 0; i--) {
+                const f = this.food[i];
                 if ((snake.head.x - f.x)**2 + (snake.head.y - f.y)**2 < (snake.radius + f.size)**2) {
-                    snake.targetLength += f.value;
+                    // Rule: If length < 50, eating any food restores to 50
+                    if (snake.length < CONFIG.INITIAL_LENGTH) {
+                        snake.targetLength = CONFIG.INITIAL_LENGTH;
+                    } else {
+                        snake.targetLength += f.value;
+                    }
+                    snake.totalEaten += f.value;
                     this.food.splice(i, 1);
                 }
-            });
-            this.energyOrbs.forEach((o, i) => {
-                if ((snake.head.x - o.x)**2 + (snake.head.y - o.y)**2 < (snake.radius + o.size)**2) {
-                    snake.addEnergy(o.value);
-                    this.energyOrbs.splice(i, 1);
-                }
-            });
+            }
 
-            // Combat (Cutting)
+            // Combat
             this.snakes.forEach(other => {
-                if (other.isDead) return;
-                if (snake !== other) {
-                    // Head-Head
-                    const dHead = (snake.head.x - other.head.x)**2 + (snake.head.y - other.head.y)**2;
-                    if (dHead < (snake.radius + other.radius)**2) {
-                        if (snake.length > other.length) this.kill(other);
-                        else this.kill(snake);
-                    }
-                    // Head-Body
-                    for(let i = 10; i < other.points.length; i++) {
-                        const p = other.points[i];
-                        if ((snake.head.x - p.x)**2 + (snake.head.y - p.y)**2 < (snake.radius + other.radius)**2) {
-                            if (snake.isDashing) {
-                                this.cut(other, i);
-                                snake.addEnergy(30);
-                            } else {
-                                this.kill(snake);
-                            }
+                if (other.isDead || snake === other) return;
+                
+                // Head-Head
+                const dHead = (snake.head.x - other.head.x)**2 + (snake.head.y - other.head.y)**2;
+                if (dHead < (snake.radius + other.radius)**2) {
+                    if (snake.length > other.length) this.kill(other);
+                    else this.kill(snake);
+                }
+                
+                // Head-Body (Cutting)
+                for(let i = 10; i < other.points.length; i++) {
+                    const p = other.points[i];
+                    if ((snake.head.x - p.x)**2 + (snake.head.y - p.y)**2 < (snake.radius + 10)**2) {
+                        if (snake.isDashing) {
+                            this.cut(other, i);
+                        } else {
+                            this.kill(snake);
                         }
                     }
                 }
@@ -317,25 +267,13 @@ export class Game {
     }
 
     cut(snake, idx) {
-        if (snake.id === 'ai') this.matchStats.cuts++;
-        
         const legacy = snake.points.slice(idx);
         snake.points = snake.points.slice(0, idx);
         snake.length = snake.points.length * 2;
         snake.targetLength = snake.length;
         
-        // Tactical Logging for AI Optimization
-        if (snake.id === 'ai') {
-            const cutPoint = legacy[0];
-            const dx = this.player.head.x - cutPoint.x;
-            const dy = this.player.head.y - cutPoint.y;
-            const angle = Math.atan2(dy, dx);
-            const relativeAngle = angle - this.player.angle;
-            console.log(`[TACTICAL CUT] Player cut AI! Angle: ${(relativeAngle * 180 / Math.PI).toFixed(1)}deg, Dist: ${Math.sqrt(dx*dx+dy*dy).toFixed(1)}px`);
-        }
-
         legacy.forEach((p, i) => {
-            if (i % 5 === 0) this.food.push({ x: p.x, y: p.y, size: 6, value: 3 });
+            if (i % 5 === 0) this.food.push({ x: p.x, y: p.y, size: 4, value: 2 });
         });
         this.spark(snake.head.x, snake.head.y, snake.color);
     }
@@ -343,23 +281,32 @@ export class Game {
     kill(snake) {
         snake.isDead = true;
         this.spark(snake.head.x, snake.head.y, snake.color);
-        
-        // End game if player dies OR if AI dies in Duel mode
-        if (snake === this.player || (this.mode === 'duel' && snake.id === 'ai')) {
-            this.endGame();
-        }
+        this.respawnQueue.push({ snake, time: CONFIG.RESPAWN_TIME });
+    }
+
+    respawn(snake) {
+        const pos = this.getSafeSpawnPoint();
+        snake.head = { x: pos.x, y: pos.y };
+        snake.points = [{ x: pos.x, y: pos.y }];
+        snake.length = CONFIG.INITIAL_LENGTH;
+        snake.targetLength = CONFIG.INITIAL_LENGTH;
+        snake.isDead = false;
+        snake.isDashing = false;
+        snake.angle = Math.random() * Math.PI * 2;
     }
 
     spark(x, y, color) {
-        for(let i = 0; i < 12; i++) {
-            this.effects.push({ x, y, vx: (Math.random()-0.5)*12, vy: (Math.random()-0.5)*12, color, life: 0.6 });
+        for(let i = 0; i < 15; i++) {
+            this.effects.push({ x, y, vx: (Math.random()-0.5)*15, vy: (Math.random()-0.5)*15, color, life: 0.8 });
         }
     }
 
     endGame() {
         this.isGameOver = true;
-        if (this.player.length > this.bestScore) {
-            this.bestScore = Math.floor(this.player.length);
+        // In v2.2.0, victory is based on totalEaten
+        const finalScore = Math.floor(this.player.totalEaten);
+        if (finalScore > this.bestScore) {
+            this.bestScore = finalScore;
             localStorage.setItem('snake_best', this.bestScore);
         }
     }

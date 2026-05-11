@@ -1,27 +1,28 @@
 export const CONFIG = {
     WORLD_SIZE: 1200,
     FPS: 60,
-    
-    // Snake Stats (GDD v2.1.3)
-    BASE_SPEED: 4,
-    DASH_MULTIPLIER: 1.5,
-    ENERGY_MAX: 100,
-    ENERGY_CONSUME_RATE: 33.3, // % per second
-    ENERGY_STARTUP_THRESHOLD: 10, // % required to start dash
-    ENERGY_ORB_VALUE: 10,
-    
-    // Modes
-    SOLO_TIME: 90, // seconds
-    
-    // Collision
+    SOLO_TIME: 90,
     HEAD_RADIUS: 15,
     
-    // Visuals
+    // Snake Stats (GDD v2.2.0)
+    BASE_SPEED: 4,
+    DASH_MULTIPLIER: 1.5,
+    INITIAL_LENGTH: 50,
+    DASH_LENGTH_CONSUME_RATE: 40, // Length per second
+    RESPAWN_TIME: 3000, // ms
+    
+    FOOD_TYPES: {
+        SMALL: { value: 2, size: 4 },
+        MEDIUM: { value: 5, size: 7 },
+        LARGE: { value: 10, size: 10 }
+    },
+
     COLORS: {
-        PLAYER: '#00ff88',
-        AI: '#ff00ea',
-        FOOD: '#ffffff',
-        ENERGY: '#00f2ff',
-        STONE: '#333'
+        PLAYER: '#00FF88',
+        AI: '#FF44CC',
+        STONE: '#222',
+        STONE_BORDER: '#FF0000',
+        FOOD: '#FFD700',
+        BOUNDARY: '#FF0000'
     }
 };

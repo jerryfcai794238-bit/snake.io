@@ -8,29 +8,29 @@ export class Snake {
         this.isAI = isAI;
         
         this.head = { x, y };
-        this.points = [{ x, y }]; // High-res path for body
-        this.length = 50;
-        this.targetLength = 50;
+        this.points = [{ x, y }]; 
+        this.length = CONFIG.INITIAL_LENGTH;
+        this.targetLength = CONFIG.INITIAL_LENGTH;
         this.radius = CONFIG.HEAD_RADIUS;
         this.angle = startAngle !== null ? startAngle : Math.random() * Math.PI * 2;
         
-        this.energy = 10;
         this.isDashing = false;
         this.speed = CONFIG.BASE_SPEED;
         this.isDead = false;
+        this.totalEaten = 0; // Total score for victory
     }
 
     update(targetAngle, wantsToDash, dt, worldContext) {
         if (this.isDead) return;
 
-        // 1. AI Decision Override
+        // 1. AI Decision
         if (this.isAI) {
             this.updateAI(worldContext);
             targetAngle = this.angle;
             wantsToDash = this.isDashing;
         }
 
-        // 2. Turn Logic (Inertia on Ice)
+        // 2. Turn Logic
         if (targetAngle !== null) {
             let diff = targetAngle - this.angle;
             while (diff < -Math.PI) diff += Math.PI * 2;
@@ -40,58 +40,46 @@ export class Snake {
             this.angle += diff * turnSensitivity;
         }
 
-        // 3. Dash & Energy Logic
-        const canStart = wantsToDash && this.energy >= CONFIG.ENERGY_STARTUP_THRESHOLD;
-        const canContinue = wantsToDash && this.energy > 0;
+        // 3. Dash Logic (Length-based)
+        const canDash = wantsToDash && this.length > CONFIG.INITIAL_LENGTH;
         
-        if (this.isDashing) {
-            if (canContinue) {
-                this.speed = CONFIG.BASE_SPEED * CONFIG.DASH_MULTIPLIER;
-                this.energy -= CONFIG.ENERGY_CONSUME_RATE * dt;
-            } else {
-                this.isDashing = false;
-                this.speed = CONFIG.BASE_SPEED;
+        if (canDash) {
+            this.isDashing = true;
+            this.speed = CONFIG.BASE_SPEED * CONFIG.DASH_MULTIPLIER;
+            // Consume length
+            this.targetLength -= CONFIG.DASH_LENGTH_CONSUME_RATE * dt;
+            if (this.targetLength < CONFIG.INITIAL_LENGTH) {
+                this.targetLength = CONFIG.INITIAL_LENGTH;
             }
         } else {
-            if (canStart) {
-                this.isDashing = true;
-                this.speed = CONFIG.BASE_SPEED * CONFIG.DASH_MULTIPLIER;
-                this.energy -= CONFIG.ENERGY_CONSUME_RATE * dt;
-            } else {
-                this.speed = CONFIG.BASE_SPEED;
-            }
+            this.isDashing = false;
+            this.speed = CONFIG.BASE_SPEED;
         }
-        this.energy = Math.max(0, Math.min(CONFIG.ENERGY_MAX, this.energy));
         
-        // 4. Apply Speed Modifier & Move
+        // 4. Move
         const speedMod = worldContext.speedMod || 1.0;
         const currentSpeed = this.speed * speedMod;
 
         this.head.x += Math.cos(this.angle) * currentSpeed;
         this.head.y += Math.sin(this.angle) * currentSpeed;
         
-        // 5. Update Path & Length
+        // 5. Path & Length Management
         this.points.unshift({ x: this.head.x, y: this.head.y });
         
         if (this.length < this.targetLength) this.length += 1.0;
         if (this.length > this.targetLength) this.length -= 0.5;
 
-        const maxPoints = Math.floor(this.length / 2);
+        const maxPoints = Math.max(5, Math.floor(this.length / 2));
         if (this.points.length > maxPoints) {
             this.points.length = maxPoints;
         }
     }
 
-    addEnergy(amount) {
-        this.energy = Math.min(CONFIG.ENERGY_MAX, this.energy + amount);
-    }
-
     updateAI(world) {
         const head = this.head;
         const halfSize = CONFIG.WORLD_SIZE / 2;
-        const visionRange = 300;
+        const visionRange = 400;
         
-        // 1. Setup 7 Vision Rays (-60 to +60 degrees)
         const rayAngles = [-60, -30, -15, 0, 15, 30, 60].map(a => a * Math.PI / 180);
         let bestScore = -Infinity;
         let bestAngle = this.angle;
@@ -103,69 +91,52 @@ export class Snake {
             const rayAngle = this.angle + offset;
             let score = 0;
             
-            // Check along the ray at 3 key distances
             for (let dist = 40; dist <= visionRange; dist += 80) {
                 const rx = head.x + Math.cos(rayAngle) * dist;
                 const ry = head.y + Math.sin(rayAngle) * dist;
 
-                // A. Boundary/Walls (Critical Penalty)
-                if (Math.abs(rx) > halfSize - 20 || Math.abs(ry) > halfSize - 20) {
-                    score -= 20000 / (dist/40); // Hard penalty, prioritized
+                if (Math.abs(rx) > halfSize - 30 || Math.abs(ry) > halfSize - 30) {
+                    score -= 30000 / (dist/40);
                     break;
                 }
 
-                // B. Stones (Critical Penalty)
                 for (const s of world.stones) {
                     const d2 = (rx - s.x)**2 + (ry - s.y)**2;
-                    if (d2 < (s.radius + 20)**2) {
-                        score -= 15000 / (dist/40);
+                    if (d2 < (s.radius + 30)**2) {
+                        score -= 25000 / (dist/40);
                         break;
                     }
                 }
 
-                // C. Player Body (Tactical Cross-Through Cut)
                 if (player && !player.isDead) {
+                    // Avoid player body or try to cut
                     let bodyHitIdx = -1;
                     for (let i = 0; i < player.points.length; i += 10) {
                         const p = player.points[i];
-                        if ((rx - p.x)**2 + (ry - p.y)**2 < 60**2) {
+                        if ((rx - p.x)**2 + (ry - p.y)**2 < 70**2) {
                             bodyHitIdx = i;
                             break;
                         }
                     }
 
                     if (bodyHitIdx !== -1) {
-                        // TACTICAL DECISION: If we have energy, perform a CROSS-THROUGH CUT
-                        if (this.energy > 30 && this.length > 150) {
-                            // Target a point BEYOND the body to ensure we cross the path
-                            // We use the current ray direction but extend the vision to "see through"
-                            score += 5000; 
+                        if (this.length > CONFIG.INITIAL_LENGTH + 20) {
+                            score += 8000; // Aggressive cut
                             shouldDash = true;
                         } else {
-                            // No energy or too small: Extreme avoidance
-                            score -= 18000 / (dist/40);
-                        }
-                    }
-
-                    // D. Combat: Aggressive Head Interception
-                    if (bodyHitIdx === -1) {
-                        const dHead2 = (rx - player.head.x)**2 + (ry - player.head.y)**2;
-                        if (dHead2 < 180**2) {
-                            if (this.length > 100) {
-                                score += 3000;
-                                if (dist < 250) shouldDash = true; 
-                            }
+                            score -= 20000 / (dist/40);
                         }
                     }
                 }
 
-                // E. Food & Orbs (Reward)
-                for (let i = 0; i < Math.min(world.food.length, 30); i++) {
-                    const f = world.food[i];
-                    if ((rx - f.x)**2 + (ry - f.y)**2 < 120**2) {
-                        score += (this.length < 200 ? 180 : 40);
+                // Food
+                world.food.forEach(f => {
+                    const d2 = (rx - f.x)**2 + (ry - f.y)**2;
+                    if (d2 < 150**2) {
+                        const distVal = Math.sqrt(d2);
+                        score += (f.value * 100) / (distVal/40 + 1);
                     }
-                }
+                });
             }
 
             if (score > bestScore) {
@@ -174,13 +145,11 @@ export class Snake {
             }
         });
 
-        // Apply smoothed turn
         let diff = bestAngle - this.angle;
         while (diff < -Math.PI) diff += Math.PI * 2;
         while (diff > Math.PI) diff -= Math.PI * 2;
-        this.angle += diff * 0.15;
+        this.angle += diff * 0.2;
 
-        // Energy management for Dash
-        this.isDashing = shouldDash && this.energy > 30 && this.length > 150;
+        this.isDashing = shouldDash && this.length > CONFIG.INITIAL_LENGTH + 30;
     }
 }
