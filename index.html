@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Snake.io - Combat Evolved</title>
-    <link rel="stylesheet" href="style.css?v=37">
+    <link rel="stylesheet" href="style.css?v=42">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
@@ -22,35 +22,40 @@
                     <span id="best-score">0</span>
                 </div>
 
-                <div class="mode-select">
-                    <button id="btn-mode-solo" class="mode-btn">
-                        <span class="title">SOLO CHALLENGE</span>
-                        <span class="desc">90s 限時挑戰</span>
-                    </button>
-                    <button id="btn-mode-duel" class="mode-btn special">
-                        <span class="title">1V1 DUEL (AI)</span>
-                        <span class="desc">截斷對抗生死鬥</span>
-                    </button>
+                <div class="mode-selection">
+                    <div id="btn-mode-solo" class="mode-card">
+                        <div class="title">SOLO CHALLENGE</div>
+                        <div class="desc">90s 限時挑戰</div>
+                    </div>
+                    <div id="btn-mode-duel" class="mode-card special">
+                        <div class="title">1V1 DUEL (AI)</div>
+                        <div class="desc">截斷對抗生死鬥</div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- HUD Top -->
         <div id="hud-top" class="hidden">
-            <div class="hud-item">
-                <span class="label">LENGTH</span>
-                <span id="current-length">0</span>
+            <div class="hud-group-left">
+                <div class="hud-item">
+                    <span class="label">LENGTH</span>
+                    <span id="current-length">0</span>
+                </div>
+                <div class="hud-item">
+                    <span class="label">BEST</span>
+                    <span id="total-score">0</span>
+                </div>
             </div>
-            <div class="hud-item">
-                <span class="label">BEST</span>
-                <span id="total-score">0</span>
+
+            <div class="hud-group-center">
+                <span id="timer">02:00</span>
             </div>
-            <div id="leaderboard">
-                <!-- List items injected here -->
-            </div>
-            <div class="hud-item">
-                <span class="label">TIME</span>
-                <span id="timer">01:30</span>
+
+            <div class="hud-group-right">
+                <div id="leaderboard">
+                    <!-- List items injected here -->
+                </div>
             </div>
         </div>
 

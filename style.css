@@ -25,33 +25,25 @@ html {
     align-items: center;
 }
 
+#app-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
 #game-container {
     position: relative;
     width: 100%;
     height: 100%;
-    max-width: 540px;
-    max-height: 960px;
-    aspect-ratio: 9/16;
     background: var(--bg);
     overflow: hidden;
-    border: 14px solid #ffffff;
-    border-radius: 45px;
-    box-shadow: 0 0 60px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(0, 0, 0, 0.5);
 }
 
-#game-container::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 160px;
-    height: 28px;
-    background: #ffffff;
-    border-bottom-left-radius: 18px;
-    border-bottom-right-radius: 18px;
-    z-index: 100;
-}
+/* Removed Notch */
 
 #game-canvas {
     position: absolute;
@@ -69,14 +61,17 @@ html {
 /* Lobby */
 #lobby {
     position: absolute;
-    inset: 0;
-    z-index: 50;
-    background: radial-gradient(circle at center, #111 0%, #000 100%);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 40px;
+    z-index: 200;
+    padding: 20px;
 }
 
 .logo {
@@ -113,11 +108,48 @@ html {
     color: var(--neon-gold);
 }
 
-.mode-select {
+.mode-selection {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.mode-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid var(--neon-blue);
+    border-radius: 20px;
+    padding: 30px;
+    width: 280px; /* 增加寬度 */
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    width: 100%;
+    gap: 8px;
+}
+
+.mode-card.special {
+    border-color: var(--neon-pink);
+}
+
+.mode-card:active {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.mode-card .title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.mode-card .desc {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
 }
 
 .mode-btn {
@@ -152,47 +184,29 @@ html {
     opacity: 0.6;
 }
 
-/* HUD */
+/* HUD Layout (v3.0.4 Landscape Optimized) */
 #hud-top {
     position: absolute;
-    top: 40px;
-    left: 0;
-    right: 0;
-    padding: 0 25px;
+    top: 20px;
+    left: 20px;
+    right: 20px;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    z-index: 50;
+    z-index: 150;
     pointer-events: none;
 }
 
-#leaderboard {
-    background: rgba(0, 0, 0, 0.5);
-    padding: 12px 18px;
-    border-radius: 12px;
-    font-size: 14px;
-    min-width: 130px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(5px);
+.hud-group-left {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    gap: 30px;
 }
 
-.lb-item {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
+.hud-group-center {
+    font-size: 32px;
     font-weight: 700;
-}
-
-.lb-item.player {
-    color: #00ff88;
-    text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
-}
-
-.lb-item.ai {
-    color: var(--neon-pink);
+    color: #fff;
+    text-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
 .hud-item {
@@ -200,48 +214,35 @@ html {
     flex-direction: column;
 }
 
-.hud-item:last-child {
-    align-items: flex-end;
-}
-
 .hud-item .label {
-    font-size: 10px;
-    color: #888;
-    letter-spacing: 1px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 2px;
 }
 
 .hud-item span:not(.label) {
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 700;
     color: #fff;
 }
 
 #leaderboard {
     background: rgba(0, 0, 0, 0.5);
-    padding: 8px 15px;
+    padding: 12px 20px;
     border-radius: 12px;
-    font-size: 14px;
-    min-width: 150px;
+    font-size: 16px;
+    min-width: 200px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(5px);
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 5px;
 }
 
 .lb-item {
     display: flex;
     justify-content: space-between;
-    gap: 10px;
-    font-weight: 700;
-}
-
-.lb-item.player {
-    color: #00ff88;
-}
-
-.lb-item.ai {
-    color: var(--neon-pink);
+    gap: 15px;
 }
 
 #hud-bottom {
@@ -319,30 +320,30 @@ html {
 
 #dash-btn {
     position: absolute;
-    right: 40px;
-    bottom: 140px;
-    width: 100px;
-    height: 100px;
+    right: 50px;
+    bottom: 50px; /* 右下角大按鈕 */
+    width: 140px;
+    height: 140px;
     background: rgba(255, 255, 255, 0.05);
-    border: 2px solid var(--neon-pink);
+    border: 3px solid var(--neon-pink);
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     color: #fff;
-    font-size: 40px;
+    font-size: 52px;
     z-index: 100;
     pointer-events: auto;
-    box-shadow: 0 0 15px rgba(255, 0, 234, 0.2);
+    box-shadow: 0 0 30px rgba(255, 0, 234, 0.4);
     backdrop-filter: blur(5px);
 }
 
 #magnet-btn {
     position: absolute;
-    right: 40px;
-    bottom: 260px; /* 磁鐵位置 */
-    width: 70px;
-    height: 70px;
+    right: 220px; /* 主按鈕左側 */
+    bottom: 60px; /* 偏下 */
+    width: 85px;
+    height: 85px;
     background: rgba(255, 255, 255, 0.05);
     border: 2px solid var(--neon-blue);
     border-radius: 50%;
@@ -350,33 +351,33 @@ html {
     justify-content: center;
     align-items: center;
     color: #fff;
-    font-size: 30px;
+    font-size: 38px;
     z-index: 100;
     pointer-events: auto;
-    box-shadow: 0 0 10px rgba(0, 204, 255, 0.2);
     backdrop-filter: blur(5px);
     overflow: hidden;
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
 }
 
 #shockwave-btn {
     position: absolute;
-    right: 40px;
-    bottom: 350px; /* 放在磁鐵上方 */
-    width: 70px;
-    height: 70px;
+    right: 70px; /* 稍微內縮 */
+    bottom: 220px; /* 主按鈕上方 */
+    width: 85px;
+    height: 85px;
     background: rgba(255, 255, 255, 0.05);
-    border: 2px solid #BC13FE; /* 霓虹紫 */
+    border: 2px solid #BC13FE;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     color: #fff;
-    font-size: 30px;
+    font-size: 38px;
     z-index: 100;
     pointer-events: auto;
-    box-shadow: 0 0 10px rgba(188, 19, 254, 0.2);
     backdrop-filter: blur(5px);
     overflow: hidden;
+    box-shadow: 0 0 15px rgba(188, 19, 254, 0.3);
 }
 
 #shockwave-cooldown-overlay {
@@ -528,6 +529,8 @@ html {
     border-radius: 30px;
     border: 2px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+    width: 90%;
+    max-width: 900px; /* 結算畫面寬度 */
     animation: slide-up 0.4s ease-out;
 }
 
@@ -545,11 +548,11 @@ html {
 
 /* Comparison Table */
 .comparison-table {
-    width: 320px;
+    width: 100%; /* 撐滿寬度 */
     border-collapse: collapse;
     margin-bottom: 30px;
     color: #fff;
-    font-size: 14px;
+    font-size: 16px;
     background: rgba(255, 255, 255, 0.02);
     border-radius: 15px;
     overflow: hidden;

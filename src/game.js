@@ -394,8 +394,8 @@ export class Game {
         snake.deaths++;
         if (killer) killer.kills++;
         
-        // 死亡瞬間立即計算 70% 懲罰 (v2.8.4)
-        const penaltyLength = Math.max(CONFIG.INITIAL_LENGTH, snake.maxLength * 0.7);
+        // 死亡瞬間立即計算 50% 懲罰 (v3.0.7)
+        const penaltyLength = Math.max(CONFIG.INITIAL_LENGTH, snake.maxLength * 0.5);
         snake.length = penaltyLength;
         snake.targetLength = penaltyLength;
         snake.maxLength = penaltyLength; // 重置最高紀錄，確保連續死亡會持續扣除長度
