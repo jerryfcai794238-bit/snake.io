@@ -134,6 +134,28 @@ export class Renderer {
         }
     }
 
+    drawMagnetHUD(snake) {
+        const ctx = this.ctx;
+        const x = snake.head.x;
+        const y = snake.head.y - snake.radius - 40;
+        
+        // 畫圖標
+        ctx.font = '24px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('🧲', x, y);
+        
+        // 畫倒數條
+        const barWidth = 40;
+        const barHeight = 4;
+        const ratio = snake.magnetTime / 10; // 10秒總時長
+        
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.fillRect(x - barWidth/2, y + 5, barWidth, barHeight);
+        
+        ctx.fillStyle = '#FF3333';
+        ctx.fillRect(x - barWidth/2, y + 5, barWidth * ratio, barHeight);
+    }
+
     drawSnake(snake) {
         if (snake.isDead || snake.points.length < 2) return;
         const ctx = this.ctx;
@@ -163,6 +185,11 @@ export class Renderer {
         
         if (snake.id === 'player') {
             this.drawHeadHUD(snake);
+        }
+
+        // Magnet HUD (v2.9.0)
+        if (snake.isMagnetActive) {
+            this.drawMagnetHUD(snake);
         }
 
         // Eyes

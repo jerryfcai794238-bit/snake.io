@@ -337,6 +337,57 @@ html {
     backdrop-filter: blur(5px);
 }
 
+#magnet-btn {
+    position: absolute;
+    right: 40px;
+    bottom: 260px; /* 放在加速按鈕上方 */
+    width: 70px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid var(--neon-blue);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 30px;
+    z-index: 100;
+    pointer-events: auto;
+    box-shadow: 0 0 10px rgba(0, 204, 255, 0.2);
+    backdrop-filter: blur(5px);
+    overflow: hidden;
+}
+
+#magnet-cooldown-overlay {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 0%; /* 動態控制高度 */
+    background: rgba(0, 0, 0, 0.6);
+    transition: height 0.1s linear;
+}
+
+#magnet-btn.active {
+    border-color: #fff;
+    box-shadow: 0 0 20px #00FFFF;
+    background: rgba(0, 255, 255, 0.2);
+}
+
+#magnet-cd-text {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(0,0,0,0.8);
+    pointer-events: none;
+    z-index: 105;
+}
+
 #dash-btn.active {
     background: var(--neon-pink);
     box-shadow: 0 0 30px var(--neon-pink);

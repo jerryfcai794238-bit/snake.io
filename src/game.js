@@ -191,8 +191,25 @@ export class Game {
                 if (this.food[i].expires <= 0) this.food.splice(i, 1);
             }
         }
+
+        // 磁鐵吸取邏輯 (v2.9.0)
+        this.food.forEach(f => {
+            this.snakes.forEach(snake => {
+                if (snake.isDead || !snake.isMagnetActive) return;
+                const dx = snake.head.x - f.x;
+                const dy = snake.head.y - f.y;
+                const distSq = dx*dx + dy*dy;
+                const magnetRadius = 75; // 吸取半徑 (直徑 150px)
+                if (distSq < magnetRadius * magnetRadius) {
+                    const dist = Math.sqrt(distSq);
+                    const attractSpeed = 10; // 吸取速度
+                    f.x += (dx / dist) * attractSpeed;
+                    f.y += (dy / dist) * attractSpeed;
+                }
+            });
+        });
+
         this.snakes.forEach(snake => {
-            if (snake.isDead) return;
             let speedMod = 1.0, currentTerrain = null;
             this.terrains.forEach(t => { if ((snake.head.x - t.x)**2 + (snake.head.y - t.y)**2 < t.radius**2) { currentTerrain = t.type; if (t.type === 'river') speedMod = 0.75; } });
             const targetAngle = snake === this.player ? (input.isMoving ? input.angle : null) : null;

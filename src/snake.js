@@ -26,9 +26,27 @@ export class Snake {
         this.cuts = 0;
         this.deaths = 0;
         this.totalDashTime = 0;
+
+        // Magnet Skill (v2.9.0)
+        this.isMagnetActive = false;
+        this.magnetTime = 0; // 當前啟動剩餘時間
+        this.magnetCooldown = 0; // 當前冷卻剩餘時間
     }
 
     update(targetAngle, wantsToDash, dt, worldContext) {
+        // 更新技能計時器 (即使死亡也要倒數 v2.9.6)
+        if (this.magnetTime > 0) {
+            this.magnetTime -= dt;
+            if (this.magnetTime <= 0) {
+                this.magnetTime = 0;
+                this.isMagnetActive = false;
+            }
+        }
+        if (this.magnetCooldown > 0) {
+            this.magnetCooldown -= dt;
+            if (this.magnetCooldown <= 0) this.magnetCooldown = 0;
+        }
+
         if (this.isDead) return;
 
         if (this.isAI) {

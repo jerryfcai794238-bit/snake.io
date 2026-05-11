@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Snake.io - Combat Evolved</title>
-    <link rel="stylesheet" href="style.css?v=30">
+    <link rel="stylesheet" href="style.css?v=35">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
@@ -72,6 +72,12 @@
             <!-- 加速按鈕 -->
             <button id="dash-btn" class="hidden">
                 <div class="dash-icon">🚀</div>
+            </button>
+            <!-- 磁鐵技能按鈕 (v2.9.0) -->
+            <button id="magnet-btn" class="hidden">
+                <div class="skill-icon">🧲</div>
+                <div id="magnet-cooldown-overlay"></div>
+                <div id="magnet-cd-text"></div>
             </button>
         </div>
 

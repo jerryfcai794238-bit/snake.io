@@ -1,5 +1,6 @@
 export class InputHandler {
-    constructor() {
+    constructor(game) {
+        this.game = game;
         this.zone = document.getElementById('joystick-zone');
         this.base = document.getElementById('joystick-base');
         this.handle = document.getElementById('joystick-handle');
@@ -123,11 +124,36 @@ export class InputHandler {
         this.dashBtn.addEventListener('mousedown', startDash);
         this.dashBtn.addEventListener('mouseup', endDash);
         this.dashBtn.addEventListener('mouseleave', endDash);
+
+        // Magnet Skill (v2.9.0)
+        const magnetBtn = document.getElementById('magnet-btn');
+        const triggerMagnet = (e) => {
+            if (e) e.preventDefault();
+            const p = this.game.player;
+            if (p && p.magnetCooldown <= 0) {
+                p.isMagnetActive = true;
+                p.magnetTime = 10;
+                p.magnetCooldown = 30;
+            }
+        };
+        magnetBtn.addEventListener('touchstart', triggerMagnet, { passive: false });
+        magnetBtn.addEventListener('mousedown', triggerMagnet);
     }
 
     initKeyboard() {
         window.addEventListener('keydown', (e) => {
             const key = e.key.toLowerCase();
+            
+            // 磁鐵技能快捷鍵 (v2.9.1)
+            if (key === '2' || key === 'e') {
+                const p = this.game.player;
+                if (p && p.magnetCooldown <= 0) {
+                    p.isMagnetActive = true;
+                    p.magnetTime = 10;
+                    p.magnetCooldown = 30;
+                }
+            }
+
             if (this.keys.hasOwnProperty(key)) {
                 this.keys[key] = true;
                 this.updateKeyboardInput();

@@ -7,7 +7,7 @@ class Main {
         this.canvas = document.getElementById('game-canvas');
         this.game = new Game();
         this.renderer = new Renderer(this.canvas);
-        this.input = new InputHandler();
+        this.input = new InputHandler(this.game);
         this.lastTime = performance.now();
         this.initEvents();
         document.getElementById('best-score').innerText = this.game.bestScore;
@@ -30,6 +30,7 @@ class Main {
         document.getElementById('hud-bottom').classList.remove('hidden');
         document.getElementById('joystick-zone').classList.remove('hidden');
         document.getElementById('dash-btn').classList.remove('hidden');
+        document.getElementById('magnet-btn').classList.remove('hidden');
         document.getElementById('game-over').classList.add('hidden');
     }
 
@@ -96,6 +97,27 @@ class Main {
             overlay.classList.remove('hidden');
             document.getElementById('respawn-sec').innerText = Math.ceil(respawnData.time / 1000);
         } else { overlay.classList.add('hidden'); }
+
+        // Magnet Skill UI (v2.9.0)
+        const magnetBtn = document.getElementById('magnet-btn');
+        const magnetOverlay = document.getElementById('magnet-cooldown-overlay');
+        const magnetCDText = document.getElementById('magnet-cd-text');
+        if (magnetBtn && magnetOverlay && magnetCDText) {
+            const cdRatio = p.magnetCooldown / 30; // 30秒冷卻
+            magnetOverlay.style.height = `${cdRatio * 100}%`;
+            
+            // 更新倒數文字 (v2.9.4)
+            if (p.magnetCooldown > 0) {
+                magnetCDText.innerText = Math.ceil(p.magnetCooldown);
+                magnetBtn.querySelector('.skill-icon').style.opacity = '0.3'; // 冷卻中淡化圖標
+            } else {
+                magnetCDText.innerText = '';
+                magnetBtn.querySelector('.skill-icon').style.opacity = '1';
+            }
+            
+            if (p.isMagnetActive) magnetBtn.classList.add('active');
+            else magnetBtn.classList.remove('active');
+        }
     }
 
     populateSettlement() {
