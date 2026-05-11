@@ -1,12 +1,16 @@
 export class InputHandler {
     constructor() {
+        this.zone = document.getElementById('joystick-zone');
         this.base = document.getElementById('joystick-base');
         this.handle = document.getElementById('joystick-handle');
         
         this.angle = 0;
         this.isMoving = false;
         this.isDashing = false;
-        this.distanceRatio = 0; // 0 to 1+
+        this.distanceRatio = 0; 
+        
+        this.centerX = 0;
+        this.centerY = 0;
         
         this.keys = { w: false, a: false, s: false, d: false, '1': false, shift: false };
         
@@ -15,20 +19,39 @@ export class InputHandler {
     }
 
     initJoystick() {
-        const handleMove = (e) => {
+        const handleStart = (e) => {
             const touch = e.touches ? e.touches[0] : e;
-            const rect = this.base.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
+            const rect = this.zone.getBoundingClientRect();
             
-            const dx = touch.clientX - centerX;
-            const dy = touch.clientY - centerY;
+            // 記錄起始點作為中心 (相對於容器內部)
+            this.centerX = touch.clientX - rect.left;
+            this.centerY = touch.clientY - rect.top;
+            
+            // 定位底座並顯示
+            this.base.style.display = 'block';
+            this.base.style.left = `${this.centerX - 90}px`;
+            this.base.style.top = `${this.centerY - 90}px`;
+            
+            // handleMove 也需要統一的座標系，所以我們傳入修正後的座標
+            handleMove(e);
+        };
+
+        const handleMove = (e) => {
+            if (!this.isMoving && !this.isMouseDown && (!e.touches || e.touches.length === 0)) return;
+            
+            const touch = e.touches ? e.touches[0] : e;
+            const rect = this.zone.getBoundingClientRect();
+            const currentX = touch.clientX - rect.left;
+            const currentY = touch.clientY - rect.top;
+
+            const dx = currentX - this.centerX;
+            const dy = currentY - this.centerY;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            const radius = rect.width / 2;
+            const radius = 90; // 固定半徑 (180/2)
             
             this.angle = Math.atan2(dy, dx);
             
-            // 阻力邏輯：超過半徑後，移動感降低為 30%
+            // 阻力邏輯
             let visualDist;
             if (dist <= radius) {
                 visualDist = dist;
@@ -47,20 +70,20 @@ export class InputHandler {
         };
 
         const handleEnd = () => {
+            this.base.style.display = 'none';
             this.handle.style.transform = 'translate(-50%, -50%)';
             this.isMoving = false;
             this.distanceRatio = 0;
             this.updateDashState();
         };
 
-        this.base.addEventListener('touchstart', (e) => { e.preventDefault(); handleMove(e); }, { passive: false });
-        this.base.addEventListener('touchmove', (e) => { e.preventDefault(); handleMove(e); }, { passive: false });
-        this.base.addEventListener('touchend', handleEnd);
+        this.zone.addEventListener('touchstart', (e) => { e.preventDefault(); handleStart(e); }, { passive: false });
+        this.zone.addEventListener('touchmove', (e) => { e.preventDefault(); handleMove(e); }, { passive: false });
+        this.zone.addEventListener('touchend', handleEnd);
         
-        // Mouse support
-        this.base.addEventListener('mousedown', (e) => {
+        this.zone.addEventListener('mousedown', (e) => {
             this.isMouseDown = true;
-            handleMove(e);
+            handleStart(e);
             const onMove = (me) => this.isMouseDown && handleMove(me);
             const onUp = () => { this.isMouseDown = false; handleEnd(); window.removeEventListener('mousemove', onMove); };
             window.addEventListener('mousemove', onMove);
