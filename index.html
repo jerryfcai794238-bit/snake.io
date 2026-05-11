@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Snake.io - Combat Evolved</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=4">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div id="game-container">
         <!-- Lobby -->
@@ -14,7 +16,7 @@
             <div class="lobby-content">
                 <h1 class="logo">SNAKE.IO</h1>
                 <p class="subtitle">COMBAT EVOLVED</p>
-                
+
                 <div class="stats">
                     <span class="label">BEST RECORD</span>
                     <span id="best-score">0</span>
@@ -71,7 +73,7 @@
         <div id="game-over" class="hidden">
             <div class="content">
                 <h1 id="game-over-title">DEFEAT</h1>
-                
+
                 <table class="comparison-table">
                     <thead>
                         <tr>
@@ -94,4 +96,5 @@
     </div>
     <script type="module" src="src/main.js"></script>
 </body>
+
 </html>

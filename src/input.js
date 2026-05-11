@@ -27,11 +27,18 @@ export class InputHandler {
             const radius = rect.width / 2;
             
             this.angle = Math.atan2(dy, dx);
+            
+            // 阻力邏輯：超過半徑後，移動感降低為 30%
+            let visualDist;
+            if (dist <= radius) {
+                visualDist = dist;
+            } else {
+                visualDist = radius + (dist - radius) * 0.3;
+            }
+            
             this.distanceRatio = dist / radius;
             this.isMoving = dist > 5;
             
-            // Visual clamping
-            const visualDist = Math.min(dist, radius);
             const moveX = Math.cos(this.angle) * visualDist;
             const moveY = Math.sin(this.angle) * visualDist;
             this.handle.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px))`;
@@ -95,7 +102,7 @@ export class InputHandler {
     }
 
     updateDashState() {
-        const joyDash = this.distanceRatio > 1.0;
+        const joyDash = this.distanceRatio > 1.4;
         const keyDash = this.keys['1'] || this.keys.shift;
         this.isDashing = joyDash || keyDash;
         
