@@ -36,15 +36,6 @@ export class Game {
                 this.terrains.push({ type: 'river', x: rx + i * 120, y: ry + Math.sin(i * 0.5) * 100, radius: 60 + Math.random() * 20 });
             }
         }
-        const numIce = Math.floor(Math.random() * 3) + 2;
-        for (let i = 0; i < numIce; i++) {
-            this.terrains.push({ 
-                type: 'ice', 
-                x: (Math.random() - 0.5) * size * 0.8, 
-                y: (Math.random() - 0.5) * size * 0.8, 
-                radius: 71 + Math.random() * 53 
-            });
-        }
         const numStones = Math.floor(Math.random() * 7) + 8;
         for (let i = 0; i < numStones; i++) {
             const s = { x: (Math.random() - 0.5) * size * 0.9, y: (Math.random() - 0.5) * size * 0.9, radius: 25 + Math.random() * 30 };
@@ -131,9 +122,18 @@ export class Game {
         const pPos = this.getSafeSpawnPoint();
         this.player = new Snake('player', 'You', CONFIG.COLORS.PLAYER, pPos.x, pPos.y, false, this.calculateBestStartAngle(pPos.x, pPos.y));
         this.snakes = [this.player];
+        
         if (mode === 'duel') {
-            const aPos = this.getSafeSpawnPoint();
-            this.snakes.push(new Snake('ai', 'Bot', CONFIG.COLORS.AI, aPos.x, aPos.y, true, this.calculateBestStartAngle(aPos.x, aPos.y)));
+            const aiConfigs = [
+                { name: 'Bot Alpha', color: '#FF44CC' },
+                { name: 'Bot Beta', color: '#FF8800' },
+                { name: 'Bot Gamma', color: '#00CCFF' }
+            ];
+
+            aiConfigs.forEach((cfg, index) => {
+                const aPos = this.getSafeSpawnPoint();
+                this.snakes.push(new Snake(`ai-${index}`, cfg.name, cfg.color, aPos.x, aPos.y, true, this.calculateBestStartAngle(aPos.x, aPos.y)));
+            });
         }
         for(let i = 0; i < 238; i++) this.spawnResource();
     }
@@ -210,8 +210,48 @@ export class Game {
     checkCollisions() {
         this.snakes.forEach(snake => {
             if (snake.isDead) return;
-            if (Math.abs(snake.head.x) > CONFIG.WORLD_SIZE/2 || Math.abs(snake.head.y) > CONFIG.WORLD_SIZE/2) { this.kill(snake); return; }
-            this.stones.forEach(s => { if ((snake.head.x - s.x)**2 + (snake.head.y - s.y)**2 < (snake.radius + s.radius)**2) { this.kill(snake); } });
+            
+            const halfSize = CONFIG.WORLD_SIZE / 2;
+            const margin = snake.radius;
+            
+            // 牆壁碰撞：改為回彈 (加強版：向內推回一段距離)
+            const bounceDist = 20; 
+            if (Math.abs(snake.head.x) > halfSize - margin || Math.abs(snake.head.y) > halfSize - margin) {
+                if (snake.head.x > halfSize - margin) { 
+                    snake.head.x = halfSize - margin - bounceDist; 
+                    snake.angle = Math.PI - snake.angle; 
+                }
+                if (snake.head.x < -halfSize + margin) { 
+                    snake.head.x = -halfSize + margin + bounceDist; 
+                    snake.angle = Math.PI - snake.angle; 
+                }
+                if (snake.head.y > halfSize - margin) { 
+                    snake.head.y = halfSize - margin - bounceDist; 
+                    snake.angle = -snake.angle; 
+                }
+                if (snake.head.y < -halfSize + margin) { 
+                    snake.head.y = -halfSize + margin + bounceDist; 
+                    snake.angle = -snake.angle; 
+                }
+                return; 
+            }
+
+            // 石頭碰撞：改為回彈 (加強版)
+            this.stones.forEach(s => {
+                const dx = snake.head.x - s.x;
+                const dy = snake.head.y - s.y;
+                const distSq = dx*dx + dy*dy;
+                const minDist = snake.radius + s.radius;
+                if (distSq < minDist*minDist) {
+                    const angle = Math.atan2(dy, dx);
+                    // 向外推回一段距離
+                    snake.head.x = s.x + Math.cos(angle) * (minDist + bounceDist);
+                    snake.head.y = s.y + Math.sin(angle) * (minDist + bounceDist);
+                    snake.angle = angle; 
+                }
+            });
+
+            // 食物碰撞
             for (let i = this.food.length - 1; i >= 0; i--) {
                 const f = this.food[i];
                 if ((snake.head.x - f.x)**2 + (snake.head.y - f.y)**2 < (snake.radius + f.size)**2) {
@@ -221,18 +261,52 @@ export class Game {
                     this.food.splice(i, 1);
                 }
             }
+
+            // 蛇與蛇碰撞 (核心戰鬥邏輯)
             this.snakes.forEach(other => {
                 if (other.isDead || snake === other) return;
+                
                 const dHead = (snake.head.x - other.head.x)**2 + (snake.head.y - other.head.y)**2;
                 if (dHead < (snake.radius + other.radius)**2) {
-                    if (snake.length > other.length) { this.kill(other, snake); }
-                    else { this.kill(snake, other); }
+                    // 頭部對撞
+                    if (snake.isDashing && other.isDashing) {
+                        // 雙方都加速：互相回彈
+                        const angle = Math.atan2(snake.head.y - other.head.y, snake.head.x - other.head.x);
+                        snake.angle = angle;
+                        other.angle = angle + Math.PI;
+                    } else if (snake.isDashing) {
+                        this.kill(other, snake); // 你加速你贏
+                    } else if (other.isDashing) {
+                        this.kill(snake, other); // 對方加速對方贏
+                    } else {
+                        // 都沒加速：大吃小
+                        if (snake.length > other.length) { this.kill(other, snake); }
+                        else { this.kill(snake, other); }
+                    }
+                    return;
                 }
+
+                // 撞到身體
                 for(let i = 10; i < other.points.length; i++) {
                     const p = other.points[i];
                     if ((snake.head.x - p.x)**2 + (snake.head.y - p.y)**2 < (snake.radius + 10)**2) {
-                        if (snake.isDashing) { this.cut(other, i, snake); }
-                        else { this.kill(snake, other); }
+                        if (snake.isDashing && other.isDashing) {
+                            // 雙方都在加速：撞到身體也要回彈 (v2.8.3)
+                            const angle = Math.atan2(snake.head.y - p.y, snake.head.x - p.x);
+                            const bounceDist = 30;
+                            snake.head.x = p.x + Math.cos(angle) * (snake.radius + 10 + bounceDist);
+                            snake.head.y = p.y + Math.sin(angle) * (snake.radius + 10 + bounceDist);
+                            snake.angle = angle;
+                        } else if (snake.isDashing) {
+                            // 只有你加速：截斷對方
+                            this.cut(other, i, snake);
+                        } else if (!other.isDashing) {
+                            // 你沒加速且對方也沒加速：你死
+                            this.kill(snake, other);
+                        } else {
+                            // 對方加速你沒加：你死 (被無敵星撞到)
+                            this.kill(snake, other);
+                        }
                     }
                 }
             });
@@ -253,7 +327,16 @@ export class Game {
         snake.isDead = true;
         snake.deaths++;
         if (killer) killer.kills++;
+        
+        // 死亡瞬間立即計算 70% 懲罰 (v2.8.4)
+        const penaltyLength = Math.max(CONFIG.INITIAL_LENGTH, snake.maxLength * 0.7);
+        snake.length = penaltyLength;
+        snake.targetLength = penaltyLength;
+        snake.maxLength = penaltyLength; // 重置最高紀錄，確保連續死亡會持續扣除長度
+
+        // 恢復掉落食物機制
         snake.points.forEach((p, i) => { if (i % 6 === 0) this.food.push({ x: p.x, y: p.y, size: 4, value: 9.6, expires: 5.0 }); });
+        
         this.spark(snake.head.x, snake.head.y, snake.color);
         this.respawnQueue.push({ snake, time: CONFIG.RESPAWN_TIME });
     }
@@ -262,8 +345,8 @@ export class Game {
         const pos = this.getSafeSpawnPoint();
         snake.head = { x: pos.x, y: pos.y };
         snake.points = [{ x: pos.x, y: pos.y }];
-        snake.length = CONFIG.INITIAL_LENGTH;
-        snake.targetLength = CONFIG.INITIAL_LENGTH;
+        
+        // 長度已在 kill 階段計算過，此處僅確保狀態重置
         snake.isDead = false;
         snake.isDashing = false;
         snake.angle = this.calculateBestStartAngle(pos.x, pos.y);
@@ -275,7 +358,7 @@ export class Game {
 
     endGame() {
         this.isGameOver = true;
-        const finalScore = Math.floor(this.player.totalEaten);
+        const finalScore = Math.floor(this.player.length); // 改為最終長度 (v2.7.5)
         if (finalScore > this.bestScore) { this.bestScore = finalScore; localStorage.setItem('snake_best', this.bestScore); }
     }
 }

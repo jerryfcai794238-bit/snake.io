@@ -102,16 +102,54 @@ export class Renderer {
         });
     }
 
+    drawHeadHUD(snake) {
+        const ctx = this.ctx;
+        const radius = snake.radius + 18; // 稍微拉開一點
+        
+        // 畫背景環
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(snake.head.x, snake.head.y, radius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // 畫進度環 (青色加強版)
+        const usableLength = Math.max(0, snake.targetLength - CONFIG.INITIAL_LENGTH);
+        const maxDisplayLength = 150; 
+        const ratio = Math.min(1.0, usableLength / maxDisplayLength);
+        
+        if (ratio > 0) {
+            const cyan = '#00FFFF';
+            ctx.strokeStyle = snake.isDashing ? cyan : 'rgba(0, 255, 255, 0.6)';
+            if (snake.isDashing) {
+                ctx.shadowBlur = 25; // 亮度大幅提升
+                ctx.shadowColor = cyan;
+            }
+            
+            ctx.lineWidth = 7; // 加粗
+            ctx.beginPath();
+            ctx.arc(snake.head.x, snake.head.y, radius, -Math.PI / 2, -Math.PI / 2 + (Math.PI * 2 * ratio));
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+        }
+    }
+
     drawSnake(snake) {
         if (snake.isDead || snake.points.length < 2) return;
         const ctx = this.ctx;
         ctx.save();
+        
+        // 速度線特效 (v2.7.1)
+        if (snake.isDashing) {
+            this.drawSpeedLines(snake);
+        }
+
         ctx.lineCap = 'round'; ctx.lineJoin = 'round';
         ctx.lineWidth = snake.radius * 2; ctx.strokeStyle = snake.color;
         if (snake.isDashing) { 
-            ctx.shadowBlur = 20; 
+            ctx.shadowBlur = 30; // 發光加強
             ctx.shadowColor = snake.color; 
-            ctx.lineWidth *= 1.1; 
+            ctx.lineWidth *= 1.15; 
         }
         
         ctx.beginPath();
@@ -123,6 +161,10 @@ export class Renderer {
         ctx.fillStyle = '#fff'; ctx.shadowBlur = 0;
         ctx.beginPath(); ctx.arc(snake.head.x, snake.head.y, snake.radius, 0, Math.PI*2); ctx.fill();
         
+        if (snake.id === 'player') {
+            this.drawHeadHUD(snake);
+        }
+
         // Eyes
         ctx.fillStyle = '#000';
         const offset = 7;
@@ -132,6 +174,27 @@ export class Renderer {
         const y2 = snake.head.y + Math.sin(snake.angle - 0.6) * offset;
         ctx.beginPath(); ctx.arc(x1, y1, 3, 0, Math.PI*2); ctx.arc(x2, y2, 3, 0, Math.PI*2); ctx.fill();
         ctx.restore();
+    }
+
+    drawSpeedLines(snake) {
+        const ctx = this.ctx;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.lineWidth = 2;
+        
+        // 在蛇頭周圍產生後掠線
+        for (let i = 0; i < 5; i++) {
+            const angleOffset = (Math.random() - 0.5) * 1.5;
+            const lineLen = 30 + Math.random() * 50;
+            const startDist = snake.radius + 5;
+            
+            const ax = Math.cos(snake.angle + Math.PI + angleOffset);
+            const ay = Math.sin(snake.angle + Math.PI + angleOffset);
+            
+            ctx.beginPath();
+            ctx.moveTo(snake.head.x + ax * startDist, snake.head.y + ay * startDist);
+            ctx.lineTo(snake.head.x + ax * (startDist + lineLen), snake.head.y + ay * (startDist + lineLen));
+            ctx.stroke();
+        }
     }
 
     drawEffects(effects) {

@@ -21,6 +21,7 @@ export class Snake {
         // Stats Tracking (v2.3.0)
         this.totalEaten = 0;
         this.maxLength = CONFIG.INITIAL_LENGTH;
+        this.sessionMax = CONFIG.INITIAL_LENGTH; // 整場絕對最高
         this.kills = 0;
         this.cuts = 0;
         this.deaths = 0;
@@ -37,25 +38,21 @@ export class Snake {
         }
 
         if (targetAngle !== null) {
-            let diff = targetAngle - this.angle;
-            while (diff < -Math.PI) diff += Math.PI * 2;
-            while (diff > Math.PI) diff -= Math.PI * 2;
-            const turnSensitivity = worldContext.terrain === 'ice' ? 0.03 : 0.15;
-            this.angle += diff * turnSensitivity;
+            this.angle = targetAngle;
         }
 
-        const canDash = wantsToDash && this.length > CONFIG.INITIAL_LENGTH;
+        const canDash = wantsToDash && this.targetLength > CONFIG.INITIAL_LENGTH + 5;
         if (canDash) {
             this.isDashing = true;
             this.speed = CONFIG.BASE_SPEED * CONFIG.DASH_MULTIPLIER;
             this.totalDashTime += dt;
             
-            // Quadratic Drain: 40 * (1 + ((L-50)/100)^2)
-            // This effectively caps dash duration at ~4s for any length.
-            const diffLen = this.length - CONFIG.INITIAL_LENGTH;
-            const scalingFactor = 1 + Math.pow(diffLen / 100, 2);
+            // 動態消耗：確保大約 2.5 秒內會消耗完所有儲備長度 (v2.7.4)
+            const reserveLength = this.targetLength - CONFIG.INITIAL_LENGTH;
+            const dynamicDrain = reserveLength / 2.5; // 2.5秒內噴完
             
-            const drainRate = CONFIG.DASH_LENGTH_CONSUME_RATE * scalingFactor;
+            // 取「基本消耗率」與「動態消耗率」的最大值
+            const drainRate = Math.max(CONFIG.DASH_LENGTH_CONSUME_RATE, dynamicDrain);
             const amountToConsume = drainRate * dt;
             
             this.targetLength -= amountToConsume;
@@ -80,6 +77,7 @@ export class Snake {
         if (this.length < this.targetLength) this.length += 1.0;
         if (this.length > this.targetLength) this.length -= 0.5;
         this.maxLength = Math.max(this.maxLength, this.length);
+        this.sessionMax = Math.max(this.sessionMax, this.length);
 
         const maxPoints = Math.max(5, Math.floor(this.length / 2));
         if (this.points.length > maxPoints) this.points.length = maxPoints;

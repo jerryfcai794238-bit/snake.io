@@ -76,16 +76,16 @@ class Main {
     updateHUD() {
         const p = this.game.player;
         document.getElementById('current-length').innerText = Math.floor(p.length);
-        document.getElementById('total-score').innerText = Math.floor(p.totalEaten);
+        document.getElementById('total-score').innerText = Math.floor(p.maxLength);
         const m = Math.floor(this.game.timer / 60);
         const s = this.game.timer % 60;
         document.getElementById('timer').innerText = `${m}:${s.toString().padStart(2, '0')}`;
         
-        const sorted = [...this.game.snakes].sort((a, b) => b.totalEaten - a.totalEaten);
+        const sorted = [...this.game.snakes].sort((a, b) => b.length - a.length);
         const lbHtml = sorted.map((s, i) => `
-            <div class="lb-item ${s.id === 'player' ? 'player' : 'ai'}">
+            <div class="lb-item" style="color: ${s.color}; font-weight: ${s.id === 'player' ? 'bold' : 'normal'}">
                 <span>${i+1}. ${s.name}</span>
-                <span>${Math.floor(s.totalEaten)}</span>
+                <span>${Math.floor(s.length)}</span>
             </div>
         `).join('');
         document.getElementById('leaderboard').innerHTML = lbHtml;
@@ -100,19 +100,21 @@ class Main {
 
     populateSettlement() {
         const player = this.game.player;
-        const bot = this.game.snakes.find(s => s.id === 'ai') || { kills: 0, cuts: 0, deaths: 0, totalEaten: 0, maxLength: 0, totalDashTime: 0 };
+        // 找出長度最長的 AI 作為結算比對對象 (v2.7.7)
+        const bots = this.game.snakes.filter(s => s.id !== 'player');
+        const bot = bots.sort((a, b) => b.length - a.length)[0] || { kills: 0, cuts: 0, deaths: 0, length: 0, maxLength: 0, totalDashTime: 0 };
         
-        const isVictory = player.totalEaten >= bot.totalEaten;
+        const isVictory = player.length >= bot.length;
         const title = document.getElementById('game-over-title');
         title.innerText = isVictory ? 'VICTORY' : 'DEFEAT';
         title.style.color = isVictory ? 'var(--neon-gold)' : 'var(--neon-pink)';
 
         const stats = [
-            { label: 'TOTAL SCORE', p: Math.floor(player.totalEaten), b: Math.floor(bot.totalEaten) },
+            { label: 'FINAL LENGTH', p: Math.floor(player.length), b: Math.floor(bot.length) },
             { label: 'KILLS', p: player.kills, b: bot.kills },
             { label: 'CUTS', p: player.cuts, b: bot.cuts },
             { label: 'DEATHS', p: player.deaths, b: bot.deaths, inverse: true },
-            { label: 'MAX LENGTH', p: Math.floor(player.maxLength), b: Math.floor(bot.maxLength) },
+            { label: 'MAX LENGTH', p: Math.floor(player.sessionMax), b: Math.floor(bot.sessionMax) },
             { label: 'DASH TIME (S)', p: player.totalDashTime.toFixed(1), b: bot.totalDashTime.toFixed(1) }
         ];
 

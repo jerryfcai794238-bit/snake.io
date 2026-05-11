@@ -8,7 +8,7 @@ export const CONFIG = {
     BASE_SPEED: 4,
     DASH_MULTIPLIER: 1.5,
     INITIAL_LENGTH: 50,
-    DASH_LENGTH_CONSUME_RATE: 40, // Length per second
+    DASH_LENGTH_CONSUME_RATE: 80, // Length per second (v2.7.2)
     RESPAWN_TIME: 3000, // ms
     
     FOOD_TYPES: {
