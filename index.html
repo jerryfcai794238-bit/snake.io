@@ -43,6 +43,9 @@
                 <span class="label">SCORE</span>
                 <span id="total-score">0</span>
             </div>
+            <div id="leaderboard">
+                <!-- List items injected here -->
+            </div>
             <div class="hud-item">
                 <span class="label">TIME</span>
                 <span id="timer">01:30</span>
@@ -69,24 +72,18 @@
             <div class="content">
                 <h1 id="game-over-title">DEFEAT</h1>
                 
-                <div class="settlement-card">
-                    <div class="stat-row">
-                        <span class="stat-label">TOTAL SCORE</span>
-                        <span id="stat-score" class="stat-value">0</span>
-                    </div>
-                    <div class="stat-row">
-                        <span class="stat-label">FINAL LENGTH</span>
-                        <span id="stat-length" class="stat-value">0</span>
-                    </div>
-                    <div class="stat-row">
-                        <span class="stat-label">TIME SURVIVED</span>
-                        <span id="stat-time" class="stat-value">00:00</span>
-                    </div>
-                    <div class="stat-row">
-                        <span class="stat-label">INTERCEPTS</span>
-                        <span id="stat-cuts" class="stat-value">0</span>
-                    </div>
-                </div>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>STAT</th>
+                            <th>YOU</th>
+                            <th>BOT</th>
+                        </tr>
+                    </thead>
+                    <tbody id="settlement-stats">
+                        <!-- Stats rows injected here -->
+                    </tbody>
+                </table>
 
                 <div class="game-over-btns">
                     <button id="btn-restart">RETRY</button>

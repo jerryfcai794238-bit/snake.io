@@ -73,6 +73,15 @@ body, html { width: 100%; height: 100%; overflow: hidden; background: #000; disp
 .hud-item .label { font-size: 10px; color: #888; letter-spacing: 1px; }
 .hud-item span:not(.label) { font-size: 28px; font-weight: 700; color: #fff; }
 
+#leaderboard {
+    background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 12px;
+    font-size: 14px; min-width: 150px; border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(5px); display: flex; flex-direction: column; gap: 2px;
+}
+.lb-item { display: flex; justify-content: space-between; gap: 10px; font-weight: 700; }
+.lb-item.player { color: #00ff88; }
+.lb-item.ai { color: var(--neon-pink); }
+
 #hud-bottom {
     position: absolute; bottom: 50px; width: 100%; display: flex; flex-direction: column;
     align-items: center; gap: 30px; z-index: 10; pointer-events: none;
@@ -142,21 +151,41 @@ body, html { width: 100%; height: 100%; overflow: hidden; background: #000; disp
 }
 @keyframes slide-up { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-.settlement-card {
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 20px;
-    padding: 20px;
-    width: 280px;
+/* Comparison Table */
+.comparison-table {
+    width: 320px;
+    border-collapse: collapse;
     margin-bottom: 30px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    color: #fff;
+    font-size: 14px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 15px;
+    overflow: hidden;
 }
-.stat-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+.comparison-table th, .comparison-table td {
+    padding: 12px 15px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
 }
-.stat-row:last-child { border-bottom: none; }
-.stat-label { font-size: 11px; color: var(--neon-gold); letter-spacing: 2px; font-weight: 700; }
-.stat-value { font-size: 24px; font-weight: 700; color: #fff; }
+.comparison-table th {
+    background: rgba(255,255,255,0.05);
+    color: var(--neon-gold);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+.comparison-table td:first-child {
+    text-align: left;
+    color: #888;
+    font-size: 11px;
+    font-weight: 700;
+}
+.comparison-table tr:last-child td { border-bottom: none; }
+.comparison-table .val-you { color: var(--neon-blue); font-weight: 700; font-size: 18px; }
+.comparison-table .val-bot { color: var(--neon-pink); font-weight: 700; font-size: 18px; }
+.comparison-table .winner { 
+    background: rgba(255, 255, 255, 0.1); 
+    border: 2px solid var(--neon-gold); 
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
