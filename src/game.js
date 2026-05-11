@@ -224,6 +224,55 @@ export class Game {
         if (this.food.length < 100) this.spawnResource();
     }
 
+    triggerShockwave(sourceSnake) {
+        if (sourceSnake.shockwaveCooldown > 0) return;
+        
+        sourceSnake.shockwaveCooldown = 5; // 測試用：5秒冷卻 (v3.0.1)
+        
+        // 視覺特效：加入一個震盪波圈圈
+        this.effects.push({
+            type: 'SHOCKWAVE',
+            x: sourceSnake.head.x,
+            y: sourceSnake.head.y,
+            radius: 0,
+            maxRadius: 300,
+            life: 0.5,
+            color: '#BC13FE'
+        });
+
+        const range = 200;
+        const pushForce = 100;
+
+        this.snakes.forEach(other => {
+            if (other === sourceSnake || other.isDead) return;
+
+            // 尋找 other 蛇頭到 sourceSnake 身體的最短距離
+            let minDistSq = Infinity;
+            let nearestPoint = null;
+
+            sourceSnake.points.forEach(p => {
+                const dSq = (other.head.x - p.x)**2 + (other.head.y - p.y)**2;
+                if (dSq < minDistSq) {
+                    minDistSq = dSq;
+                    nearestPoint = p;
+                }
+            });
+
+            if (minDistSq < range * range) {
+                const dist = Math.sqrt(minDistSq);
+                const angle = Math.atan2(other.head.y - nearestPoint.y, other.head.x - nearestPoint.x);
+                
+                // 強力彈射
+                other.head.x += Math.cos(angle) * pushForce;
+                other.head.y += Math.sin(angle) * pushForce;
+                other.angle = angle; // 轉向被彈開的方向
+                
+                // 附加 2 秒減速 90% (v3.0.1)
+                other.slowTimer = 2.0;
+            }
+        });
+    }
+
     checkCollisions() {
         this.snakes.forEach(snake => {
             if (snake.isDead) return;

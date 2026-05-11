@@ -227,9 +227,21 @@ export class Renderer {
     drawEffects(effects) {
         const ctx = this.ctx;
         effects.forEach(e => {
-            ctx.globalAlpha = e.life * 1.5; ctx.fillStyle = e.color;
-            ctx.beginPath(); ctx.arc(e.x, e.y, 3, 0, Math.PI*2); ctx.fill();
-            e.x += e.vx; e.y += e.vy;
+            if (e.type === 'SHOCKWAVE') {
+                const alpha = e.life * 2;
+                if (!e.radius) e.radius = 0;
+                e.radius += 15; // 擴散速度
+                ctx.strokeStyle = `rgba(188, 19, 254, ${alpha})`;
+                ctx.lineWidth = 5;
+                ctx.beginPath();
+                ctx.arc(e.x, e.y, e.radius, 0, Math.PI * 2);
+                ctx.stroke();
+            } else {
+                ctx.globalAlpha = e.life * 1.5; ctx.fillStyle = e.color;
+                ctx.beginPath(); ctx.arc(e.x, e.y, 3, 0, Math.PI*2); ctx.fill();
+                if (e.vx) e.x += e.vx; 
+                if (e.vy) e.y += e.vy;
+            }
         });
         ctx.globalAlpha = 1.0;
     }

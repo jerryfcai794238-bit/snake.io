@@ -31,6 +31,7 @@ class Main {
         document.getElementById('joystick-zone').classList.remove('hidden');
         document.getElementById('dash-btn').classList.remove('hidden');
         document.getElementById('magnet-btn').classList.remove('hidden');
+        document.getElementById('shockwave-btn').classList.remove('hidden');
         document.getElementById('game-over').classList.add('hidden');
     }
 
@@ -117,6 +118,23 @@ class Main {
             
             if (p.isMagnetActive) magnetBtn.classList.add('active');
             else magnetBtn.classList.remove('active');
+        }
+
+        // Shockwave Skill UI (v3.0.0)
+        const shockBtn = document.getElementById('shockwave-btn');
+        const shockOverlay = document.getElementById('shockwave-cooldown-overlay');
+        const shockCDText = document.getElementById('shockwave-cd-text');
+        if (shockBtn && shockOverlay && shockCDText) {
+            const cdRatio = p.shockwaveCooldown / 5; // 測試用：5秒冷卻
+            shockOverlay.style.height = `${cdRatio * 100}%`;
+            
+            if (p.shockwaveCooldown > 0) {
+                shockCDText.innerText = Math.ceil(p.shockwaveCooldown);
+                shockBtn.querySelector('.skill-icon').style.opacity = '0.3';
+            } else {
+                shockCDText.innerText = '';
+                shockBtn.querySelector('.skill-icon').style.opacity = '1';
+            }
         }
     }
 

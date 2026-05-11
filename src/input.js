@@ -138,6 +138,16 @@ export class InputHandler {
         };
         magnetBtn.addEventListener('touchstart', triggerMagnet, { passive: false });
         magnetBtn.addEventListener('mousedown', triggerMagnet);
+
+        // Shockwave Skill (v3.0.0)
+        const shockBtn = document.getElementById('shockwave-btn');
+        const triggerShock = (e) => {
+            if (e) e.preventDefault();
+            const p = this.game.player;
+            if (p) this.game.triggerShockwave(p); 
+        };
+        shockBtn.addEventListener('touchstart', triggerShock, { passive: false });
+        shockBtn.addEventListener('mousedown', triggerShock);
     }
 
     initKeyboard() {
@@ -152,6 +162,12 @@ export class InputHandler {
                     p.magnetTime = 10;
                     p.magnetCooldown = 30;
                 }
+            }
+
+            // 震盪波技能快捷鍵 (v3.0.0)
+            if (key === '3' || key === 'q') {
+                const p = this.game.player;
+                if (p) this.game.triggerShockwave(p);
             }
 
             if (this.keys.hasOwnProperty(key)) {

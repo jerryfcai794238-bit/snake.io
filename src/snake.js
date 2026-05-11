@@ -29,8 +29,12 @@ export class Snake {
 
         // Magnet Skill (v2.9.0)
         this.isMagnetActive = false;
-        this.magnetTime = 0; // 當前啟動剩餘時間
-        this.magnetCooldown = 0; // 當前冷卻剩餘時間
+        this.magnetTime = 0; 
+        this.magnetCooldown = 0;
+
+        // Shockwave Skill (v3.0.0)
+        this.shockwaveCooldown = 0;
+        this.slowTimer = 0; // 被擊中後的減速時間
     }
 
     update(targetAngle, wantsToDash, dt, worldContext) {
@@ -46,6 +50,14 @@ export class Snake {
             this.magnetCooldown -= dt;
             if (this.magnetCooldown <= 0) this.magnetCooldown = 0;
         }
+        if (this.shockwaveCooldown > 0) {
+            this.shockwaveCooldown -= dt;
+            if (this.shockwaveCooldown <= 0) this.shockwaveCooldown = 0;
+        }
+        if (this.slowTimer > 0) {
+            this.slowTimer -= dt;
+            if (this.slowTimer <= 0) this.slowTimer = 0;
+        }
 
         if (this.isDead) return;
 
@@ -60,9 +72,14 @@ export class Snake {
         }
 
         const canDash = wantsToDash && this.targetLength > CONFIG.INITIAL_LENGTH + 5;
+        let baseSpeed = CONFIG.BASE_SPEED;
+        
+        // 減速 90% (v3.0.0)
+        if (this.slowTimer > 0) baseSpeed *= 0.1;
+
         if (canDash) {
             this.isDashing = true;
-            this.speed = CONFIG.BASE_SPEED * CONFIG.DASH_MULTIPLIER;
+            this.speed = baseSpeed * CONFIG.DASH_MULTIPLIER;
             this.totalDashTime += dt;
             
             // 動態消耗：確保大約 2.5 秒內會消耗完所有儲備長度 (v2.7.4)
