@@ -3,10 +3,12 @@ export class InputHandler {
         this.zone = document.getElementById('joystick-zone');
         this.base = document.getElementById('joystick-base');
         this.handle = document.getElementById('joystick-handle');
+        this.dashBtn = document.getElementById('dash-btn');
         
         this.angle = 0;
         this.isMoving = false;
         this.isDashing = false;
+        this.isDashButtonPressed = false;
         this.distanceRatio = 0; 
         
         this.centerX = 0;
@@ -15,24 +17,24 @@ export class InputHandler {
         this.keys = { w: false, a: false, s: false, d: false, '1': false, shift: false };
         
         this.initJoystick();
+        this.initDashButton();
         this.initKeyboard();
     }
 
     initJoystick() {
         const handleStart = (e) => {
+            if (e.target.closest('#dash-btn')) return;
+
             const touch = e.touches ? e.touches[0] : e;
             const rect = this.zone.getBoundingClientRect();
             
-            // 記錄起始點作為中心 (相對於容器內部)
             this.centerX = touch.clientX - rect.left;
             this.centerY = touch.clientY - rect.top;
             
-            // 定位底座並顯示
             this.base.style.display = 'block';
-            this.base.style.left = `${this.centerX - 90}px`;
-            this.base.style.top = `${this.centerY - 90}px`;
+            this.base.style.left = `${this.centerX - 50}px`;
+            this.base.style.top = `${this.centerY - 50}px`;
             
-            // handleMove 也需要統一的座標系，所以我們傳入修正後的座標
             handleMove(e);
         };
 
@@ -47,11 +49,10 @@ export class InputHandler {
             const dx = currentX - this.centerX;
             const dy = currentY - this.centerY;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            const radius = 90; // 固定半徑 (180/2)
+            const radius = 50;
             
             this.angle = Math.atan2(dy, dx);
             
-            // 阻力邏輯
             let visualDist;
             if (dist <= radius) {
                 visualDist = dist;
@@ -77,11 +78,23 @@ export class InputHandler {
             this.updateDashState();
         };
 
-        this.zone.addEventListener('touchstart', (e) => { e.preventDefault(); handleStart(e); }, { passive: false });
-        this.zone.addEventListener('touchmove', (e) => { e.preventDefault(); handleMove(e); }, { passive: false });
-        this.zone.addEventListener('touchend', handleEnd);
+        this.zone.addEventListener('touchstart', (e) => { 
+            if (e.target.closest('#dash-btn')) return;
+            e.preventDefault(); 
+            handleStart(e); 
+        }, { passive: false });
+        this.zone.addEventListener('touchmove', (e) => { 
+            if (e.target.closest('#dash-btn')) return;
+            e.preventDefault(); 
+            handleMove(e); 
+        }, { passive: false });
+        this.zone.addEventListener('touchend', (e) => {
+            if (e.target.closest('#dash-btn')) return;
+            handleEnd();
+        });
         
         this.zone.addEventListener('mousedown', (e) => {
+            if (e.target.closest('#dash-btn')) return;
             this.isMouseDown = true;
             handleStart(e);
             const onMove = (me) => this.isMouseDown && handleMove(me);
@@ -89,6 +102,27 @@ export class InputHandler {
             window.addEventListener('mousemove', onMove);
             window.addEventListener('mouseup', onUp);
         });
+    }
+
+    initDashButton() {
+        const startDash = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.isDashButtonPressed = true;
+            this.dashBtn.classList.add('active');
+            this.updateDashState();
+        };
+        const endDash = (e) => {
+            this.isDashButtonPressed = false;
+            this.dashBtn.classList.remove('active');
+            this.updateDashState();
+        };
+
+        this.dashBtn.addEventListener('touchstart', startDash, { passive: false });
+        this.dashBtn.addEventListener('touchend', endDash);
+        this.dashBtn.addEventListener('mousedown', startDash);
+        this.dashBtn.addEventListener('mouseup', endDash);
+        this.dashBtn.addEventListener('mouseleave', endDash);
     }
 
     initKeyboard() {
@@ -125,12 +159,10 @@ export class InputHandler {
     }
 
     updateDashState() {
-        const joyDash = this.distanceRatio > 1.4;
         const keyDash = this.keys['1'] || this.keys.shift;
-        this.isDashing = joyDash || keyDash;
+        this.isDashing = this.isDashButtonPressed || keyDash;
         
-        // Visual feedback
-        if (this.isDashing && joyDash) {
+        if (this.isDashing) {
             this.handle.style.background = 'var(--neon-pink)';
             this.handle.style.boxShadow = '0 0 20px var(--neon-pink)';
         } else {

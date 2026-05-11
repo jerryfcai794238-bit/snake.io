@@ -29,6 +29,7 @@ class Main {
         document.getElementById('hud-top').classList.remove('hidden');
         document.getElementById('hud-bottom').classList.remove('hidden');
         document.getElementById('joystick-zone').classList.remove('hidden');
+        document.getElementById('dash-btn').classList.remove('hidden');
         document.getElementById('game-over').classList.add('hidden');
     }
 
@@ -39,6 +40,7 @@ class Main {
         document.getElementById('hud-top').classList.add('hidden');
         document.getElementById('hud-bottom').classList.add('hidden');
         document.getElementById('joystick-zone').classList.add('hidden');
+        document.getElementById('dash-btn').classList.add('hidden');
         document.getElementById('game-over').classList.add('hidden');
         document.getElementById('best-score').innerText = this.game.bestScore;
     }
@@ -66,6 +68,7 @@ class Main {
             this.populateSettlement();
             gameOverDiv.classList.remove('hidden');
             document.getElementById('joystick-zone').classList.add('hidden');
+            document.getElementById('dash-btn').classList.add('hidden');
         }
         requestAnimationFrame((t) => this.loop(t));
     }
