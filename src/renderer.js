@@ -42,7 +42,7 @@ export class Renderer {
         this.drawResources(food);
         this.drawEffects(effects);
         
-        snakes.forEach(s => this.drawSnake(s));
+        snakes.forEach(s => this.drawSnake(s, effects));
 
         ctx.restore();
     }
@@ -112,7 +112,7 @@ export class Renderer {
 
     drawHeadHUD(snake) {
         const ctx = this.ctx;
-        const radius = snake.radius + 18; // 稍微拉開一點
+        const radius = snake.radius + 18;
         
         // 畫背景環
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
@@ -121,23 +121,28 @@ export class Renderer {
         ctx.arc(snake.head.x, snake.head.y, radius, 0, Math.PI * 2);
         ctx.stroke();
 
-        // 畫進度環 (青色加強版)
-        const usableLength = Math.max(0, snake.targetLength - CONFIG.INITIAL_LENGTH);
-        const maxDisplayLength = 150; 
-        const ratio = Math.min(1.0, usableLength / maxDisplayLength);
+        // 體力進度環 (v3.2.0)
+        const staminaRatio = snake.stamina / CONFIG.STAMINA_MAX;
         
-        // 只有在能量足以啟動加速時才顯示進度環 (v3.1.6 門檻為 5)
-        if (usableLength > 5) {
+        // 只有在體力不滿或是過熱時才顯示
+        if (staminaRatio < 0.99 || snake.isOverloaded) {
             const cyan = '#00FFFF';
-            ctx.strokeStyle = snake.isDashing ? cyan : 'rgba(0, 255, 255, 0.6)';
-            if (snake.isDashing) {
-                ctx.shadowBlur = 25; // 亮度大幅提升
+            const red = '#FF3333';
+            
+            // 狀態變色：過熱為紅，加速為亮青，充能為暗青
+            if (snake.isOverloaded) {
+                ctx.strokeStyle = red;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = red;
+            } else {
+                ctx.strokeStyle = snake.isDashing ? cyan : 'rgba(0, 255, 255, 0.4)';
+                ctx.shadowBlur = snake.isDashing ? 20 : 0;
                 ctx.shadowColor = cyan;
             }
             
-            ctx.lineWidth = 7; // 加粗
+            ctx.lineWidth = 6;
             ctx.beginPath();
-            ctx.arc(snake.head.x, snake.head.y, radius, -Math.PI / 2, -Math.PI / 2 + (Math.PI * 2 * ratio));
+            ctx.arc(snake.head.x, snake.head.y, radius, -Math.PI / 2, -Math.PI / 2 + (Math.PI * 2 * staminaRatio));
             ctx.stroke();
             ctx.shadowBlur = 0;
         }
@@ -165,7 +170,7 @@ export class Renderer {
         ctx.fillRect(x - barWidth/2, y + 5, barWidth * ratio, barHeight);
     }
 
-    drawSnake(snake) {
+    drawSnake(snake, effects) {
         if (snake.isDead || snake.points.length < 2) return;
         const ctx = this.ctx;
         ctx.save();
@@ -194,6 +199,18 @@ export class Renderer {
         
         if (snake.id === 'player') {
             this.drawHeadHUD(snake);
+        }
+
+        // Overload Smoke Effect (v3.2.0)
+        if (snake.isOverloaded && Math.random() < 0.3) {
+            effects.push({
+                x: snake.head.x + (Math.random() - 0.5) * 20,
+                y: snake.head.y + (Math.random() - 0.5) * 20,
+                vx: (Math.random() - 0.5) * 2,
+                vy: -Math.random() * 3,
+                color: 'rgba(150, 150, 150, 0.5)',
+                life: 0.6
+            });
         }
 
         // Magnet HUD (v2.9.0)

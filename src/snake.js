@@ -35,6 +35,8 @@ export class Snake {
         // Shockwave Skill (v3.0.0)
         this.shockwaveCooldown = 0;
         this.slowTimer = 0; // 被擊中後的減速時間
+        this.stamina = CONFIG.STAMINA_MAX;
+        this.isOverloaded = false;
     }
 
     update(targetAngle, wantsToDash, dt, worldContext) {
@@ -71,7 +73,7 @@ export class Snake {
             this.angle = targetAngle;
         }
 
-        const canDash = wantsToDash && this.targetLength > CONFIG.INITIAL_LENGTH + 5;
+        const canDash = wantsToDash && !this.isOverloaded && this.stamina > 0;
         let baseSpeed = CONFIG.BASE_SPEED;
         
         // 減速 90% (v3.0.0)
@@ -82,25 +84,23 @@ export class Snake {
             this.speed = baseSpeed * CONFIG.DASH_MULTIPLIER;
             this.totalDashTime += dt;
             
-            // 動態消耗：確保大約 2.5 秒內會消耗完所有儲備長度 (v2.7.4)
-            const reserveLength = this.targetLength - CONFIG.INITIAL_LENGTH;
-            const dynamicDrain = reserveLength / 2.5; // 2.5秒內噴完
-            
-            // 取「基本消耗率」與「動態消耗率」的最大值
-            const drainRate = Math.max(CONFIG.DASH_LENGTH_CONSUME_RATE, dynamicDrain);
-            const amountToConsume = drainRate * dt;
-            
-            this.targetLength -= amountToConsume;
-            if (this.targetLength < CONFIG.INITIAL_LENGTH) {
-                this.targetLength = CONFIG.INITIAL_LENGTH;
-            }
-            
-            if (worldContext.onDropFood) {
-                worldContext.onDropFood(this, amountToConsume * 0.6);
+            // 體力消耗 (v3.2.0)
+            this.stamina -= CONFIG.STAMINA_DRAIN_SPEED * dt;
+            if (this.stamina <= 0) {
+                this.stamina = 0;
+                this.isOverloaded = true;
+                this.isDashing = false;
             }
         } else {
             this.isDashing = false;
-            this.speed = CONFIG.BASE_SPEED;
+            this.speed = baseSpeed;
+            
+            // 體力回充 (非加速狀態持續回充)
+            this.stamina += CONFIG.STAMINA_REGEN_SPEED * dt;
+            if (this.stamina >= CONFIG.STAMINA_MAX) {
+                this.stamina = CONFIG.STAMINA_MAX;
+                this.isOverloaded = false; // 只有回滿才能解除過熱鎖定
+            }
         }
         
         const speedMod = worldContext.speedMod || 1.0;

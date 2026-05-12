@@ -8,7 +8,9 @@ export const CONFIG = {
     BASE_SPEED: 4,
     DASH_MULTIPLIER: 1.25, // 下修至提升 25% (v3.1.12)
     INITIAL_LENGTH: 50,
-    DASH_LENGTH_CONSUME_RATE: 80, // Length per second (v2.7.2)
+    STAMINA_MAX: 100,
+    STAMINA_DRAIN_SPEED: 33.3, // 100/3s
+    STAMINA_REGEN_SPEED: 6.67, // 100/15s
     RESPAWN_TIME: 3000, // ms
 
     FOOD_TYPES: {
