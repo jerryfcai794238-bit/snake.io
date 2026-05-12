@@ -231,6 +231,21 @@ export class Game {
                 onDropFood: (s, v) => this.dropTailFood(s, v)
             });
         });
+        
+        // 技能與環境互動 (v3.3.8: 噴墨致盲 + 自我免疫)
+        this.snakes.forEach(snake => {
+            this.effects.forEach(e => {
+                if (e.type === 'INK_CLOUD') {
+                    if (snake.id === e.ownerId) return; // 免疫自己放的墨水
+                    const dx = snake.head.x - e.x;
+                    const dy = snake.head.y - e.y;
+                    if (dx*dx + dy*dy < e.radius * e.radius) {
+                        snake.inkTime = 3.0; // 致盲 3 秒
+                    }
+                }
+            });
+        });
+        
         this.checkCollisions();
         if (this.food.length < 400) this.spawnResource();
     }
@@ -433,6 +448,7 @@ export class Game {
     }
 
     cut(snake, idx, killer) {
+        snake.hitTimer = 0.5; // 被切斷時閃爍 (v3.3.2)
         if (killer) killer.cuts++;
         const legacy = snake.points.slice(idx);
         snake.points = snake.points.slice(0, idx);
@@ -443,6 +459,7 @@ export class Game {
     }
 
     kill(snake, killer) {
+        snake.hitTimer = 0.5; // 死亡時閃爍
         snake.isDead = true;
         snake.deaths++;
         if (killer) killer.kills++;

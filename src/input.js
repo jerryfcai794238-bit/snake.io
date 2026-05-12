@@ -125,50 +125,37 @@ export class InputHandler {
         this.dashBtn.addEventListener('mouseup', endDash);
         this.dashBtn.addEventListener('mouseleave', endDash);
 
-        // Magnet Skill (v2.9.0)
+        // 技能按鈕綁定 (v3.3.0)
         const magnetBtn = document.getElementById('magnet-btn');
-        const triggerMagnet = (e) => {
-            if (e) e.preventDefault();
-            const p = this.game.player;
-            if (p && p.magnetCooldown <= 0) {
-                p.isMagnetActive = true;
-                p.magnetTime = 10;
-                p.magnetCooldown = 30;
-            }
-        };
-        magnetBtn.addEventListener('touchstart', triggerMagnet, { passive: false });
-        magnetBtn.addEventListener('mousedown', triggerMagnet);
+        if (magnetBtn) {
+            const triggerMagnet = (e) => { if (e) e.preventDefault(); this.game.player?.triggerMagnet(); };
+            magnetBtn.addEventListener('touchstart', triggerMagnet, { passive: false });
+            magnetBtn.addEventListener('mousedown', triggerMagnet);
+        }
 
-        // Shockwave Skill (v3.0.0)
-        const shockBtn = document.getElementById('shockwave-btn');
-        const triggerShock = (e) => {
-            if (e) e.preventDefault();
-            const p = this.game.player;
-            if (p) this.game.triggerShockwave(p); 
-        };
-        shockBtn.addEventListener('touchstart', triggerShock, { passive: false });
-        shockBtn.addEventListener('mousedown', triggerShock);
+        const eagleBtn = document.getElementById('eagleeye-btn');
+        if (eagleBtn) {
+            const triggerEagle = (e) => { if (e) e.preventDefault(); this.game.player?.triggerEagleEye(); };
+            eagleBtn.addEventListener('touchstart', triggerEagle, { passive: false });
+            eagleBtn.addEventListener('mousedown', triggerEagle);
+        }
+
+        const inkBtn = document.getElementById('ink-btn');
+        if (inkBtn) {
+            const triggerInk = (e) => { if (e) e.preventDefault(); this.game.player?.triggerInkCloud(this.game.effects); };
+            inkBtn.addEventListener('touchstart', triggerInk, { passive: false });
+            inkBtn.addEventListener('mousedown', triggerInk);
+        }
     }
 
     initKeyboard() {
         window.addEventListener('keydown', (e) => {
             const key = e.key.toLowerCase();
             
-            // 磁鐵技能快捷鍵 (v2.9.1)
-            if (key === '2' || key === 'e') {
-                const p = this.game.player;
-                if (p && p.magnetCooldown <= 0) {
-                    p.isMagnetActive = true;
-                    p.magnetTime = 10;
-                    p.magnetCooldown = 30;
-                }
-            }
-
-            // 震盪波技能快捷鍵 (v3.0.0)
-            if (key === '3' || key === 'q') {
-                const p = this.game.player;
-                if (p) this.game.triggerShockwave(p);
-            }
+            // 技能快捷鍵 (v3.3.1: 1=加速在 updateDashState, 2=磁鐵, 3=噴墨, 4=鷹眼)
+            if (key === '2') this.game.player?.triggerMagnet();
+            if (key === '3') this.game.player?.triggerInkCloud(this.game.effects);
+            if (key === '4') this.game.player?.triggerEagleEye();
 
             if (this.keys.hasOwnProperty(key)) {
                 this.keys[key] = true;
@@ -201,7 +188,7 @@ export class InputHandler {
     }
 
     updateDashState() {
-        const keyDash = this.keys['1'] || this.keys.shift;
+        const keyDash = this.keys['1'] || this.keys.shift; 
         this.isDashing = this.isDashButtonPressed || keyDash;
         
         if (this.isDashing) {

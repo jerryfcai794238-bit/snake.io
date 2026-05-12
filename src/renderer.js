@@ -23,10 +23,21 @@ export class Renderer {
     render(state) {
         const { player, snakes, food, stones, terrains, effects } = state;
         const ctx = this.ctx;
-        
+
         this.camera.x = player.head.x;
         this.camera.y = player.head.y;
-        this.camera.zoom = this.camera.baseZoom; // 使用動態計算的縮放值 (v3.1.2)
+
+        // 渲染時計算目標 Zoom (v3.3.3)
+        let targetZoom = this.camera.baseZoom;
+        if (player.eagleEyeTime > 0) {
+            targetZoom *= 0.6; // 視野擴張
+        }
+
+        // 平滑縮放 (Lerp) - 係數調小使過程更絲滑 (v3.3.4)
+        if (!this.camera.currentZoom) this.camera.currentZoom = targetZoom;
+        this.camera.currentZoom += (targetZoom - this.camera.currentZoom) * 0.04;
+        this.camera.zoom = this.camera.currentZoom;
+
 
         const dpr = window.devicePixelRatio || 1;
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -42,26 +53,31 @@ export class Renderer {
         this.drawStones(stones);
         this.drawResources(food);
         this.drawEffects(effects);
-        
+
         snakes.forEach(s => this.drawSnake(s, effects));
 
         ctx.restore();
+
+        // 噴墨致盲遮罩 (v3.3.0)
+        if (player.inkTime > 0) {
+            this.drawInkOverlay(player.inkTime);
+        }
     }
 
     drawGrid() {
         const ctx = this.ctx;
         ctx.strokeStyle = 'rgba(255,255,255,0.05)';
         ctx.lineWidth = 1;
-        for(let x = -CONFIG.WORLD_SIZE/2; x <= CONFIG.WORLD_SIZE/2; x += 100) {
-            ctx.beginPath(); ctx.moveTo(x, -CONFIG.WORLD_SIZE/2); ctx.lineTo(x, CONFIG.WORLD_SIZE/2); ctx.stroke();
+        for (let x = -CONFIG.WORLD_SIZE / 2; x <= CONFIG.WORLD_SIZE / 2; x += 100) {
+            ctx.beginPath(); ctx.moveTo(x, -CONFIG.WORLD_SIZE / 2); ctx.lineTo(x, CONFIG.WORLD_SIZE / 2); ctx.stroke();
         }
-        for(let y = -CONFIG.WORLD_SIZE/2; y <= CONFIG.WORLD_SIZE/2; y += 100) {
-            ctx.beginPath(); ctx.moveTo(-CONFIG.WORLD_SIZE/2, y); ctx.lineTo(CONFIG.WORLD_SIZE/2, y); ctx.stroke();
+        for (let y = -CONFIG.WORLD_SIZE / 2; y <= CONFIG.WORLD_SIZE / 2; y += 100) {
+            ctx.beginPath(); ctx.moveTo(-CONFIG.WORLD_SIZE / 2, y); ctx.lineTo(CONFIG.WORLD_SIZE / 2, y); ctx.stroke();
         }
         // Boundary matches Stone Border (Red)
-        ctx.strokeStyle = CONFIG.COLORS.BOUNDARY; 
+        ctx.strokeStyle = CONFIG.COLORS.BOUNDARY;
         ctx.lineWidth = 15;
-        ctx.strokeRect(-CONFIG.WORLD_SIZE/2, -CONFIG.WORLD_SIZE/2, CONFIG.WORLD_SIZE, CONFIG.WORLD_SIZE);
+        ctx.strokeRect(-CONFIG.WORLD_SIZE / 2, -CONFIG.WORLD_SIZE / 2, CONFIG.WORLD_SIZE, CONFIG.WORLD_SIZE);
     }
 
     drawTerrains(terrains) {
@@ -72,7 +88,7 @@ export class Renderer {
             ctx.beginPath();
             ctx.arc(t.x, t.y, t.radius, 0, Math.PI * 2);
             ctx.fill();
-            
+
             ctx.strokeStyle = t.type === 'river' ? 'rgba(0,180,255,0.6)' : 'rgba(180, 255, 255, 0.9)';
             ctx.lineWidth = 3;
             ctx.stroke();
@@ -84,16 +100,16 @@ export class Renderer {
         stones.forEach(s => {
             // Red Border Stone
             ctx.fillStyle = CONFIG.COLORS.STONE;
-            ctx.beginPath(); ctx.arc(s.x, s.y, s.radius, 0, Math.PI*2); ctx.fill();
-            
-            ctx.strokeStyle = CONFIG.COLORS.STONE_BORDER; 
-            ctx.lineWidth = 4; 
+            ctx.beginPath(); ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2); ctx.fill();
+
+            ctx.strokeStyle = CONFIG.COLORS.STONE_BORDER;
+            ctx.lineWidth = 4;
             ctx.stroke();
-            
+
             // Subtle highlight
             ctx.strokeStyle = 'rgba(255,255,255,0.15)';
             ctx.beginPath();
-            ctx.arc(s.x - s.radius*0.3, s.y - s.radius*0.3, s.radius*0.2, 0, Math.PI * 2);
+            ctx.arc(s.x - s.radius * 0.3, s.y - s.radius * 0.3, s.radius * 0.2, 0, Math.PI * 2);
             ctx.stroke();
         });
     }
@@ -103,10 +119,10 @@ export class Renderer {
         food.forEach(f => {
             // All food is yellow (#FFD700)
             ctx.fillStyle = CONFIG.COLORS.FOOD;
-            ctx.shadowBlur = f.value >= 10 ? 15 : 5; 
+            ctx.shadowBlur = f.value >= 10 ? 15 : 5;
             ctx.shadowColor = CONFIG.COLORS.FOOD;
-            
-            ctx.beginPath(); ctx.arc(f.x, f.y, f.size, 0, Math.PI*2); ctx.fill();
+
+            ctx.beginPath(); ctx.arc(f.x, f.y, f.size, 0, Math.PI * 2); ctx.fill();
             ctx.shadowBlur = 0;
         });
     }
@@ -114,7 +130,7 @@ export class Renderer {
     drawHeadHUD(snake) {
         const ctx = this.ctx;
         const radius = snake.radius + 18;
-        
+
         // 畫背景環
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
         ctx.lineWidth = 3;
@@ -124,12 +140,12 @@ export class Renderer {
 
         // 體力進度環 (v3.2.2)
         const staminaRatio = snake.stamina / CONFIG.STAMINA_MAX;
-        
+
         // 玩家始終顯示，其餘蛇只有在體力不滿、過熱或加速時才顯示
         if (snake.id === 'player' || staminaRatio < 0.99 || snake.isOverloaded || snake.isDashing) {
             const cyan = '#00FFFF';
             const red = '#FF3333';
-            
+
             // 狀態變色：過熱為紅，加速為亮青，充能為暗青
             if (snake.isOverloaded) {
                 ctx.strokeStyle = red;
@@ -140,7 +156,7 @@ export class Renderer {
                 ctx.shadowBlur = snake.isDashing ? 20 : 0;
                 ctx.shadowColor = cyan;
             }
-            
+
             ctx.lineWidth = 6;
             ctx.beginPath();
             ctx.arc(snake.head.x, snake.head.y, radius, -Math.PI / 2, -Math.PI / 2 + (Math.PI * 2 * staminaRatio));
@@ -149,55 +165,62 @@ export class Renderer {
         }
     }
 
-    drawMagnetHUD(snake) {
+    drawSkillHUD(snake, icon, timeLeft, maxTime, y) {
         const ctx = this.ctx;
         const x = snake.head.x;
-        const y = snake.head.y - snake.radius - 40;
-        
+
         // 畫圖標
-        ctx.font = '24px Arial';
+        ctx.font = '20px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText('🧲', x, y);
-        
+        ctx.fillText(icon, x, y);
+
         // 畫倒數條
-        const barWidth = 40;
-        const barHeight = 4;
-        const ratio = snake.magnetTime / 10; // 10秒總時長
-        
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-        ctx.fillRect(x - barWidth/2, y + 5, barWidth, barHeight);
-        
-        ctx.fillStyle = '#FF3333';
-        ctx.fillRect(x - barWidth/2, y + 5, barWidth * ratio, barHeight);
+        const barWidth = 36;
+        const barHeight = 3;
+        const ratio = timeLeft / maxTime;
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.fillRect(x - barWidth / 2, y + 5, barWidth, barHeight);
+
+        ctx.fillStyle = '#FF3333'; // 統一使用紅色跑條 (v3.3.6)
+        ctx.fillRect(x - barWidth / 2, y + 5, barWidth * ratio, barHeight);
     }
 
     drawSnake(snake, effects) {
         if (snake.isDead || snake.points.length < 2) return;
         const ctx = this.ctx;
         ctx.save();
-        
+
         // 速度線特效 (v2.7.1)
         if (snake.isDashing) {
             this.drawSpeedLines(snake);
         }
 
         ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-        ctx.lineWidth = snake.radius * 2; ctx.strokeStyle = snake.color;
-        if (snake.isDashing) { 
-            ctx.shadowBlur = 30; // 發光加強
-            ctx.shadowColor = snake.color; 
-            ctx.lineWidth *= 1.15; 
+
+        // 受傷閃爍處理 (v3.3.2)
+        let displayColor = snake.color;
+        if (snake.hitTimer > 0) {
+            const isWhite = Math.floor(Date.now() / 50) % 2 === 0;
+            displayColor = isWhite ? '#FFFFFF' : '#FF0000';
         }
-        
+
+        ctx.lineWidth = snake.radius * 2; ctx.strokeStyle = displayColor;
+        if (snake.isDashing) {
+            ctx.shadowBlur = 30; // 發光加強
+            ctx.shadowColor = displayColor;
+            ctx.lineWidth *= 1.15;
+        }
+
         ctx.beginPath();
         ctx.moveTo(snake.points[0].x, snake.points[0].y);
-        for(let i = 1; i < snake.points.length; i++) ctx.lineTo(snake.points[i].x, snake.points[i].y);
+        for (let i = 1; i < snake.points.length; i++) ctx.lineTo(snake.points[i].x, snake.points[i].y);
         ctx.stroke();
 
         // Head
         ctx.fillStyle = '#fff'; ctx.shadowBlur = 0;
-        ctx.beginPath(); ctx.arc(snake.head.x, snake.head.y, snake.radius, 0, Math.PI*2); ctx.fill();
-        
+        ctx.beginPath(); ctx.arc(snake.head.x, snake.head.y, snake.radius, 0, Math.PI * 2); ctx.fill();
+
         if (snake.id === 'player') {
             this.drawHeadHUD(snake);
         }
@@ -214,9 +237,19 @@ export class Renderer {
             });
         }
 
-        // Magnet HUD (v2.9.0)
-        if (snake.isMagnetActive) {
-            this.drawMagnetHUD(snake);
+        // 技能圖標 HUD (v3.3.5: 磁鐵 & 鷹眼 垂直堆疊)
+        let hudY = snake.head.y - snake.radius - 45;
+        if (snake.magnetTime > 0) {
+            this.drawSkillHUD(snake, '🧲', snake.magnetTime, 8, hudY);
+            hudY -= 35; // 向上堆疊下一個圖標
+        }
+        if (snake.eagleEyeTime > 0) {
+            this.drawSkillHUD(snake, '🦅', snake.eagleEyeTime, 12, hudY);
+            hudY -= 35;
+        }
+        if (snake.inkTime > 0) {
+            this.drawSkillHUD(snake, '🌑', snake.inkTime, 3, hudY);
+            hudY -= 35;
         }
 
         // Eyes
@@ -226,7 +259,7 @@ export class Renderer {
         const y1 = snake.head.y + Math.sin(snake.angle + 0.6) * offset;
         const x2 = snake.head.x + Math.cos(snake.angle - 0.6) * offset;
         const y2 = snake.head.y + Math.sin(snake.angle - 0.6) * offset;
-        ctx.beginPath(); ctx.arc(x1, y1, 3, 0, Math.PI*2); ctx.arc(x2, y2, 3, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(x1, y1, 3, 0, Math.PI * 2); ctx.arc(x2, y2, 3, 0, Math.PI * 2); ctx.fill();
         ctx.restore();
     }
 
@@ -234,16 +267,16 @@ export class Renderer {
         const ctx = this.ctx;
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
         ctx.lineWidth = 2;
-        
+
         // 在蛇頭周圍產生後掠線
         for (let i = 0; i < 5; i++) {
             const angleOffset = (Math.random() - 0.5) * 1.5;
             const lineLen = 30 + Math.random() * 50;
             const startDist = snake.radius + 5;
-            
+
             const ax = Math.cos(snake.angle + Math.PI + angleOffset);
             const ay = Math.sin(snake.angle + Math.PI + angleOffset);
-            
+
             ctx.beginPath();
             ctx.moveTo(snake.head.x + ax * startDist, snake.head.y + ay * startDist);
             ctx.lineTo(snake.head.x + ax * (startDist + lineLen), snake.head.y + ay * (startDist + lineLen));
@@ -288,13 +321,60 @@ export class Renderer {
                         ctx.fill();
                     }
                 }
+                ctx.globalAlpha = 1.0;
+            } else if (e.type === 'INK_CLOUD') {
+                const alpha = Math.min(1, e.life);
+                // 高飽和霓虹紫色 (v3.3.8)
+                const isPlayer = e.ownerId === 'player';
+                const baseColor = isPlayer ? 'rgba(191, 0, 255, ' : 'rgba(75, 0, 130, '; // Electric Purple vs Indigo
+
+                ctx.fillStyle = baseColor + (alpha * 0.7) + ')';
+
+                // 繪製墨漬
+                for (let j = 0; j < 5; j++) {
+                    const offsetX = Math.cos(j * 1.25) * (e.radius * 0.4);
+                    const offsetY = Math.sin(j * 1.25) * (e.radius * 0.4);
+                    const r = e.radius * (0.7 + Math.sin(Date.now() * 0.004 + j) * 0.15);
+                    ctx.beginPath();
+                    ctx.arc(e.x + offsetX, e.y + offsetY, r, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                // 中心核心 (玩家的有發光感)
+                if (isPlayer) {
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = '#BF00FF';
+                    ctx.fillStyle = `rgba(224, 102, 255, ${alpha * 0.9})`; // Lighter Purple
+                } else {
+                    ctx.fillStyle = `rgba(40, 0, 80, ${alpha * 0.8})`;
+                }
+
+                ctx.beginPath();
+                ctx.arc(e.x, e.y, e.radius * 0.6, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
             } else {
                 ctx.globalAlpha = e.life * 1.5; ctx.fillStyle = e.color;
-                ctx.beginPath(); ctx.arc(e.x, e.y, 3, 0, Math.PI*2); ctx.fill();
-                if (e.vx) e.x += e.vx; 
+                ctx.beginPath(); ctx.arc(e.x, e.y, 3, 0, Math.PI * 2); ctx.fill();
+                if (e.vx) e.x += e.vx;
                 if (e.vy) e.y += e.vy;
             }
         });
         ctx.globalAlpha = 1.0;
+    }
+
+    drawInkOverlay(time) {
+        const ctx = this.ctx;
+        const w = this.canvas.width;
+        const h = this.canvas.height;
+
+        ctx.save();
+        const grad = ctx.createRadialGradient(w / 2, h / 2, 50, w / 2, h / 2, 350);
+        grad.addColorStop(0, 'rgba(0, 0, 0, 0)');
+        grad.addColorStop(1, 'rgba(0, 0, 0, 0.95)');
+
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+        ctx.restore();
     }
 }

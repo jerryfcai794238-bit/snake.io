@@ -31,7 +31,8 @@ class Main {
         document.getElementById('joystick-zone').classList.remove('hidden');
         document.getElementById('dash-btn').classList.remove('hidden');
         document.getElementById('magnet-btn').classList.remove('hidden');
-        document.getElementById('shockwave-btn').classList.remove('hidden');
+        document.getElementById('eagleeye-btn').classList.remove('hidden');
+        document.getElementById('ink-btn').classList.remove('hidden');
         document.getElementById('game-over').classList.add('hidden');
     }
 
@@ -43,6 +44,9 @@ class Main {
         document.getElementById('hud-bottom').classList.add('hidden');
         document.getElementById('joystick-zone').classList.add('hidden');
         document.getElementById('dash-btn').classList.add('hidden');
+        document.getElementById('magnet-btn').classList.add('hidden');
+        document.getElementById('eagleeye-btn').classList.add('hidden');
+        document.getElementById('ink-btn').classList.add('hidden');
         document.getElementById('game-over').classList.add('hidden');
         document.getElementById('best-score').innerText = this.game.bestScore;
     }
@@ -61,7 +65,8 @@ class Main {
             food: this.game.food,
             stones: this.game.stones,
             terrains: this.game.terrains,
-            effects: this.game.effects
+            effects: this.game.effects,
+            redFlash: this.game.redFlash
         };
         if (this.game.player) this.renderer.render(state);
 
@@ -120,20 +125,37 @@ class Main {
             else magnetBtn.classList.remove('active');
         }
 
-        // Shockwave Skill UI (v3.0.0)
-        const shockBtn = document.getElementById('shockwave-btn');
-        const shockOverlay = document.getElementById('shockwave-cooldown-overlay');
-        const shockCDText = document.getElementById('shockwave-cd-text');
-        if (shockBtn && shockOverlay && shockCDText) {
-            const cdRatio = p.shockwaveCooldown / 5; // 測試用：5秒冷卻
-            shockOverlay.style.height = `${cdRatio * 100}%`;
-            
-            if (p.shockwaveCooldown > 0) {
-                shockCDText.innerText = Math.ceil(p.shockwaveCooldown);
-                shockBtn.querySelector('.skill-icon').style.opacity = '0.3';
+        // Eagle Eye UI (v3.3.3: 恢復冷卻顯示)
+        const eagleBtn = document.getElementById('eagleeye-btn');
+        const eagleOverlay = document.getElementById('eagleeye-cooldown-overlay');
+        const eagleCDText = document.getElementById('eagleeye-cd-text');
+        if (eagleBtn && eagleOverlay && eagleCDText) {
+            const cdRatio = p.eagleEyeCooldown / 25; 
+            eagleOverlay.style.height = `${cdRatio * 100}%`;
+            if (p.eagleEyeCooldown > 0) {
+                eagleCDText.innerText = Math.ceil(p.eagleEyeCooldown);
+                eagleBtn.querySelector('.skill-icon').style.opacity = '0.3';
             } else {
-                shockCDText.innerText = '';
-                shockBtn.querySelector('.skill-icon').style.opacity = '1';
+                eagleCDText.innerText = '';
+                eagleBtn.querySelector('.skill-icon').style.opacity = '1';
+            }
+            if (p.eagleEyeTime > 0) eagleBtn.classList.add('active');
+            else eagleBtn.classList.remove('active');
+        }
+
+        // Ink Cloud UI (v3.3.3: 恢復冷卻顯示)
+        const inkBtn = document.getElementById('ink-btn');
+        const inkOverlay = document.getElementById('ink-cooldown-overlay');
+        const inkCDText = document.getElementById('ink-cd-text');
+        if (inkBtn && inkOverlay && inkCDText) {
+            const cdRatio = p.inkCooldown / 20;
+            inkOverlay.style.height = `${cdRatio * 100}%`;
+            if (p.inkCooldown > 0) {
+                inkCDText.innerText = Math.ceil(p.inkCooldown);
+                inkBtn.querySelector('.skill-icon').style.opacity = '0.3';
+            } else {
+                inkCDText.innerText = '';
+                inkBtn.querySelector('.skill-icon').style.opacity = '1';
             }
         }
     }
