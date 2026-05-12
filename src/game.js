@@ -28,7 +28,7 @@ export class Game {
         this.timer = CONFIG.SOLO_TIME;
         this.isGameOver = false;
         const size = CONFIG.WORLD_SIZE;
-        const numRivers = 1;
+        const numRivers = 2;
         for (let r = 0; r < numRivers; r++) {
             const rx = (Math.random() - 0.5) * size * 0.5;
             const ry = (Math.random() - 0.5) * size * 0.5;
@@ -139,20 +139,20 @@ export class Game {
                 this.snakes.push(new Snake(`ai-${index}`, cfg.name, cfg.color, aPos.x, aPos.y, true, this.calculateBestStartAngle(aPos.x, aPos.y)));
             });
         }
-        for (let i = 0; i < 600; i++) this.spawnResource();
+        for (let i = 0; i < 800; i++) this.spawnResource();
     }
 
     spawnResource() {
         let x, y, isNearStone = false, terrainType = null;
         const size = CONFIG.WORLD_SIZE;
         const rand = Math.random();
-        if (rand < 0.4 && this.terrains.length > 0) {
+        if (rand < 0.2 && this.terrains.length > 0) {
             const t = this.terrains[Math.floor(Math.random() * this.terrains.length)];
             const angle = Math.random() * Math.PI * 2;
             const dist = Math.random() * t.radius;
             x = t.x + Math.cos(angle) * dist; y = t.y + Math.sin(angle) * dist;
             terrainType = t.type;
-        } else if (rand < 0.7 && this.stones.length > 0) {
+        } else if (rand < 0.5 && this.stones.length > 0) {
             const stone = this.stones[Math.floor(Math.random() * this.stones.length)];
             const angle = Math.random() * Math.PI * 2;
             const dist = stone.radius + 10 + Math.random() * 50;
@@ -232,7 +232,7 @@ export class Game {
             });
         });
         this.checkCollisions();
-        if (this.food.length < 300) this.spawnResource();
+        if (this.food.length < 400) this.spawnResource();
     }
 
     triggerShockwave(sourceSnake) {
@@ -310,6 +310,28 @@ export class Game {
                     snake.head.y = -halfSize + margin + bounceDist;
                     snake.angle = -snake.angle;
                 }
+                
+                // 地形碰撞懲罰 (v3.2.4: 15% + 尾部碎裂)
+                const penalty = snake.length * 0.15;
+                const oldPoints = [...snake.points];
+                
+                snake.targetLength = Math.max(CONFIG.INITIAL_LENGTH, snake.targetLength - penalty);
+                snake.length = Math.max(CONFIG.INITIAL_LENGTH, snake.length - penalty);
+                
+                // 計算被切掉的節點並轉化為碎裂特效 (v3.2.4)
+                const newPointsCount = Math.ceil(snake.length / 2);
+                if (oldPoints.length > newPointsCount) {
+                    const deadPoints = oldPoints.slice(newPointsCount);
+                    this.effects.push({
+                        type: 'TAIL_SHATTER',
+                        points: deadPoints,
+                        color: snake.color,
+                        life: 2.0,
+                        maxLife: 2.0
+                    });
+                }
+
+                this.spark(snake.head.x, snake.head.y, '#FFFFFF'); // 白色碰撞火花
                 return;
             }
 
@@ -325,6 +347,26 @@ export class Game {
                     snake.head.x = s.x + Math.cos(angle) * (minDist + bounceDist);
                     snake.head.y = s.y + Math.sin(angle) * (minDist + bounceDist);
                     snake.angle = angle;
+                    
+                    // 地形碰撞懲罰 (v3.2.4: 15% + 尾部碎裂)
+                    const penalty = snake.length * 0.15;
+                    const oldPoints = [...snake.points];
+                    
+                    snake.targetLength = Math.max(CONFIG.INITIAL_LENGTH, snake.targetLength - penalty);
+                    snake.length = Math.max(CONFIG.INITIAL_LENGTH, snake.length - penalty);
+                    
+                    const newPointsCount = Math.ceil(snake.length / 2);
+                    if (oldPoints.length > newPointsCount) {
+                        const deadPoints = oldPoints.slice(newPointsCount);
+                        this.effects.push({
+                            type: 'TAIL_SHATTER',
+                            points: deadPoints,
+                            color: snake.color,
+                            life: 2.0,
+                            maxLife: 2.0
+                        });
+                    }
+                    this.spark(snake.head.x, snake.head.y, '#FFFFFF');
                 }
             });
 

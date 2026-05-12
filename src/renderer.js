@@ -31,6 +31,7 @@ export class Renderer {
         const dpr = window.devicePixelRatio || 1;
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         ctx.save();
+
         // 修正中心點：需除以 dpr 才能對準螢幕中央 (v3.1.5)
         ctx.translate(this.canvas.width / (2 * dpr), this.canvas.height / (2 * dpr));
         ctx.scale(this.camera.zoom, this.camera.zoom);
@@ -121,11 +122,11 @@ export class Renderer {
         ctx.arc(snake.head.x, snake.head.y, radius, 0, Math.PI * 2);
         ctx.stroke();
 
-        // 體力進度環 (v3.2.0)
+        // 體力進度環 (v3.2.2)
         const staminaRatio = snake.stamina / CONFIG.STAMINA_MAX;
         
-        // 只有在體力不滿或是過熱時才顯示
-        if (staminaRatio < 0.99 || snake.isOverloaded) {
+        // 玩家始終顯示，其餘蛇只有在體力不滿、過熱或加速時才顯示
+        if (snake.id === 'player' || staminaRatio < 0.99 || snake.isOverloaded || snake.isDashing) {
             const cyan = '#00FFFF';
             const red = '#FF3333';
             
@@ -262,6 +263,31 @@ export class Renderer {
                 ctx.beginPath();
                 ctx.arc(e.x, e.y, e.radius, 0, Math.PI * 2);
                 ctx.stroke();
+            } else if (e.type === 'TAIL_SHATTER') {
+                // 總時長 2秒：停滯 1秒，消逝 1秒 (v3.2.5)
+                const fadeTime = 1.0;
+                let visibleCount = e.points.length;
+                let alpha = 0.6;
+                let sizeScale = 1.0;
+
+                if (e.life < fadeTime) {
+                    const progress = e.life / fadeTime; // 1.0 -> 0.0
+                    // 從末端開始消逝 (points 最後面是尾尖)
+                    visibleCount = Math.floor(e.points.length * progress);
+                    alpha = 0.6 * progress;
+                    sizeScale = progress;
+                }
+
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = e.color;
+                for (let i = 0; i < visibleCount; i++) {
+                    if (i % 2 === 0) {
+                        const p = e.points[i];
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, 8 * sizeScale, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
             } else {
                 ctx.globalAlpha = e.life * 1.5; ctx.fillStyle = e.color;
                 ctx.beginPath(); ctx.arc(e.x, e.y, 3, 0, Math.PI*2); ctx.fill();
