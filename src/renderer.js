@@ -117,13 +117,10 @@ export class Renderer {
     drawResources(food) {
         const ctx = this.ctx;
         food.forEach(f => {
-            // All food is yellow (#FFD700)
-            ctx.fillStyle = CONFIG.COLORS.FOOD;
-            ctx.shadowBlur = f.value >= 10 ? 15 : 5;
-            ctx.shadowColor = CONFIG.COLORS.FOOD;
-
-            ctx.beginPath(); ctx.arc(f.x, f.y, f.size, 0, Math.PI * 2); ctx.fill();
-            ctx.shadowBlur = 0;
+            ctx.fillStyle = f.color || CONFIG.COLORS.FOOD; // 支援自定義顏色 (v3.5.4)
+            ctx.beginPath();
+            ctx.arc(f.x, f.y, f.size, 0, Math.PI * 2);
+            ctx.fill();
         });
     }
 

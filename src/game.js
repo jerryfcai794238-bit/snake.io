@@ -66,6 +66,7 @@ export class Game {
     }
 
     calculateBestStartAngle(x, y) {
+
         let bestAngle = 0;
         let maxDist = -1;
         const halfSize = CONFIG.WORLD_SIZE / 2;
@@ -453,9 +454,26 @@ export class Game {
         if (killer) killer.cuts++;
         const legacy = snake.points.slice(idx);
         snake.points = snake.points.slice(0, idx);
+        
+        // 動態食物價值：損失長度的 50% (v3.5.3)
+        const lostLength = legacy.length * 2;
+        const totalFoodValue = lostLength * 0.5;
+        const dropRate = 5;
+        const foodValuePerItem = totalFoodValue / (legacy.length / dropRate);
+        
         snake.length = snake.points.length * 2;
         snake.targetLength = snake.length;
-        legacy.forEach((p, i) => { if (i % 5 === 0) this.food.push({ x: p.x, y: p.y, size: 4, value: 2 }); });
+        
+        legacy.forEach((p, i) => { 
+            if (i % dropRate === 0) {
+                this.food.push({ 
+                    x: p.x, y: p.y, 
+                    size: 4, 
+                    value: foodValuePerItem,
+                    color: snake.color // 繼承蛇的顏色 (v3.5.4)
+                }); 
+            }
+        });
         this.spark(snake.head.x, snake.head.y, snake.color);
     }
 
@@ -466,13 +484,30 @@ export class Game {
         if (killer) killer.kills++;
 
         // 死亡瞬間立即計算 50% 懲罰 (從最高紀錄改為當前長度 v3.1.7)
-        const penaltyLength = Math.max(CONFIG.INITIAL_LENGTH, snake.length * 0.5);
+        const originalLength = snake.length;
+        const penaltyLength = Math.max(CONFIG.INITIAL_LENGTH, originalLength * 0.5);
+        const lostLength = originalLength - penaltyLength;
+        const totalFoodValue = lostLength * 0.5; // 損失長度的 50% 轉化為食物
+        
         snake.length = penaltyLength;
         snake.targetLength = penaltyLength;
-        snake.maxLength = penaltyLength; // 重置最高紀錄，確保連續死亡會持續扣除長度
+        snake.maxLength = penaltyLength; 
 
-        // 恢復掉落食物機制
-        snake.points.forEach((p, i) => { if (i % 6 === 0) this.food.push({ x: p.x, y: p.y, size: 4, value: 9.6, expires: 5.0 }); });
+        // 恢復掉落食物機制 (動態價值 v3.5.3)
+        const dropRate = 6;
+        const foodValuePerItem = totalFoodValue / (snake.points.length / dropRate);
+        
+        snake.points.forEach((p, i) => { 
+            if (i % dropRate === 0) {
+                this.food.push({ 
+                    x: p.x, y: p.y, 
+                    size: 4, 
+                    value: foodValuePerItem, 
+                    expires: 5.0,
+                    color: snake.color // 繼承蛇的顏色 (v3.5.4)
+                }); 
+            }
+        });
 
         this.spark(snake.head.x, snake.head.y, snake.color);
         this.respawnQueue.push({ snake, time: CONFIG.RESPAWN_TIME });

@@ -207,7 +207,7 @@ export class Snake {
                 y: this.head.y,
                 life: 6.0,
                 maxLife: 6.0,
-                radius: 60
+                radius: 80 // 提升至 80px (v3.5.5)
             });
             this.inkCooldown = 20;
             return true;
