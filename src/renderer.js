@@ -15,6 +15,9 @@ export class Renderer {
         this.canvas.width = rect.width * dpr;
         this.canvas.height = rect.height * dpr;
         this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        // 動態計算縮放比例 (v3.1.4)：大幅拉近，手機約 0.85，PC 約 1.2
+        this.camera.baseZoom = Math.max(0.85, Math.min(1.3, rect.width / 1000));
     }
 
     render(state) {
@@ -23,11 +26,13 @@ export class Renderer {
         
         this.camera.x = player.head.x;
         this.camera.y = player.head.y;
-        this.camera.zoom = 0.5; // 調小縮放比例 (v3.1.0)
+        this.camera.zoom = this.camera.baseZoom; // 使用動態計算的縮放值 (v3.1.2)
 
+        const dpr = window.devicePixelRatio || 1;
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         ctx.save();
-        ctx.translate(this.canvas.width/2, this.canvas.height/2);
+        // 修正中心點：需除以 dpr 才能對準螢幕中央 (v3.1.5)
+        ctx.translate(this.canvas.width / (2 * dpr), this.canvas.height / (2 * dpr));
         ctx.scale(this.camera.zoom, this.camera.zoom);
         ctx.translate(-this.camera.x, -this.camera.y);
 
@@ -121,7 +126,8 @@ export class Renderer {
         const maxDisplayLength = 150; 
         const ratio = Math.min(1.0, usableLength / maxDisplayLength);
         
-        if (ratio > 0) {
+        // 只有在能量足以啟動加速時才顯示進度環 (v3.1.6 門檻為 5)
+        if (usableLength > 5) {
             const cyan = '#00FFFF';
             ctx.strokeStyle = snake.isDashing ? cyan : 'rgba(0, 255, 255, 0.6)';
             if (snake.isDashing) {

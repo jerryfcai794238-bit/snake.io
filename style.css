@@ -321,9 +321,9 @@ html {
 #dash-btn {
     position: absolute;
     right: max(40px, env(safe-area-inset-right));
-    bottom: max(40px, env(safe-area-inset-bottom)); /* 右下角主按鈕 */
-    width: 100px;
-    height: 100px;
+    bottom: max(40px, env(safe-area-inset-bottom));
+    width: clamp(90px, 12vw, 130px);
+    height: clamp(90px, 12vw, 130px);
     background: rgba(255, 255, 255, 0.05);
     border: 3px solid var(--neon-pink);
     border-radius: 50%;
@@ -340,10 +340,10 @@ html {
 
 #magnet-btn {
     position: absolute;
-    right: calc(max(40px, env(safe-area-inset-right)) + 120px); 
-    bottom: max(40px, env(safe-area-inset-bottom)); /* 偏下 */
-    width: 65px;
-    height: 65px;
+    right: calc(max(40px, env(safe-area-inset-right)) + clamp(110px, 15vw, 160px)); 
+    bottom: max(40px, env(safe-area-inset-bottom));
+    width: clamp(60px, 8vw, 85px);
+    height: clamp(60px, 8vw, 85px);
     background: rgba(255, 255, 255, 0.05);
     border: 2px solid var(--neon-blue);
     border-radius: 50%;
@@ -362,9 +362,9 @@ html {
 #shockwave-btn {
     position: absolute;
     right: calc(max(40px, env(safe-area-inset-right)) + 15px); 
-    bottom: calc(max(40px, env(safe-area-inset-bottom)) + 120px); /* 主按鈕上方 */
-    width: 65px;
-    height: 65px;
+    bottom: calc(max(40px, env(safe-area-inset-bottom)) + clamp(110px, 15vw, 160px));
+    width: clamp(60px, 8vw, 85px);
+    height: clamp(60px, 8vw, 85px);
     background: rgba(255, 255, 255, 0.05);
     border: 2px solid #BC13FE;
     border-radius: 50%;
