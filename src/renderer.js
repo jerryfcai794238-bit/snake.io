@@ -4,14 +4,17 @@ export class Renderer {
     constructor(canvas) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
-        this.camera = { x: 0, y: 0, zoom: 1 };
+        this.camera = { x: 0, y: 0, zoom: 0.5 }; // 縮小比例，視野變廣 (v3.1.0)
         this.resize();
         window.addEventListener('resize', () => this.resize());
     }
 
     resize() {
-        this.canvas.width = this.canvas.parentElement.offsetWidth;
-        this.canvas.height = this.canvas.parentElement.offsetHeight;
+        const dpr = window.devicePixelRatio || 1;
+        const rect = this.canvas.parentElement.getBoundingClientRect();
+        this.canvas.width = rect.width * dpr;
+        this.canvas.height = rect.height * dpr;
+        this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
     render(state) {
@@ -20,7 +23,7 @@ export class Renderer {
         
         this.camera.x = player.head.x;
         this.camera.y = player.head.y;
-        this.camera.zoom = 0.85;
+        this.camera.zoom = 0.5; // 調小縮放比例 (v3.1.0)
 
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         ctx.save();
