@@ -192,19 +192,26 @@ export class Game {
             }
         }
 
-        // 磁鐵吸取邏輯 (v2.9.0)
+        // 磁鐵與基礎吸力邏輯 (v3.1.8)
         this.food.forEach(f => {
             this.snakes.forEach(snake => {
-                if (snake.isDead || !snake.isMagnetActive) return;
+                if (snake.isDead) return;
+                
                 const dx = snake.head.x - f.x;
                 const dy = snake.head.y - f.y;
                 const distSq = dx*dx + dy*dy;
-                const magnetRadius = 75; // 吸取半徑 (直徑 150px)
-                if (distSq < magnetRadius * magnetRadius) {
+                
+                // 基礎半徑 30, 磁鐵啟動則變為 90 (v3.1.10)
+                const isMagnetActive = snake.magnetTime > 0;
+                const suctionRadius = isMagnetActive ? 90 : 30;
+                const suctionSpeed = isMagnetActive ? 15 : 8; // 磁鐵吸速維持強勁
+
+                if (distSq < suctionRadius * suctionRadius) {
                     const dist = Math.sqrt(distSq);
-                    const attractSpeed = 10; // 吸取速度
-                    f.x += (dx / dist) * attractSpeed;
-                    f.y += (dy / dist) * attractSpeed;
+                    if (dist > 5) {
+                        f.x += (dx / dist) * suctionSpeed;
+                        f.y += (dy / dist) * suctionSpeed;
+                    }
                 }
             });
         });
@@ -317,10 +324,10 @@ export class Game {
                 }
             });
 
-            // 食物碰撞
+            // 食物碰撞 (增加 10px 判定寬容度 v3.1.7)
             for (let i = this.food.length - 1; i >= 0; i--) {
                 const f = this.food[i];
-                if ((snake.head.x - f.x)**2 + (snake.head.y - f.y)**2 < (snake.radius + f.size)**2) {
+                if ((snake.head.x - f.x)**2 + (snake.head.y - f.y)**2 < (snake.radius + f.size + 10)**2) {
                     if (snake.length < CONFIG.INITIAL_LENGTH) snake.targetLength = CONFIG.INITIAL_LENGTH;
                     else snake.targetLength += f.value;
                     snake.totalEaten += f.value;
