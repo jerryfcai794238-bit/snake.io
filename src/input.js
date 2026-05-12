@@ -52,7 +52,9 @@ export class InputHandler {
             const dist = Math.sqrt(dx * dx + dy * dy);
             const radius = 75; // 提升至 75px (v3.5.6)
             
-            this.angle = Math.atan2(dy, dx);
+            const newAngle = Math.atan2(dy, dx);
+            // 輸入抖動過濾 (v3.5.7)
+            this.angle = this.lerpAngle(this.angle, newAngle, 0.4);
             
             let visualDist;
             if (dist <= radius) {
@@ -198,5 +200,12 @@ export class InputHandler {
             this.handle.style.background = '#fff';
             this.handle.style.boxShadow = '0 0 15px rgba(255,255,255,0.3)';
         }
+    }
+    // 輔助函數：角度補間
+    lerpAngle(a, b, t) {
+        let diff = b - a;
+        while (diff < -Math.PI) diff += Math.PI * 2;
+        while (diff > Math.PI) diff -= Math.PI * 2;
+        return a + diff * t;
     }
 }

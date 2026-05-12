@@ -69,7 +69,14 @@ export class Snake {
         }
 
         if (targetAngle !== null) {
-            this.angle = targetAngle;
+            // 基礎轉向速率 (v3.5.7)
+            let turnSpeed = 0.15; 
+            
+            // 衝刺時轉向更靈巧 (1.5x 轉向速率)
+            if (this.isDashing) turnSpeed *= 1.5;
+            
+            // 角度補間平滑處理
+            this.angle = this.lerpAngle(this.angle, targetAngle, turnSpeed);
         }
 
         const canDash = wantsToDash && !this.isOverloaded && this.stamina > 0;
@@ -213,5 +220,13 @@ export class Snake {
             return true;
         }
         return false;
+    }
+
+    // 輔助函數：處理角度平滑過渡 (處理 -PI 到 PI 的跨越問題)
+    lerpAngle(a, b, t) {
+        let diff = b - a;
+        while (diff < -Math.PI) diff += Math.PI * 2;
+        while (diff > Math.PI) diff -= Math.PI * 2;
+        return a + diff * t;
     }
 }
