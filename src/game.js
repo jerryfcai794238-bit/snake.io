@@ -205,10 +205,10 @@ export class Game {
                 const dy = snake.head.y - f.y;
                 const distSq = dx * dx + dy * dy;
 
-                // 基礎半徑 30, 磁鐵啟動則變為 90 (v3.1.10)
+                // 基礎半徑 40, 磁鐵啟動則變為 100 (v3.5.3)
                 const isMagnetActive = snake.magnetTime > 0;
-                const suctionRadius = isMagnetActive ? 90 : 30;
-                const suctionSpeed = isMagnetActive ? 15 : 8; // 磁鐵吸速維持強勁
+                const suctionRadius = isMagnetActive ? 100 : 40;
+                const suctionSpeed = isMagnetActive ? 15 : 12; // 提升基礎吸力感
 
                 if (distSq < suctionRadius * suctionRadius) {
                     const dist = Math.sqrt(distSq);
@@ -388,7 +388,8 @@ export class Game {
             // 食物碰撞 (增加 10px 判定寬容度 v3.1.7)
             for (let i = this.food.length - 1; i >= 0; i--) {
                 const f = this.food[i];
-                if ((snake.head.x - f.x) ** 2 + (snake.head.y - f.y) ** 2 < (snake.radius + f.size + 10) ** 2) {
+                // 縮小判定範圍，讓食物有「飛進去」的過程 (v3.5.3)
+                if ((snake.head.x - f.x) ** 2 + (snake.head.y - f.y) ** 2 < (snake.radius + 2) ** 2) {
                     if (snake.length < CONFIG.INITIAL_LENGTH) snake.targetLength = CONFIG.INITIAL_LENGTH;
                     else snake.targetLength += f.value;
                     snake.totalEaten += f.value;

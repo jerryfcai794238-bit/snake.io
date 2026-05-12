@@ -30,7 +30,7 @@ export class Renderer {
         // 渲染時計算目標 Zoom (v3.3.3)
         let targetZoom = this.camera.baseZoom;
         if (player.eagleEyeTime > 0) {
-            targetZoom *= 0.6; // 視野擴張
+            targetZoom *= 0.75; // 視野擴張 (從 0.6 調整為 0.75，視野適中) (v3.5.2)
         }
 
         // 平滑縮放 (Lerp) - 係數調小使過程更絲滑 (v3.3.4)
