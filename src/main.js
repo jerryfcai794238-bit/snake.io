@@ -199,11 +199,11 @@ class Main {
             const pWin = s.inverse ? parseFloat(s.p) < parseFloat(s.b) : parseFloat(s.p) > parseFloat(s.b);
             const bWin = s.inverse ? parseFloat(s.b) < parseFloat(s.p) : parseFloat(s.b) > parseFloat(s.p);
             return `
-                <tr>
-                    <td>${s.label}</td>
-                    <td><div class="val-you ${pWin ? 'winner' : ''}">${s.p}</div></td>
-                    <td><div class="val-bot ${bWin ? 'winner' : ''}">${s.b}</div></td>
-                </tr>
+                <div class="stat-row-item">
+                    <div class="grid-cell label">${s.label}</div>
+                    <div class="grid-cell"><div class="val-you ${pWin ? 'winner' : ''}">${s.p}</div></div>
+                    <div class="grid-cell"><div class="val-bot ${bWin ? 'winner' : ''}">${s.b}</div></div>
+                </div>
             `;
         }).join('');
         document.getElementById('settlement-stats').innerHTML = html;

@@ -103,18 +103,14 @@
             <div class="content">
                 <h1 id="game-over-title">DEFEAT</h1>
 
-                <table class="comparison-table">
-                    <thead>
-                        <tr>
-                            <th>STAT</th>
-                            <th>YOU</th>
-                            <th>BOT</th>
-                        </tr>
-                    </thead>
-                    <tbody id="settlement-stats">
-                        <!-- Stats rows injected here -->
-                    </tbody>
-                </table>
+                <div class="comparison-grid">
+                    <div class="grid-header">STAT</div>
+                    <div class="grid-header">YOU</div>
+                    <div class="grid-header">BOT</div>
+                    <div id="settlement-stats" class="grid-body">
+                        <!-- Stats injected here -->
+                    </div>
+                </div>
 
                 <div class="game-over-btns">
                     <button id="btn-restart">RETRY</button>

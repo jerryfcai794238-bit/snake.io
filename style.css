@@ -121,8 +121,8 @@ html {
     background: rgba(255, 255, 255, 0.05);
     border: 2px solid var(--neon-blue);
     border-radius: 20px;
-    padding: 30px;
-    width: 280px; /* 增加寬度 */
+    padding: clamp(15px, 3vw, 30px);
+    width: clamp(200px, 35vw, 320px);
     text-align: center;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -142,13 +142,13 @@ html {
 }
 
 .mode-card .title {
-    font-size: 22px;
+    font-size: clamp(16px, 2vw, 22px);
     font-weight: 700;
     color: #fff;
 }
 
 .mode-card .desc {
-    font-size: 14px;
+    font-size: clamp(10px, 1.2vw, 14px);
     color: rgba(255, 255, 255, 0.5);
 }
 
@@ -573,59 +573,62 @@ html {
     }
 }
 
-/* Comparison Table */
-.comparison-table {
-    width: 100%; /* 撐滿寬度 */
-    border-collapse: collapse;
-    margin-bottom: 30px;
-    color: #fff;
-    font-size: 16px;
-    background: rgba(255, 255, 255, 0.02);
+/* Comparison Grid (v3.5.5) */
+.comparison-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 100px 100px;
+    gap: 1px;
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 15px;
     overflow: hidden;
+    margin-bottom: 30px;
 }
 
-.comparison-table th,
-.comparison-table td {
-    padding: 12px 15px;
-    text-align: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.comparison-table th {
-    background: rgba(255, 255, 255, 0.05);
+.grid-header {
+    background: rgba(255, 255, 255, 0.1);
     color: var(--neon-gold);
-    font-size: 11px;
+    font-size: 10px;
+    padding: 12px;
+    text-align: center;
     letter-spacing: 2px;
-    text-transform: uppercase;
+    font-weight: bold;
 }
 
-.comparison-table td:first-child {
-    text-align: left;
+.grid-body {
+    display: contents; /* 讓子元素參與外層 grid */
+}
+
+.stat-row-item {
+    display: contents;
+}
+
+.grid-cell {
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.2);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: #fff;
+}
+
+.grid-cell.label {
+    justify-content: flex-start;
     color: #888;
     font-size: 11px;
-    font-weight: 700;
+    font-weight: bold;
 }
 
-.comparison-table tr:last-child td {
-    border-bottom: none;
-}
+.grid-cell .val-you { color: var(--neon-blue); font-weight: bold; font-size: 18px; }
+.grid-cell .val-bot { color: var(--neon-pink); font-weight: bold; font-size: 18px; }
 
-.comparison-table .val-you {
-    color: var(--neon-blue);
-    font-weight: 700;
-    font-size: 18px;
-}
-
-.comparison-table .val-bot {
-    color: var(--neon-pink);
-    font-weight: 700;
-    font-size: 18px;
-}
-
-.comparison-table .winner {
+.grid-cell .winner {
     background: rgba(255, 255, 255, 0.1);
     border: 2px solid var(--neon-gold);
-    border-radius: 8px;
+    border-radius: 20px;
+    padding: 4px 15px;
+    min-width: 70px;
+    text-align: center;
     box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
 }
