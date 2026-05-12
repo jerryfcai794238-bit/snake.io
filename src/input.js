@@ -33,8 +33,8 @@ export class InputHandler {
             this.centerY = touch.clientY - rect.top;
             
             this.base.style.display = 'block';
-            this.base.style.left = `${this.centerX - 50}px`;
-            this.base.style.top = `${this.centerY - 50}px`;
+            this.base.style.left = `${this.centerX - 75}px`;
+            this.base.style.top = `${this.centerY - 75}px`;
             
             handleMove(e);
         };
@@ -50,7 +50,7 @@ export class InputHandler {
             const dx = currentX - this.centerX;
             const dy = currentY - this.centerY;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            const radius = 50;
+            const radius = 75; // 提升至 75px (v3.5.6)
             
             this.angle = Math.atan2(dy, dx);
             
