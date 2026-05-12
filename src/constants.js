@@ -6,7 +6,7 @@ export const CONFIG = {
     
     // Snake Stats (GDD v2.2.0)
     BASE_SPEED: 4,
-    DASH_MULTIPLIER: 1.5,
+    DASH_MULTIPLIER: 1.25, // 下修至提升 25% (v3.1.12)
     INITIAL_LENGTH: 50,
     DASH_LENGTH_CONSUME_RATE: 80, // Length per second (v2.7.2)
     RESPAWN_TIME: 3000, // ms
