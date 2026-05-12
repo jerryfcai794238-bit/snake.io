@@ -231,7 +231,7 @@ export class Game {
                 onDropFood: (s, v) => this.dropTailFood(s, v)
             });
         });
-        
+
         // 技能與環境互動 (v3.3.8: 噴墨致盲 + 自我免疫)
         this.snakes.forEach(snake => {
             this.effects.forEach(e => {
@@ -239,13 +239,13 @@ export class Game {
                     if (snake.id === e.ownerId) return; // 免疫自己放的墨水
                     const dx = snake.head.x - e.x;
                     const dy = snake.head.y - e.y;
-                    if (dx*dx + dy*dy < e.radius * e.radius) {
+                    if (dx * dx + dy * dy < e.radius * e.radius) {
                         snake.inkTime = 3.0; // 致盲 3 秒
                     }
                 }
             });
         });
-        
+
         this.checkCollisions();
         if (this.food.length < 400) this.spawnResource();
     }
@@ -325,14 +325,14 @@ export class Game {
                     snake.head.y = -halfSize + margin + bounceDist;
                     snake.angle = -snake.angle;
                 }
-                
+
                 // 地形碰撞懲罰 (v3.2.4: 15% + 尾部碎裂)
                 const penalty = snake.length * 0.15;
                 const oldPoints = [...snake.points];
-                
+
                 snake.targetLength = Math.max(CONFIG.INITIAL_LENGTH, snake.targetLength - penalty);
                 snake.length = Math.max(CONFIG.INITIAL_LENGTH, snake.length - penalty);
-                
+
                 // 計算被切掉的節點並轉化為碎裂特效 (v3.2.4)
                 const newPointsCount = Math.ceil(snake.length / 2);
                 if (oldPoints.length > newPointsCount) {
@@ -362,14 +362,14 @@ export class Game {
                     snake.head.x = s.x + Math.cos(angle) * (minDist + bounceDist);
                     snake.head.y = s.y + Math.sin(angle) * (minDist + bounceDist);
                     snake.angle = angle;
-                    
+
                     // 地形碰撞懲罰 (v3.2.4: 15% + 尾部碎裂)
                     const penalty = snake.length * 0.15;
                     const oldPoints = [...snake.points];
-                    
+
                     snake.targetLength = Math.max(CONFIG.INITIAL_LENGTH, snake.targetLength - penalty);
                     snake.length = Math.max(CONFIG.INITIAL_LENGTH, snake.length - penalty);
-                    
+
                     const newPointsCount = Math.ceil(snake.length / 2);
                     if (oldPoints.length > newPointsCount) {
                         const deadPoints = oldPoints.slice(newPointsCount);

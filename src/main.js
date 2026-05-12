@@ -87,14 +87,28 @@ class Main {
         const m = Math.floor(this.game.timer / 60);
         const s = this.game.timer % 60;
         document.getElementById('timer').innerText = `${m}:${s.toString().padStart(2, '0')}`;
-        
+
         const sorted = [...this.game.snakes].sort((a, b) => b.totalEaten - a.totalEaten);
-        const lbHtml = sorted.map((s, i) => `
-            <div class="lb-item" style="color: ${s.color}; font-weight: ${s.id === 'player' ? 'bold' : 'normal'}">
-                <span>${i+1}. ${s.name}</span>
-                <span>${Math.floor(s.totalEaten)}</span>
-            </div>
-        `).join('');
+        const playerRank = sorted.findIndex(s => s.id === 'player');
+
+        // 限制顯示人數為 4 人 (前三名 + 玩家)
+        let displayList = [];
+        if (playerRank < 3) {
+            displayList = sorted.slice(0, 4);
+        } else {
+            displayList = [...sorted.slice(0, 3), sorted[playerRank]];
+        }
+
+        const lbHtml = displayList.map((s) => {
+            const rank = sorted.indexOf(s) + 1;
+            const isPlayer = s.id === 'player';
+            return `
+                <div class="lb-item" style="color: ${s.color}; font-weight: ${isPlayer ? 'bold' : 'normal'}; ${isPlayer ? 'background: rgba(255,255,255,0.1); border-radius: 4px; padding: 0 4px;' : ''}">
+                    <span>${rank}. ${s.name}</span>
+                    <span>${Math.floor(s.totalEaten)}</span>
+                </div>
+            `;
+        }).join('');
         document.getElementById('leaderboard').innerHTML = lbHtml;
 
         const overlay = document.getElementById('respawn-overlay');
@@ -111,7 +125,7 @@ class Main {
         if (magnetBtn && magnetOverlay && magnetCDText) {
             const cdRatio = p.magnetCooldown / 30; // 30秒冷卻
             magnetOverlay.style.height = `${cdRatio * 100}%`;
-            
+
             // 更新倒數文字 (v2.9.4)
             if (p.magnetCooldown > 0) {
                 magnetCDText.innerText = Math.ceil(p.magnetCooldown);
@@ -120,7 +134,7 @@ class Main {
                 magnetCDText.innerText = '';
                 magnetBtn.querySelector('.skill-icon').style.opacity = '1';
             }
-            
+
             if (p.isMagnetActive) magnetBtn.classList.add('active');
             else magnetBtn.classList.remove('active');
         }
@@ -130,7 +144,7 @@ class Main {
         const eagleOverlay = document.getElementById('eagleeye-cooldown-overlay');
         const eagleCDText = document.getElementById('eagleeye-cd-text');
         if (eagleBtn && eagleOverlay && eagleCDText) {
-            const cdRatio = p.eagleEyeCooldown / 25; 
+            const cdRatio = p.eagleEyeCooldown / 25;
             eagleOverlay.style.height = `${cdRatio * 100}%`;
             if (p.eagleEyeCooldown > 0) {
                 eagleCDText.innerText = Math.ceil(p.eagleEyeCooldown);
@@ -165,7 +179,7 @@ class Main {
         // 找出進食量最多的 AI 作為結算比對對象 (v3.1.7)
         const bots = this.game.snakes.filter(s => s.id !== 'player');
         const bot = bots.sort((a, b) => b.totalEaten - a.totalEaten)[0] || { kills: 0, cuts: 0, deaths: 0, length: 0, totalEaten: 0, maxLength: 0, totalDashTime: 0 };
-        
+
         const isVictory = player.totalEaten >= bot.totalEaten;
         const title = document.getElementById('game-over-title');
         title.innerText = isVictory ? 'VICTORY' : 'DEFEAT';

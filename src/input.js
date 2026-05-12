@@ -15,7 +15,7 @@ export class InputHandler {
         this.centerX = 0;
         this.centerY = 0;
         
-        this.keys = { w: false, a: false, s: false, d: false, '1': false, shift: false };
+        this.keys = { w: false, a: false, s: false, d: false, '0': false, shift: false };
         
         this.initJoystick();
         this.initDashButton();
@@ -152,10 +152,10 @@ export class InputHandler {
         window.addEventListener('keydown', (e) => {
             const key = e.key.toLowerCase();
             
-            // 技能快捷鍵 (v3.3.1: 1=加速在 updateDashState, 2=磁鐵, 3=噴墨, 4=鷹眼)
-            if (key === '2') this.game.player?.triggerMagnet();
-            if (key === '3') this.game.player?.triggerInkCloud(this.game.effects);
-            if (key === '4') this.game.player?.triggerEagleEye();
+            // 技能快捷鍵 (v3.4.1: 0=加速在 updateDashState, 1=磁鐵, 2=噴墨, 3=鷹眼)
+            if (key === '1') this.game.player?.triggerMagnet();
+            if (key === '2') this.game.player?.triggerInkCloud(this.game.effects);
+            if (key === '3') this.game.player?.triggerEagleEye();
 
             if (this.keys.hasOwnProperty(key)) {
                 this.keys[key] = true;
@@ -188,7 +188,7 @@ export class InputHandler {
     }
 
     updateDashState() {
-        const keyDash = this.keys['1'] || this.keys.shift; 
+        const keyDash = this.keys['0'] || this.keys.shift; 
         this.isDashing = this.isDashButtonPressed || keyDash;
         
         if (this.isDashing) {
