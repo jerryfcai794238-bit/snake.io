@@ -1,5 +1,5 @@
 export const CONFIG = {
-    WORLD_SIZE: 1200,
+    WORLD_SIZE: 2000,
     FPS: 60,
     SOLO_TIME: 90,
     HEAD_RADIUS: 15,

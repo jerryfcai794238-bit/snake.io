@@ -36,7 +36,7 @@ export class Game {
                 this.terrains.push({ type: 'river', x: rx + i * 120, y: ry + Math.sin(i * 0.5) * 100, radius: 60 + Math.random() * 20 });
             }
         }
-        const numStones = Math.floor(Math.random() * 7) + 8;
+        const numStones = Math.floor(Math.random() * 10) + 20;
         for (let i = 0; i < numStones; i++) {
             const s = { x: (Math.random() - 0.5) * size * 0.9, y: (Math.random() - 0.5) * size * 0.9, radius: 25 + Math.random() * 30 };
             const tooClose = this.stones.some(other => Math.sqrt((s.x - other.x) ** 2 + (s.y - other.y) ** 2) < (s.radius + other.radius + 80));
@@ -127,7 +127,11 @@ export class Game {
             const aiConfigs = [
                 { name: 'Bot Alpha', color: '#FF44CC' },
                 { name: 'Bot Beta', color: '#FF8800' },
-                { name: 'Bot Gamma', color: '#00CCFF' }
+                { name: 'Bot Gamma', color: '#00CCFF' },
+                { name: 'Bot Delta', color: '#FF3333' },
+                { name: 'Bot Epsilon', color: '#FFFF00' },
+                { name: 'Bot Zeta', color: '#00FF00' },
+                { name: 'Bot Eta', color: '#BC13FE' }
             ];
 
             aiConfigs.forEach((cfg, index) => {
@@ -135,7 +139,7 @@ export class Game {
                 this.snakes.push(new Snake(`ai-${index}`, cfg.name, cfg.color, aPos.x, aPos.y, true, this.calculateBestStartAngle(aPos.x, aPos.y)));
             });
         }
-        for (let i = 0; i < 238; i++) this.spawnResource();
+        for (let i = 0; i < 600; i++) this.spawnResource();
     }
 
     spawnResource() {
@@ -228,7 +232,7 @@ export class Game {
             });
         });
         this.checkCollisions();
-        if (this.food.length < 100) this.spawnResource();
+        if (this.food.length < 300) this.spawnResource();
     }
 
     triggerShockwave(sourceSnake) {
