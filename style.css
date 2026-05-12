@@ -320,10 +320,10 @@ html {
 
 #dash-btn {
     position: absolute;
-    right: 50px;
-    bottom: 50px; /* 右下角大按鈕 */
-    width: 140px;
-    height: 140px;
+    right: max(40px, env(safe-area-inset-right));
+    bottom: max(40px, env(safe-area-inset-bottom)); /* 右下角主按鈕 */
+    width: 100px;
+    height: 100px;
     background: rgba(255, 255, 255, 0.05);
     border: 3px solid var(--neon-pink);
     border-radius: 50%;
@@ -331,19 +331,19 @@ html {
     justify-content: center;
     align-items: center;
     color: #fff;
-    font-size: 52px;
+    font-size: 36px;
     z-index: 100;
     pointer-events: auto;
-    box-shadow: 0 0 30px rgba(255, 0, 234, 0.4);
+    box-shadow: 0 0 20px rgba(255, 0, 234, 0.3);
     backdrop-filter: blur(5px);
 }
 
 #magnet-btn {
     position: absolute;
-    right: 220px; /* 主按鈕左側 */
-    bottom: 60px; /* 偏下 */
-    width: 85px;
-    height: 85px;
+    right: calc(max(40px, env(safe-area-inset-right)) + 120px); 
+    bottom: max(40px, env(safe-area-inset-bottom)); /* 偏下 */
+    width: 65px;
+    height: 65px;
     background: rgba(255, 255, 255, 0.05);
     border: 2px solid var(--neon-blue);
     border-radius: 50%;
@@ -351,20 +351,20 @@ html {
     justify-content: center;
     align-items: center;
     color: #fff;
-    font-size: 38px;
+    font-size: 28px;
     z-index: 100;
     pointer-events: auto;
     backdrop-filter: blur(5px);
     overflow: hidden;
-    box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+    box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
 }
 
 #shockwave-btn {
     position: absolute;
-    right: 70px; /* 稍微內縮 */
-    bottom: 220px; /* 主按鈕上方 */
-    width: 85px;
-    height: 85px;
+    right: calc(max(40px, env(safe-area-inset-right)) + 15px); 
+    bottom: calc(max(40px, env(safe-area-inset-bottom)) + 120px); /* 主按鈕上方 */
+    width: 65px;
+    height: 65px;
     background: rgba(255, 255, 255, 0.05);
     border: 2px solid #BC13FE;
     border-radius: 50%;
@@ -372,12 +372,12 @@ html {
     justify-content: center;
     align-items: center;
     color: #fff;
-    font-size: 38px;
+    font-size: 28px;
     z-index: 100;
     pointer-events: auto;
     backdrop-filter: blur(5px);
     overflow: hidden;
-    box-shadow: 0 0 15px rgba(188, 19, 254, 0.3);
+    box-shadow: 0 0 10px rgba(188, 19, 254, 0.2);
 }
 
 #shockwave-cooldown-overlay {
