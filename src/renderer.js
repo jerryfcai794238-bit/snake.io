@@ -78,6 +78,8 @@ export class Renderer {
         this.drawLeaderMarker(state, leader);
     }
 
+
+
     drawGrid() {
         const ctx = this.ctx;
         ctx.strokeStyle = 'rgba(255,255,255,0.05)';
@@ -447,25 +449,25 @@ export class Renderer {
         ctx.save();
         ctx.translate(edgeX, edgeY);
 
-        // 霓虹發光背景 (v3.6.2: 放大 50%)
-        ctx.shadowBlur = 25;
+        // 霓虹發光背景 (v3.6.6: 縮小 50%)
+        ctx.shadowBlur = 15;
         ctx.shadowColor = leader.isDead ? '#FF0000' : '#FFD700';
         ctx.fillStyle = '#FFFFFF'; 
         ctx.beginPath();
-        ctx.arc(0, 0, 33, 0, Math.PI * 2); // 22 -> 33
+        ctx.arc(0, 0, 17, 0, Math.PI * 2); // 33 -> 17
         ctx.fill();
 
-        // 皇冠或骷髏圖標 (v3.6.2: 放大 50%)
-        ctx.font = '36px Arial'; // 24 -> 36
+        // 皇冠或骷髏圖標 (v3.6.6: 縮小 50%)
+        ctx.font = '18px Arial'; // 36 -> 18
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(leader.isDead ? '💀' : '👑', 0, -3);
+        ctx.fillText(leader.isDead ? '💀' : '👑', 0, -2);
 
-        // 距離顯示 (v3.6.2: 放大 50%)
+        // 距離顯示 (v3.6.6: 縮小 50%)
         const dist = Math.floor(Math.sqrt((targetX - player.head.x)**2 + (targetY - player.head.y)**2));
-        ctx.font = 'bold 18px Arial'; // 12 -> 18
+        ctx.font = 'bold 10px Arial'; // 18 -> 10
         ctx.fillStyle = leader.isDead ? '#FF0000' : '#D4AF37'; 
-        ctx.fillText(`${dist}m`, 0, 32); // 下移
+        ctx.fillText(`${dist}m`, 0, 16); // 上移
 
         ctx.restore();
     }
