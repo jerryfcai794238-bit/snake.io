@@ -40,6 +40,11 @@ export class Snake {
         this.deathPos = null; // 紀錄死亡座標 (v3.6.1)
         this.stamina = CONFIG.STAMINA_MAX;
         this.isOverloaded = false;
+
+        // 隨機道具狀態 (v4.0)
+        this.lucky7Time = 0;
+        this.titanTime = 0;
+        this.ghostTime = 0;
     }
 
     update(targetAngle, wantsToDash, dt, worldContext) {
@@ -60,6 +65,11 @@ export class Snake {
         if (this.inkCooldown > 0) this.inkCooldown -= dt;
         if (this.slowTimer > 0) this.slowTimer -= dt;
         if (this.hitTimer > 0) this.hitTimer -= dt;
+
+        // 道具計時器 (v4.0)
+        if (this.lucky7Time > 0) this.lucky7Time -= dt;
+        if (this.titanTime > 0) this.titanTime -= dt;
+        if (this.ghostTime > 0) this.ghostTime -= dt;
 
         if (this.isDead) {
             // 鎖定死亡座標 (v3.6.1)
@@ -117,14 +127,31 @@ export class Snake {
             }
         }
 
-        const speedMod = worldContext.speedMod || 1.0;
-        const currentSpeed = this.speed * speedMod;
+        // 巨大化屬性修正 (v4.0)
+        let titanSpeedMod = 1.0;
+        let titanSizeMod = 1.0;
+        if (this.titanTime > 0) {
+            titanSpeedMod = CONFIG.ITEM_TYPES.MUSHROOM.speedMod;
+            titanSizeMod = CONFIG.ITEM_TYPES.MUSHROOM.sizeMod;
+        }
+
+        const worldSpeedMod = worldContext.speedMod || 1.0;
+        const currentSpeed = this.speed * worldSpeedMod * titanSpeedMod;
         this.head.x += Math.cos(this.angle) * currentSpeed;
         this.head.y += Math.sin(this.angle) * currentSpeed;
 
+        this.radius = CONFIG.HEAD_RADIUS * titanSizeMod;
+
         this.points.unshift({ x: this.head.x, y: this.head.y });
-        if (this.length < this.targetLength) this.length += 1.0;
-        if (this.length > this.targetLength) this.length -= 0.5;
+        
+        // 動態成長速度 (v4.0)：差距越大成長越快，增強沙漏回饋感
+        const diff = this.targetLength - this.length;
+        if (diff > 0) {
+            const growthRate = diff > 100 ? 5.0 : 1.0;
+            this.length += Math.min(diff, growthRate);
+        } else if (diff < 0) {
+            this.length -= 0.5;
+        }
         this.maxLength = Math.max(this.maxLength, this.length);
         this.sessionMax = Math.max(this.sessionMax, this.length);
 

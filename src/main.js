@@ -63,6 +63,7 @@ class Main {
             player: this.game.player,
             snakes: this.game.snakes,
             food: this.game.food,
+            items: this.game.items, // 新增隨機道具 (v4.0)
             stones: this.game.stones,
             terrains: this.game.terrains,
             effects: this.game.effects,

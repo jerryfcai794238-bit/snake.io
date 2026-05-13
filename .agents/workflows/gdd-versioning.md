@@ -1,51 +1,38 @@
 ---
-description: 規範重大更新時的 GDD 歸檔、進版與 Old GDD 搬移流程。
+description: 規範重大更新時的實作計畫同步、GDD 進版與規格保全流程。
 ---
 
 # Workflow: GDD Versioning (GDD 版本管理)
 
-## 版本號規則（Semantic Versioning）
+## 核心規則
+- **不再使用 NEON 開頭的檔案命名方式**。
+- **根目錄僅保留一個最新的 `GDD_v{版本號}.md`**（Single Source of Truth）。
+- **禁止規格簡化**：更新 GDD 時，必須確保舊有的機制（如核心碰撞、UI 參數、特殊邏輯）被完整保留或在正確對應處更新，不得因新增功能而導致舊規格丟失。
 
-| 類型 | 範例 | 觸發情境 |
-|------|------|---------|
-| **PATCH** `x.x.+1` | `v1.3.0 → v1.3.1` | Bug fix、文字修正、數值微調 |
-| **MINOR** `x.+1.0` | `v1.3.0 → v1.4.0` | 新功能、新機制、新模式 |
-| **MAJOR** `+1.0.0` | `v1.3.0 → v2.0.0` | 核心玩法大改、系統重構 |
+## 執行流程
 
-*純字詞修正不需執行此流程。*
+### 1. 計畫與執行 (Planning & Execution)
+- 在開發任何 MAJOR 或 MINOR 功能前，必須先建立並通過 `implementation_plan.md`。
+- 確保代碼實作與計畫內容完全吻合。
 
-## 觸發條件
-- MINOR 或 MAJOR 等級的 GDD 內容更新
+### 2. GDD 更新與進版 (Update & Versioning)
+- **同步實作規則**：實作完成後，將 `implementation_plan.md` 中的功能細節完整同步至 GDD。
+- **進版動作**：
+  - 將根目錄原本的 `GDD_v{舊版號}.md` **重新命名**為 `GDD_v{新版號}.md`。
+  - 修改文件內部的標題版本號與日期。
+  - 更新文件頂部的 `Changelog` 摘要。
 
-## 執行動作
+### 3. 檔案搬移與清理 (Cleanup)
+- 將「前一個版本」的 GDD 文件（如有備份留在根目錄）搬移至 `Old GDD/` 目錄中封存。
+- 更新根目錄的 `Changelog.md`（統一彙整所有版本的變更紀錄）。
 
-1. **備份當前版本**：
-   - 將根目錄的 `NeonSnake_GDD.md` 複製至 `Old GDD/` 並重新命名為 `GDD_v{舊版號}.md`
-
-2. **進版與更新**：
-   - 更新根目錄 `NeonSnake_GDD.md` 頂部標題的版號
-   - 在文件頂部（或末尾）加入變更摘要區塊：
-     ```
-     ## Changelog - v{新版號} ({日期})
-     - 新增：...
-     - 修改：...
-     - 移除：...
-     ```
-
-3. **同步 Changelog**：
-   - 在 `NeonSnake_Changelog.md` 頂部新增版本條目，與 GDD 摘要一致
-
-4. **清理根目錄**：
-   - 根目錄**只保留** `NeonSnake_GDD.md`（現行活躍版）
-   - 舊版的 `GDD_v*.md` 若留在根目錄則搬移至 `Old GDD/`
-
-## 目錄結構規範
+## 目錄結構規範範例
 
 ```
-snake-battle/
-├── NeonSnake_GDD.md          ← 唯一活躍 GDD（source of truth）
-├── NeonSnake_Changelog.md
-└── Old GDD/
-    ├── GDD_v1.2.7.md
-    └── GDD_v1.3.0.md
+snake.io/
+├── GDD_v4.0.0.md             ← 當前活躍 GDD
+├── Changelog.md              ← 歷史變更彙整
+└── Old GDD/                  ← 歷史版本歸檔區
+    ├── GDD_v3.6.5.md
+    └── GDD_v3.6.6.md
 ```
