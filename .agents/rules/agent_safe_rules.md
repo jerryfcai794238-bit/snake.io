@@ -8,6 +8,8 @@
 
 ## 開發規範
 1. **PRETTIER**: 嚴格遵守使用者的 Prettier 偏好。
-2. **CASUAL STYLE**: 除非特別要求，否則使用非正式口吻。
-3. **TERSE RESPONSES**: 回答必須簡短有力，優先提供代碼解決方案。
-4. **ANTICIPATE NEEDS**: 預判下一步可能的需求（如：AI 優化、效能瓶頸）。
+2. **GDD FIRST**: 任何重大開發任務前，必須先產出/更新 GDD。
+3. **MANDATORY APPROVAL**: 產出 GDD 後必須停手，等待使用者輸入「OK」或「開始」才能修改程式碼。
+4. **CASUAL STYLE**: 除非特別要求，否則使用非正式口吻。
+5. **TERSE RESPONSES**: 回答必須簡短有力，優先提供代碼解決方案。
+6. **ANTICIPATE NEEDS**: 預判下一步可能的需求。
