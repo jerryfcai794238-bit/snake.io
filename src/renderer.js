@@ -32,7 +32,6 @@ export class Renderer {
 
         let targetZoom = this.camera.baseZoom;
         if (player.eagleEyeTime > 0) targetZoom *= 0.75;
-        if (player.titanTime > 0) targetZoom *= 0.85; // 巨大化時視野稍微拉遠
 
         if (!this.camera.currentZoom) this.camera.currentZoom = targetZoom;
         this.camera.currentZoom += (targetZoom - this.camera.currentZoom) * 0.04;
@@ -78,7 +77,7 @@ export class Renderer {
         }
 
         // 2. 分層視覺引導 (v4.1.0 隱形呼吸特效)
-        const pulse = 0.04 + Math.sin(Date.now() / 1000) * 0.02; // 慢速呼吸
+        const pulse = 0.04 + Math.sin(Date.now() / 1000) * 0.02; // 6.3s 慢速呼吸
         
         ctx.save();
         // 核心地帶中心光暈 (呼吸效果)
@@ -86,6 +85,8 @@ export class Renderer {
         grad.addColorStop(0, `rgba(255, 215, 0, ${pulse})`);
         grad.addColorStop(1, 'rgba(255, 215, 0, 0)');
         ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(0, 0, 400, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
 
@@ -238,21 +239,30 @@ export class Renderer {
         }
 
         // 巨大化光暈 (v4.0)
+        // 巨大化光暈 (v4.2.1 優化：僅繪製前半段路徑減少繪圖開銷)
         if (snake.titanTime > 0) {
             const isFlashing = snake.titanTime < 3 && Math.floor(Date.now() / 200) % 2 === 0;
             if (!isFlashing) {
-                ctx.strokeStyle = 'rgba(255, 100, 0, 0.4)';
+                ctx.strokeStyle = 'rgba(255, 100, 0, 0.25)';
                 ctx.lineWidth = snake.radius * 2.8;
                 ctx.beginPath();
+                const limit = Math.min(snake.points.length, 50); // 巨大化光暈僅覆蓋前半段
                 ctx.moveTo(snake.points[0].x, snake.points[0].y);
-                for (let i = 1; i < snake.points.length; i++) ctx.lineTo(snake.points[i].x, snake.points[i].y);
+                for (let i = 1; i < limit; i++) ctx.lineTo(snake.points[i].x, snake.points[i].y);
                 ctx.stroke();
             }
         }
 
         ctx.lineCap = 'round'; ctx.lineJoin = 'round';
         ctx.lineWidth = snake.radius * 2; ctx.strokeStyle = displayColor;
-        if (snake.isDashing) { ctx.shadowBlur = 30; ctx.shadowColor = displayColor; ctx.lineWidth *= 1.15; }
+        if (snake.isDashing) { 
+            // 效能優化：僅對玩家或短蛇使用高品質發光 (v4.2.1)
+            if (snake.id === 'player' || snake.points.length < 100) {
+                ctx.shadowBlur = 15; 
+                ctx.shadowColor = displayColor; 
+            }
+            ctx.lineWidth *= 1.15; 
+        }
 
         ctx.beginPath();
         ctx.moveTo(snake.points[0].x, snake.points[0].y);

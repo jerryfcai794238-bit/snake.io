@@ -283,7 +283,7 @@ export class Game {
                 // 演出級吸力 (磁力漩渦道具效果)
                 if (f.vortexTarget === snake) {
                     const dist = Math.sqrt(distSq);
-                    if (dist < 10) {
+                    if (dist < 15) {
                         // 吃到食物
                         const multiplier = (snake.lucky7Time > 0) ? CONFIG.ITEM_TYPES.LUCKY7.multiplier : 1;
                         const val = f.value * multiplier;
@@ -291,10 +291,14 @@ export class Game {
                         snake.totalEaten += val;
                         this.food.splice(i, 1);
                     } else {
-                        // 快速飛向蛇頭
-                        const speed = 25; 
-                        f.x += (dx / dist) * speed;
-                        f.y += (dy / dist) * speed;
+                        // 磁力吸附：調低吸速，增加彈性吸附感 (v4.2.2)
+                        const baseSpeed = 10;
+                        const acceleration = (1 - dist / 400) * 25; 
+                        const currentSpeed = (baseSpeed + acceleration) * dt * 60;
+                        const moveX = (dx / dist) * Math.min(dist, currentSpeed);
+                        const moveY = (dy / dist) * Math.min(dist, currentSpeed);
+                        f.x += moveX;
+                        f.y += moveY;
                     }
                     return;
                 }
