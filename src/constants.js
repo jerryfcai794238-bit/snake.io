@@ -1,7 +1,7 @@
 export const CONFIG = {
     WORLD_SIZE: 2000,
     FPS: 60,
-    SOLO_TIME: 90,
+    SOLO_TIME: 150, // 延長至 150s (v3.5.9)
     HEAD_RADIUS: 15,
 
     // Snake Stats (GDD v2.2.0)

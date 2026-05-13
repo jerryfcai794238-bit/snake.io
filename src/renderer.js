@@ -16,13 +16,20 @@ export class Renderer {
         this.canvas.height = rect.height * dpr;
         this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-        // 動態計算縮放比例 (v3.1.4)：大幅拉近，手機約 0.85，PC 約 1.2
-        this.camera.baseZoom = Math.max(0.85, Math.min(1.3, rect.width / 1000));
+        // 動態計算縮放比例 (v3.5.9)：初始視距稍微拉遠，預設從 0.85 調降為 0.75
+        this.camera.baseZoom = Math.max(0.75, Math.min(1.2, rect.width / 1100));
     }
 
     render(state) {
         const { player, snakes, food, stones, terrains, effects } = state;
         const ctx = this.ctx;
+
+        // 全局王者判定 (v3.6.5): snakes 陣列已包含 player，直接排序
+        // 必須使用 totalEaten 進行排序，以與排行榜 (Main.js) 邏輯一致
+        const sortedSnakes = [...snakes].sort((a, b) => b.totalEaten - a.totalEaten);
+        const leader = sortedSnakes[0];
+        const isPlayerLeader = leader && leader.id === player.id;
+        effects.isPlayerLeader = isPlayerLeader;
 
         this.camera.x = player.head.x;
         this.camera.y = player.head.y;
@@ -54,7 +61,11 @@ export class Renderer {
         this.drawResources(food);
         this.drawEffects(effects);
 
-        snakes.forEach(s => this.drawSnake(s, effects));
+        // 遍歷所有蛇進行渲染，並標記王者狀態 (v3.6.5)
+        snakes.forEach(s => {
+            s.isLeader = leader && s.id === leader.id;
+            this.drawSnake(s, effects);
+        });
 
         ctx.restore();
 
@@ -62,6 +73,9 @@ export class Renderer {
         if (player.inkTime > 0) {
             this.drawInkOverlay(player.inkTime);
         }
+
+        // 第一名方位指引 (v3.5.9)
+        this.drawLeaderMarker(state, leader);
     }
 
     drawGrid() {
@@ -220,6 +234,30 @@ export class Renderer {
 
         if (snake.id === 'player') {
             this.drawHeadHUD(snake);
+            
+            // 如果玩家是第一名，戴上皇冠 (v3.6.2)
+            if (effects && effects.isPlayerLeader) {
+                ctx.save();
+                ctx.font = '36px Arial'; // 略微放大
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = '#FFD700';
+                ctx.fillText('👑', snake.head.x, snake.head.y - snake.radius - 15);
+                ctx.restore();
+            }
+        } else {
+            // AI 如果是第一名，也要戴皇冠 (v3.6.5)
+            if (snake.isLeader) {
+                ctx.save();
+                ctx.font = '30px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = '#FFD700';
+                ctx.fillText('👑', snake.head.x, snake.head.y - snake.radius - 15); // AI 高度對齊
+                ctx.restore();
+            }
         }
 
         // Overload Smoke Effect (v3.2.0)
@@ -372,6 +410,63 @@ export class Renderer {
 
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, w, h);
+        ctx.restore();    }
+
+    drawLeaderMarker(state, leader) {
+        const { player } = state;
+        
+        // 如果第一名是玩家自己，或者場上沒有其他蛇，就不顯示 (v3.6.3 強化判定)
+        if (!leader || leader.id === player.id || (leader.isDead && !leader.deathPos)) return;
+
+        const ctx = this.ctx;
+        const dpr = window.devicePixelRatio || 1;
+        const w = this.canvas.width / dpr;
+        const h = this.canvas.height / dpr;
+
+        // 目標位置：存活則跟隨頭部，死亡則指向屍體 (v3.6.1)
+        const targetX = leader.isDead ? (leader.deathPos?.x || leader.head.x) : leader.head.x;
+        const targetY = leader.isDead ? (leader.deathPos?.y || leader.head.y) : leader.head.y;
+
+        // 計算向量（相對於螢幕中心/玩家位置）
+        const dx = (targetX - player.head.x) * this.camera.zoom;
+        const dy = (targetY - player.head.y) * this.camera.zoom;
+        
+        // 判斷是否在螢幕外
+        const margin = 40;
+        const halfW = w / 2 - margin;
+        const halfH = h / 2 - margin;
+
+        if (Math.abs(dx) < halfW && Math.abs(dy) < halfH) return;
+
+        // 計算與螢幕邊緣的交點 (Ray-Box Intersection)
+        const scale = Math.min(halfW / Math.abs(dx), halfH / Math.abs(dy));
+        const edgeX = w / 2 + dx * scale;
+        const edgeY = h / 2 + dy * scale;
+
+        // 渲染標記
+        ctx.save();
+        ctx.translate(edgeX, edgeY);
+
+        // 霓虹發光背景 (v3.6.2: 放大 50%)
+        ctx.shadowBlur = 25;
+        ctx.shadowColor = leader.isDead ? '#FF0000' : '#FFD700';
+        ctx.fillStyle = '#FFFFFF'; 
+        ctx.beginPath();
+        ctx.arc(0, 0, 33, 0, Math.PI * 2); // 22 -> 33
+        ctx.fill();
+
+        // 皇冠或骷髏圖標 (v3.6.2: 放大 50%)
+        ctx.font = '36px Arial'; // 24 -> 36
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(leader.isDead ? '💀' : '👑', 0, -3);
+
+        // 距離顯示 (v3.6.2: 放大 50%)
+        const dist = Math.floor(Math.sqrt((targetX - player.head.x)**2 + (targetY - player.head.y)**2));
+        ctx.font = 'bold 18px Arial'; // 12 -> 18
+        ctx.fillStyle = leader.isDead ? '#FF0000' : '#D4AF37'; 
+        ctx.fillText(`${dist}m`, 0, 32); // 下移
+
         ctx.restore();
     }
 }

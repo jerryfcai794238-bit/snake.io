@@ -37,6 +37,7 @@ export class Snake {
 
         this.slowTimer = 0; // 減速時間
         this.hitTimer = 0; // 受傷閃爍時間
+        this.deathPos = null; // 紀錄死亡座標 (v3.6.1)
         this.stamina = CONFIG.STAMINA_MAX;
         this.isOverloaded = false;
     }
@@ -60,7 +61,14 @@ export class Snake {
         if (this.slowTimer > 0) this.slowTimer -= dt;
         if (this.hitTimer > 0) this.hitTimer -= dt;
 
-        if (this.isDead) return;
+        if (this.isDead) {
+            // 鎖定死亡座標 (v3.6.1)
+            if (!this.deathPos) this.deathPos = { x: this.head.x, y: this.head.y };
+            return;
+        }
+        
+        // 存活時清除死亡座標
+        this.deathPos = null;
 
         if (this.isAI) {
             this.updateAI(worldContext);
