@@ -220,6 +220,28 @@ export class Snake {
         while (diff > Math.PI) diff -= Math.PI * 2;
         this.angle += diff * 0.2;
         this.isDashing = shouldDash && this.length > CONFIG.INITIAL_LENGTH + 50;
+
+        // --- 主動技能觸發邏輯 (v4.3.0) ---
+        if (!this.isDead) {
+            // 1. 戰術磁鐵：如果視野內有大量食物且未開啟
+            const visibleFoodCount = world.food.filter(f => (f.x - head.x)**2 + (f.y - head.y)**2 < 200**2).length;
+            if (visibleFoodCount > 8) this.triggerMagnet();
+
+            // 2. 噴墨煙霧：如果後方近距離有敵人蛇頭
+            const enemyBehind = world.snakes.some(s => {
+                if (s === this || s.isDead) return false;
+                const dx = s.head.x - head.x;
+                const dy = s.head.y - head.y;
+                const distSq = dx * dx + dy * dy;
+                // 判斷是否在後方 (向量點積)
+                const dot = dx * Math.cos(this.angle) + dy * Math.sin(this.angle);
+                return distSq < 150**2 && dot < 0; 
+            });
+            if (enemyBehind) this.triggerInkCloud(world.effects || []);
+
+            // 3. 鷹眼：如果視野內完全沒食物 (進入搜尋模式)
+            if (visibleFoodCount === 0 && Math.random() < 0.01) this.triggerEagleEye();
+        }
     }
     triggerMagnet() {
         if (this.magnetCooldown <= 0) {

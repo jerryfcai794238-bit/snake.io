@@ -151,7 +151,7 @@ export class Game {
                 this.snakes.push(new Snake(`ai-${index}`, cfg.name, cfg.color, aPos.x, aPos.y, true, this.calculateBestStartAngle(aPos.x, aPos.y)));
             });
         }
-        for (let i = 0; i < 1000; i++) this.spawnResource();
+        for (let i = 0; i < 800; i++) this.spawnResource();
     }
 
     spawnResource() {
@@ -270,28 +270,31 @@ export class Game {
             }
         }
 
-        // 食物吸力邏輯 (磁力漩渦演出與基礎吸力)
+        // 食物吸力邏輯 (效能優化：預先過濾過遠的食物 v4.3.0)
         for (let i = this.food.length - 1; i >= 0; i--) {
             const f = this.food[i];
-            this.snakes.forEach(snake => {
-                if (snake.isDead) return;
+            
+            // 找出最靠近的蛇 (只計算頭部周遭 400px 內的蛇)
+            for (const snake of this.snakes) {
+                if (snake.isDead) continue;
                 
                 const dx = snake.head.x - f.x;
                 const dy = snake.head.y - f.y;
+                // 快速粗略過濾
+                if (Math.abs(dx) > 400 || Math.abs(dy) > 400) continue;
+                
                 const distSq = dx * dx + dy * dy;
                 
                 // 演出級吸力 (磁力漩渦道具效果)
                 if (f.vortexTarget === snake) {
                     const dist = Math.sqrt(distSq);
                     if (dist < 15) {
-                        // 吃到食物
                         const multiplier = (snake.lucky7Time > 0) ? CONFIG.ITEM_TYPES.LUCKY7.multiplier : 1;
                         const val = f.value * multiplier;
                         snake.targetLength += val;
                         snake.totalEaten += val;
                         this.food.splice(i, 1);
                     } else {
-                        // 磁力吸附：調低吸速，增加彈性吸附感 (v4.2.2)
                         const baseSpeed = 10;
                         const acceleration = (1 - dist / 400) * 25; 
                         const currentSpeed = (baseSpeed + acceleration) * dt * 60;
@@ -300,10 +303,10 @@ export class Game {
                         f.x += moveX;
                         f.y += moveY;
                     }
-                    return;
+                    break; // 已經被吸住了，不需檢查下一條蛇
                 }
 
-                // 基礎吸力 (技能或被動)
+                // 基礎吸力
                 const isMagnetActive = snake.magnetTime > 0;
                 const suctionRadius = isMagnetActive ? 120 : 45;
                 const suctionSpeed = isMagnetActive ? 18 : 12;
@@ -314,7 +317,7 @@ export class Game {
                         f.y += (dy / dist) * suctionSpeed;
                     }
                 }
-            });
+            }
         }
 
         this.snakes.forEach(snake => {
@@ -325,6 +328,7 @@ export class Game {
             snake.update(targetAngle, wantsDash, dt, {
                 snakes: this.snakes, stones: this.stones, food: this.food,
                 terrain: currentTerrain, speedMod: speedMod,
+                effects: this.effects, // 補上特效陣列 (v4.3.1)
                 onDropFood: (s, v) => this.dropTailFood(s, v)
             });
         });
@@ -342,7 +346,7 @@ export class Game {
 
         this.checkCollisions();
         this.checkItemCollisions();
-        if (this.food.length < 500) this.spawnResource();
+        if (this.food.length < 400) this.spawnResource();
     }
 
     getSafeTieredSpawnPoint(ring, nearX = null, nearY = null) {
