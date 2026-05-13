@@ -5,18 +5,24 @@ description: 規範重大更新時的實作計畫同步、GDD 進版與規格保
 # Workflow: GDD Versioning (GDD 版本管理)
 
 ## 核心規則
+- **遵循 [GDD 規格保全協議](file:///c:/Users/fanchunkao/Documents/Antigravity/snake.io/.agents/rules/gdd_persistence_policy.md)**：更新時必須確保舊有機制完整繼承。
 - **不再使用 NEON 開頭的檔案命名方式**。
 - **根目錄僅保留一個最新的 `GDD_v{版本號}.md`**（Single Source of Truth）。
-- **禁止規格簡化**：更新 GDD 時，必須確保舊有的機制（如核心碰撞、UI 參數、特殊邏輯）被完整保留或在正確對應處更新，不得因新增功能而導致舊規格丟失。
+- **禁止規格簡化**：嚴禁將具體的數值表格、按鍵綁定或 UI 參數替換為模糊的文字描述。
 
 ## 執行流程
 
-### 1. 計畫與執行 (Planning & Execution)
+### 1. 深度讀取與比對 (Pre-check & Audit)
+- **讀取全檔**：必須完整讀取 `GDD_v{舊版號}.md`。
+- **提取清單**：提取所有表格與核心數值參數作為「必須保留清單」。
+
+### 2. 計畫與執行 (Planning & Execution)
 - 在開發任何 MAJOR 或 MINOR 功能前，必須先建立並通過 `implementation_plan.md`。
 - 確保代碼實作與計畫內容完全吻合。
 
-### 2. GDD 更新與進版 (Update & Versioning)
+### 3. GDD 更新與進版 (Update & Versioning)
 - **同步實作規則**：實作完成後，將 `implementation_plan.md` 中的功能細節完整同步至 GDD。
+- **繼承舊規格**：將「必須保留清單」中的內容完整搬移至新版本對應章節。
 - **進版動作**：
   - 將根目錄原本的 `GDD_v{舊版號}.md` **重新命名**為 `GDD_v{新版號}.md`。
   - 修改文件內部的標題版本號與日期。

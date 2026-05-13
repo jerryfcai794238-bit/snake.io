@@ -18,19 +18,38 @@ export class Game {
         this.bestScore = localStorage.getItem('snake_best') || 0;
         this.respawnQueue = [];
         this.itemSpawnTimer = 0;
+        this.itemQuotas = {
+            'LUCKY7': { max: 1, cd: 45, ring: 'CORE' },
+            'MUSHROOM': { max: 2, cd: 25, ring: 'MID' },
+            'CLOAK': { max: 2, cd: 25, ring: 'MID' },
+            'VORTEX': { max: 2, cd: 20, ring: 'MID' },
+            'HOURGLASS': { max: 2, cd: 20, ring: 'OUTER' },
+            'SODA': { max: 3, cd: 15, ring: 'OUTER' }
+        };
+        this.itemRespawnQueue = []; // { type, time }
+        this.heatSpots = []; // { x, y, time, radius }
     }
 
     init() {
         this.snakes = [];
         this.food = [];
         this.items = [];
+        this.itemRespawnQueue = [];
         this.stones = [];
         this.terrains = [];
         this.effects = [];
         this.respawnQueue = [];
         this.timer = CONFIG.SOLO_TIME;
         this.isGameOver = false;
-        this.itemSpawnTimer = 0;
+        
+        // 初始道具投放
+        Object.keys(this.itemQuotas).forEach(type => {
+            const q = this.itemQuotas[type];
+            for (let i = 0; i < q.max; i++) {
+                const p = this.getSafeTieredSpawnPoint(q.ring);
+                if (p) this.spawnItem(type, p.x, p.y);
+            }
+        });
         
         const size = CONFIG.WORLD_SIZE;
         const numRivers = 2;
@@ -189,12 +208,62 @@ export class Game {
             }
         }
 
-        // 更新隨機道具計時與生成 (v4.0)
-        this.itemSpawnTimer -= dt * 1000;
-        if (this.itemSpawnTimer <= 0) {
-            this.analyzeAndSpawnItems();
-            this.itemSpawnTimer = CONFIG.ITEM_SPAWN_INTERVAL;
+        // 更新熱點計時 (v4.1.0)
+        for (let i = this.heatSpots.length - 1; i >= 0; i--) {
+            this.heatSpots[i].time -= dt;
+            if (this.heatSpots[i].time <= 0) this.heatSpots.splice(i, 1);
         }
+
+        // 更新隨機道具重生隊列 (Adaptive 模式 v4.1.0)
+        for (let i = this.itemRespawnQueue.length - 1; i >= 0; i--) {
+            const task = this.itemRespawnQueue[i];
+            task.time -= dt;
+            if (task.time <= 0) {
+                const q = this.itemQuotas[task.type];
+                let spawnPos = null;
+
+                // 行為導引：弱者導引與強者推送 (v4.1.0)
+                if (this.player && !this.player.isDead) {
+                    const isWeak = this.player.length < CONFIG.INITIAL_LENGTH * 0.8;
+                    const isStrong = this.player.length > 300; // 暫定強者門檻
+
+                    if (isWeak && task.type === 'SODA') {
+                        // 弱者：引導向外圍
+                        const angle = this.player.angle + (Math.random()-0.5);
+                        const dist = 400;
+                        const tx = this.player.head.x + Math.cos(angle) * dist;
+                        const ty = this.player.head.y + Math.sin(angle) * dist;
+                        // 確保目標點比當前更靠近外圍
+                        if (tx*tx + ty*ty > this.player.head.x**2 + this.player.head.y**2) {
+                            spawnPos = this.getSafeTieredSpawnPoint('OUTER', tx, ty);
+                        }
+                    } else if (isStrong && (Math.abs(this.player.head.x) > 400 || Math.abs(this.player.head.y) > 400)) {
+                        // 強者在非核心區：不再其身邊生成，強制向 CORE 偏移
+                        if (task.type === 'LUCKY7' || task.type === 'MUSHROOM') {
+                            spawnPos = this.getSafeTieredSpawnPoint('CORE');
+                        }
+                    }
+                }
+
+                // 熱點聯動：高價值道具優先向熱點偏移 (若行為導引未攔截)
+                if (!spawnPos && (task.type === 'LUCKY7' || task.type === 'MUSHROOM') && this.heatSpots.length > 0) {
+                    const spot = this.heatSpots[Math.floor(Math.random() * this.heatSpots.length)];
+                    if (Math.random() < 0.7) { // 70% 機率偏移
+                        spawnPos = this.getSafeTieredSpawnPoint(q.ring, spot.x, spot.y);
+                    }
+                }
+
+                if (!spawnPos) spawnPos = this.getSafeTieredSpawnPoint(q.ring);
+
+                if (spawnPos) {
+                    this.spawnItem(task.type, spawnPos.x, spawnPos.y);
+                    this.itemRespawnQueue.splice(i, 1);
+                } else {
+                    task.time = 1.0; 
+                }
+            }
+        }
+
         for (let i = this.items.length - 1; i >= 0; i--) {
             if (this.items[i].teaserTime > 0) {
                 this.items[i].teaserTime -= dt;
@@ -272,81 +341,48 @@ export class Game {
         if (this.food.length < 500) this.spawnResource();
     }
 
-    getSafeItemSpawnPoint(nearX = null, nearY = null) {
+    getSafeTieredSpawnPoint(ring, nearX = null, nearY = null) {
         const size = CONFIG.WORLD_SIZE;
-        const margin = 100;
-        let x, y, attempts = 0;
+        let minR = 0, maxR = size / 2;
+        if (ring === 'CORE') { minR = 0; maxR = 400; }
+        else if (ring === 'MID') { minR = 400; maxR = 900; }
+        else if (ring === 'OUTER') { minR = 900; maxR = 1100; }
+
+        let attempts = 0;
         while (attempts < 50) {
-            if (nearX !== null && nearY !== null) {
+            let x, y;
+            if (nearX !== null && nearY !== null && Math.random() < 0.8) {
+                // 嘗試在參考點附近生成
                 const angle = Math.random() * Math.PI * 2;
-                const dist = 300 + Math.random() * 400;
-                x = nearX + Math.cos(angle) * dist;
-                y = nearY + Math.sin(angle) * dist;
+                const r = Math.random() * 300;
+                x = nearX + Math.cos(angle) * r;
+                y = nearY + Math.sin(angle) * r;
             } else {
-                x = (Math.random() - 0.5) * (size - margin * 2);
-                y = (Math.random() - 0.5) * (size - margin * 2);
+                const angle = Math.random() * Math.PI * 2;
+                const r = minR + Math.random() * (maxR - minR);
+                x = Math.cos(angle) * r;
+                y = Math.sin(angle) * r;
             }
-            
+
             // 邊界檢查
             if (Math.abs(x) > size / 2 - 60 || Math.abs(y) > size / 2 - 60) { attempts++; continue; }
             
             // 石頭檢查
-            const inStone = this.stones.some(s => Math.sqrt((x - s.x)**2 + (y - s.y)**2) < s.radius + 40);
-            if (!inStone) return { x, y };
-            attempts++;
+            const inStone = this.stones.some(s => Math.sqrt((x - s.x)**2 + (y - s.y)**2) < s.radius + 50);
+            if (inStone) { attempts++; continue; }
+
+            // 與同類道具間距檢查
+            const tooClose = this.items.some(it => Math.sqrt((x - it.x)**2 + (y - it.y)**2) < 300);
+            if (tooClose) { attempts++; continue; }
+
+            return { x, y };
         }
         return null;
     }
 
     analyzeAndSpawnItems() {
-        if (this.items.length >= CONFIG.ITEM_MAX_COUNT) return;
-
-        // 救濟機制：血量危急時在前方生沙漏
-        if (this.player && !this.player.isDead && this.player.length < CONFIG.INITIAL_LENGTH * 0.8) {
-            const hasH = this.items.some(it => it.id === 'HOURGLASS');
-            if (!hasH) {
-                const p = this.getSafeItemSpawnPoint(this.player.head.x, this.player.head.y);
-                if (p) this.spawnItem('HOURGLASS', p.x, p.y);
-            }
-        }
-
-        // 定位生成點：40% 聚焦玩家/AI 附近，60% 全域隨機
-        let spawnPos = null;
-        if (Math.random() < 0.4 && this.snakes.length > 0) {
-            const targetSnake = this.snakes[Math.floor(Math.random() * this.snakes.length)];
-            if (!targetSnake.isDead) spawnPos = this.getSafeItemSpawnPoint(targetSnake.head.x, targetSnake.head.y);
-        }
-        if (!spawnPos) spawnPos = this.getSafeItemSpawnPoint();
-        if (!spawnPos) return;
-
-        // 局部掃描判定類別
-        let snakeCount = 0, foodCount = 0;
-        this.snakes.forEach(s => { if (!s.isDead && Math.sqrt((s.head.x - spawnPos.x)**2 + (s.head.y - spawnPos.y)**2) < 400) snakeCount++; });
-        this.food.forEach(f => { if (Math.sqrt((f.x - spawnPos.x)**2 + (f.y - spawnPos.y)**2) < 200) foodCount++; });
-
-        let pool = [];
-        if (snakeCount >= 2) pool = ['LUCKY7', 'MUSHROOM', 'CLOAK']; // 提高對抗類權重
-        else if (foodCount > 10) pool = ['VORTEX', 'LUCKY7', 'CLOAK'];
-        else pool = ['SODA', 'HOURGLASS', 'VORTEX'];
-
-        // 道具特殊限制
-        const hourglasses = this.items.filter(it => it.id === 'HOURGLASS');
-        const lucky7s = this.items.filter(it => it.id === 'LUCKY7');
-        
-        const pickType = () => {
-            let type = pool[Math.floor(Math.random() * pool.length)];
-            if (type === 'HOURGLASS') {
-                if (hourglasses.length >= 2) return pool.filter(t => t !== 'HOURGLASS')[0] || 'SODA';
-                if (hourglasses.some(h => Math.sqrt((h.x - spawnPos.x)**2 + (h.y - spawnPos.y)**2) < 1000)) return 'SODA';
-            }
-            if (type === 'LUCKY7') {
-                if (lucky7s.length >= 1) return pool.filter(t => t !== 'LUCKY7')[0] || 'VORTEX';
-            }
-            return type;
-        };
-
-        const finalType = pickType();
-        this.spawnItem(finalType, spawnPos.x, spawnPos.y);
+        // MOBA 模式下不再使用 analyzeAndSpawnItems 進行全域掃描，
+        // 邏輯已移至 updateItems 的重生隊列。
     }
 
     spawnItem(type, x, y) {
@@ -382,6 +418,12 @@ export class Game {
     applyItemEffect(snake, item) {
         const type = item.id;
         const cfg = item.config;
+        
+        // 進入重生冷卻 (MOBA 模式)
+        const q = this.itemQuotas[type];
+        if (q) {
+            this.itemRespawnQueue.push({ type, time: q.cd });
+        }
         
         switch(type) {
             case 'HOURGLASS':
@@ -532,6 +574,16 @@ export class Game {
         snake.targetLength = snake.length;
         legacy.forEach((p, i) => { if (i % dropRate === 0) this.food.push({ x: p.x, y: p.y, size: 4, value: foodValuePerItem, color: snake.color }); });
         this.spark(snake.head.x, snake.head.y, snake.color);
+
+        // 截斷也會產生小型熱點 (v4.1.0)
+        if (lostLength > 100) {
+            this.heatSpots.push({
+                x: snake.head.x,
+                y: snake.head.y,
+                time: 15,
+                radius: 300
+            });
+        }
     }
 
     kill(snake, killer) {
@@ -551,6 +603,16 @@ export class Game {
         snake.points.forEach((p, i) => { if (i % dropRate === 0) this.food.push({ x: p.x, y: p.y, size: 4, value: foodValuePerItem, expires: 8.0, color: snake.color }); });
         this.spark(snake.head.x, snake.head.y, snake.color);
         this.respawnQueue.push({ snake, time: CONFIG.RESPAWN_TIME });
+
+        // 產生熱點 (v4.1.0)
+        if (originalLength > 200) {
+            this.heatSpots.push({
+                x: snake.head.x,
+                y: snake.head.y,
+                time: 30,
+                radius: 500
+            });
+        }
     }
 
     respawn(snake) {

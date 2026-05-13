@@ -65,17 +65,34 @@ export class Renderer {
 
     drawGrid() {
         const ctx = this.ctx;
+        const size = CONFIG.WORLD_SIZE;
+        
+        // 1. 基礎格線
         ctx.strokeStyle = 'rgba(255,255,255,0.05)';
         ctx.lineWidth = 1;
-        for (let x = -CONFIG.WORLD_SIZE / 2; x <= CONFIG.WORLD_SIZE / 2; x += 100) {
-            ctx.beginPath(); ctx.moveTo(x, -CONFIG.WORLD_SIZE / 2); ctx.lineTo(x, CONFIG.WORLD_SIZE / 2); ctx.stroke();
+        for (let x = -size / 2; x <= size / 2; x += 100) {
+            ctx.beginPath(); ctx.moveTo(x, -size / 2); ctx.lineTo(x, size / 2); ctx.stroke();
         }
-        for (let y = -CONFIG.WORLD_SIZE / 2; y <= CONFIG.WORLD_SIZE / 2; y += 100) {
-            ctx.beginPath(); ctx.moveTo(-CONFIG.WORLD_SIZE / 2, y); ctx.lineTo(CONFIG.WORLD_SIZE / 2, y); ctx.stroke();
+        for (let y = -size / 2; y <= size / 2; y += 100) {
+            ctx.beginPath(); ctx.moveTo(-size / 2, y); ctx.lineTo(size / 2, y); ctx.stroke();
         }
+
+        // 2. 分層視覺引導 (v4.1.0 隱形呼吸特效)
+        const pulse = 0.04 + Math.sin(Date.now() / 1000) * 0.02; // 慢速呼吸
+        
+        ctx.save();
+        // 核心地帶中心光暈 (呼吸效果)
+        const grad = ctx.createRadialGradient(0, 0, 50, 0, 0, 400);
+        grad.addColorStop(0, `rgba(255, 215, 0, ${pulse})`);
+        grad.addColorStop(1, 'rgba(255, 215, 0, 0)');
+        ctx.fillStyle = grad;
+        ctx.fill();
+        ctx.restore();
+
+        // 3. 世界邊界
         ctx.strokeStyle = CONFIG.COLORS.BOUNDARY;
         ctx.lineWidth = 15;
-        ctx.strokeRect(-CONFIG.WORLD_SIZE / 2, -CONFIG.WORLD_SIZE / 2, CONFIG.WORLD_SIZE, CONFIG.WORLD_SIZE);
+        ctx.strokeRect(-size / 2, -size / 2, size, size);
     }
 
     drawTerrains(terrains) {
@@ -112,24 +129,32 @@ export class Renderer {
         items.forEach(it => {
             const cfg = it.config;
             if (it.teaserTime > 0) {
-                // 繪製生成預告 (粒子匯聚)
+                // 繪製生成預告 (粒子匯聚) - v4.1.0 強化幸運 7 視覺
                 const progress = it.teaserTime / CONFIG.ITEM_TEASER_TIME;
+                const isLucky7 = it.id === 'LUCKY7';
+                const particleCount = isLucky7 ? 12 : 8;
+                const spread = isLucky7 ? 120 : 60;
+
                 ctx.save();
-                ctx.globalAlpha = 1 - progress;
-                ctx.strokeStyle = cfg.color;
-                ctx.setLineDash([5, 5]);
-                ctx.beginPath();
-                ctx.arc(it.x, it.y, 30 * progress, 0, Math.PI * 2);
-                ctx.stroke();
+                ctx.globalAlpha = 0.6;
                 
                 // 匯聚點粒子
-                for (let i = 0; i < 8; i++) {
-                    const angle = (Date.now() * 0.01 + i * 0.8);
-                    const r = 40 * progress;
-                    ctx.fillStyle = cfg.color;
+                for (let i = 0; i < particleCount; i++) {
+                    const angle = (Date.now() * 0.01 + i * (Math.PI * 2 / particleCount));
+                    const r = spread * progress;
+                    ctx.fillStyle = isLucky7 ? '#FFD700' : (cfg.color || '#FFF');
                     ctx.beginPath();
-                    ctx.arc(it.x + Math.cos(angle)*r, it.y + Math.sin(angle)*r, 3, 0, Math.PI * 2);
+                    ctx.arc(it.x + Math.cos(angle)*r, it.y + Math.sin(angle)*r, isLucky7 ? 4 : 2.5, 0, Math.PI * 2);
                     ctx.fill();
+                }
+
+                // 中心亮點 (幸運 7 專屬)
+                if (isLucky7) {
+                    ctx.shadowBlur = 25;
+                    ctx.shadowColor = '#FFD700';
+                    ctx.globalAlpha = (1 - progress) * 0.8;
+                    ctx.fillStyle = '#FFD700';
+                    ctx.beginPath(); ctx.arc(it.x, it.y, 10, 0, Math.PI * 2); ctx.fill();
                 }
                 ctx.restore();
             } else {
