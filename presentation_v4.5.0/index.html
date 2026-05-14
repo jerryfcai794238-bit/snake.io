@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake.io: Combat Evolved - 遊戲提案 v4.5.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FFCC00; /* Nintendo Yellow */
+            --secondary: #FF0066; /* Splatoon Pink */
+            --accent: #00E5FF; /* Cyan */
+            --bg: #FFFFFF;
+            --text: #1A1A1A;
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; line-height: 1.4; }
+
+        section { min-height: 100vh; padding: 80px 10%; display: flex; flex-direction: column; justify-content: center; position: relative; }
+
+        /* Hero */
+        #hero { padding: 80px 10%; text-align: center; background: white; border-bottom: 10px solid var(--primary); }
+        .hero-text { padding: 0; }
+        h1 { font-weight: 900; font-size: 5rem; color: var(--secondary); text-transform: uppercase; transform: rotate(-2deg); text-shadow: 4px 4px 0px var(--primary); margin-bottom: 10px; }
+
+        /* Intro Box */
+        .intro-box { background: #F0F4F8; padding: 40px; border-radius: 40px; border-left: 15px solid var(--secondary); margin-bottom: 50px; font-size: 1.4rem; }
+
+        /* 3-Card Grid */
+        .step-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-top: 40px; }
+        .step-card { background: white; padding: 35px; border-radius: 40px; box-shadow: var(--card-shadow); text-align: center; border-bottom: 10px solid var(--accent); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .step-card:hover { transform: scale(1.05) rotate(2deg); }
+        .step-card .icon { font-size: 4.5rem; margin-bottom: 20px; display: block; }
+        .step-card h4 { font-size: 1.8rem; margin-bottom: 15px; color: var(--secondary); font-weight: 900; }
+
+        /* UI Layout - Banner Size */
+        .layout-display { text-align: center; margin-top: 40px; }
+        .layout-img { width: 100%; border-radius: 30px; border: 10px solid white; box-shadow: var(--card-shadow); }
+
+        /* Tactics Table */
+        .tactics-section { background: var(--accent); color: white; border-radius: 50px; padding: 60px; margin-top: 50px; }
+        .tactics-section h2 { color: white; margin-bottom: 40px; font-size: 2.8rem; font-weight: 900; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0 15px; }
+        td { background: white; color: #333; padding: 25px; border-radius: 20px; font-size: 1.1rem; }
+        .td-name { font-weight: 900; color: var(--secondary); font-size: 1.4rem; }
+
+        /* AOS Animation */
+        [data-aos] { opacity: 0; transform: scale(0.9); transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        [data-aos].active { opacity: 1; transform: scale(1); }
+
+        footer { padding: 60px; text-align: center; font-weight: 900; color: #CCC; }
+    </style>
+</head>
+<body>
+
+    <section id="hero">
+        <div class="hero-text">
+            <h1 data-aos>Snake.io</h1>
+            <p style="font-size: 2rem; font-weight: 700; color: #666;" data-aos>截斷、奪取、制霸！</p>
+        </div>
+    </section>
+
+    <section id="intro">
+        <div class="intro-box" data-aos>
+            <p><strong>這是一場 8 條小蛇成長到大蛇的生死較量！</strong></p>
+            <p style="margin-top: 15px; opacity: 0.8; font-size: 1.2rem;">在短短 300 秒的戰局中，你將與對手在充滿隨機性的戰場上展開對決。你可以選擇猥瑣發育，也可以選擇利用加速截斷對手。這不只是比反應，更是心理與策略的極致博弈！</p>
+        </div>
+        <div class="step-grid">
+            <div class="step-card" data-aos>
+                <span class="icon">🍎</span>
+                <h4>吃食物變長</h4>
+                <p>在地圖中自由穿梭，攝取發光食物，打造你的巨蛇。</p>
+            </div>
+            <div class="step-card" data-aos style="border-bottom-color: var(--secondary);">
+                <span class="icon">🚀</span>
+                <h4>衝刺截斷</h4>
+                <p>利用<strong>青色體力</strong>進入加速模式。切開對手身體，奪取他們的養分！</p>
+            </div>
+            <div class="step-card" data-aos>
+                <span class="icon">🎁</span>
+                <h4>戰術翻盤</h4>
+                <p>利用隨機道具與三大技能，即便長度落後也能瞬間反殺。</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="ui-layout">
+        <h2 data-aos style="font-size: 3rem; font-weight: 900; color: var(--secondary);">01. 介面佈局 (UI Layout)</h2>
+        <p style="margin-bottom: 30px; font-weight: 700; color: #888;">對齊競技手遊規格的 HUD 配置</p>
+        <div class="layout-display" data-aos>
+            <div class="layout-info-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                <div class="info-tag" style="background: white; padding: 25px; border-radius: 25px; box-shadow: var(--card-shadow); border-top: 8px solid var(--primary);">
+                    <h5 style="font-size: 1.4rem; margin-bottom: 10px;">📊 戰況資訊</h5>
+                    <p>左上顯示<strong>長度/最高分</strong>；右上僅顯示<strong>前 4 名</strong>競爭者。</p>
+                </div>
+                <div class="info-tag" style="background: white; padding: 25px; border-radius: 25px; box-shadow: var(--card-shadow); border-top: 8px solid var(--accent);">
+                    <h5 style="font-size: 1.4rem; margin-bottom: 10px;">🔋 動能核心</h5>
+                    <p>底部的<strong>青色體力條</strong>。衝刺、反擊的核心能量指標。</p>
+                </div>
+                <div class="info-tag" style="background: white; padding: 25px; border-radius: 25px; box-shadow: var(--card-shadow); border-top: 8px solid var(--secondary);">
+                    <h5 style="font-size: 1.4rem; margin-bottom: 10px;">⚔️ 戰術操作</h5>
+                    <p>右下角 <strong>DASH 大鍵</strong> 與三大技能扇形佈局，支持直覺盲操。</p>
+                </div>
+                <div class="info-tag" style="background: white; padding: 25px; border-radius: 25px; box-shadow: var(--card-shadow); border-top: 8px solid #66CC00;">
+                    <h5 style="font-size: 1.4rem; margin-bottom: 10px;">⏲️ 戰局時鐘</h5>
+                    <p>正上方顯示 <strong>180s 倒數</strong>。掌握節奏，在最後時刻逆轉勝。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="stamina">
+        <h2 data-aos style="font-size: 3rem; font-weight: 900; color: var(--secondary);">02. 體力與極速衝刺 (Stamina & Dash)</h2>
+        <div class="stamina-showcase" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px;">
+            <div class="stamina-card-pro" data-aos style="background: white; padding: 40px; border-radius: 40px; box-shadow: var(--card-shadow); border: 2px solid #EEE;">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
+                    <span style="font-size: 3rem;">🔋</span>
+                    <h3 style="font-size: 2rem; color: var(--accent);">青色體力系統</h3>
+                </div>
+                <div style="width: 100%; background: #EEE; height: 15px; border-radius: 10px; margin-bottom: 20px; overflow: hidden; border: 2px solid #DDD;">
+                    <div style="width: 80%; height: 100%; background: var(--accent);"></div>
+                </div>
+                <ul style="list-style: none; font-size: 1.2rem; color: #444;">
+                    <li style="margin-bottom: 15px;">🔹 <strong>恢復速度：</strong> 8.0 pts / 秒</li>
+                    <li style="margin-bottom: 15px;">🔹 <strong>上限容量：</strong> 100 點</li>
+                    <li style="margin-bottom: 15px;">🔹 <strong>戰術價值：</strong> 管理體力就是管理「進攻機會」。滿體力狀態是你最強大的時刻。</li>
+                </ul>
+            </div>
+            <div class="stamina-card-pro" data-aos style="background: white; padding: 40px; border-radius: 40px; box-shadow: var(--card-shadow); border: 5px solid var(--secondary);">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
+                    <span style="font-size: 3rem;">🚀</span>
+                    <h3 style="font-size: 2rem; color: var(--secondary);">加速衝刺 (DASH)</h3>
+                </div>
+                <div style="width: 100%; background: #EEE; height: 15px; border-radius: 10px; margin-bottom: 20px; overflow: hidden; border: 2px solid #DDD;">
+                    <div style="width: 30%; height: 100%; background: var(--secondary);"></div>
+                </div>
+                <ul style="list-style: none; font-size: 1.2rem; color: #444;">
+                    <li style="margin-bottom: 15px;">🔸 <strong>速度加成：</strong> 1.25x 基礎移動速度</li>
+                    <li style="margin-bottom: 15px;">🔸 <strong>體力消耗：</strong> 33.3 pts / 秒 (極限 3s)</li>
+                    <li style="margin-bottom: 15px;">🔸 <strong>核心判定：</strong> 衝刺中具備 <strong>截斷判定</strong>，可切開任何未保護對手。</li>
+                    <li style="margin-bottom: 15px; background: #FFF3E0; padding: 15px; border-radius: 15px; border: 1px solid #FFCC00; font-size: 1rem;">⚠️ <strong>DASH 超載 (Overload)：</strong> 體力歸零將進入疲勞狀態，<strong>禁止加速</strong>且恢復效率減半，直到體力 <strong>完全回滿 (100 pts)</strong>。</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="skills">
+        <h2 data-aos style="font-size: 3rem; font-weight: 900; color: var(--secondary);">03. 戰術技能 (Tactical Skills)</h2>
+        <div class="skills-pro-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 40px;">
+            <div class="skill-pro-card" data-aos style="background: white; padding: 40px; border-radius: 40px; box-shadow: var(--card-shadow); border-top: 12px solid var(--accent); text-align: center;">
+                <span style="font-size: 4rem; display: block; margin-bottom: 20px;">🧲</span>
+                <h3 style="font-size: 1.8rem; color: var(--accent); margin-bottom: 10px;">戰術磁鐵</h3>
+                <p style="font-weight: 900; color: #888; margin-bottom: 20px;">冷卻：30s | 持續：8s</p>
+                <p style="font-size: 1.1rem; color: #555;">將吸附半徑從 45px 提升至 <strong>120px</strong>。適合在大規模截斷戰場後，快速收割所有養分。</p>
+            </div>
+            <div class="skill-pro-card" data-aos style="background: white; padding: 40px; border-radius: 40px; box-shadow: var(--card-shadow); border-top: 12px solid var(--secondary); text-align: center;">
+                <span style="font-size: 4rem; display: block; margin-bottom: 20px;">🦑</span>
+                <h3 style="font-size: 1.8rem; color: var(--secondary); margin-bottom: 10px;">噴墨煙霧</h3>
+                <p style="font-weight: 900; color: #888; margin-bottom: 20px;">冷卻：20s | 持續：6s</p>
+                <p style="font-size: 1.1rem; color: #555;">在蛇身路徑留下致盲雲朵。進入其中的敵方玩家將損失 <strong>90% 視野</strong>，持續 5s。</p>
+            </div>
+            <div class="skill-pro-card" data-aos style="background: white; padding: 40px; border-radius: 40px; box-shadow: var(--card-shadow); border-top: 12px solid #66CC00; text-align: center;">
+                <span style="font-size: 4rem; display: block; margin-bottom: 20px;">🦅</span>
+                <h3 style="font-size: 1.8rem; color: #66CC00; margin-bottom: 10px;">鷹眼</h3>
+                <p style="font-weight: 900; color: #888; margin-bottom: 20px;">冷卻：25s | 持續：12s</p>
+                <p style="font-size: 1.1rem; color: #555;">相機鏡頭縮放至 <strong>0.75x</strong>。提供極致的戰場視野，提前偵測對手動向與關鍵道具位置。</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="items">
+        <h2 data-aos style="font-size: 3rem; font-weight: 900; color: var(--secondary);">04. 關鍵道具系統 (Key Items)</h2>
+        <div style="margin-top: 40px; background: white; padding: 30px; border-radius: 40px; box-shadow: var(--card-shadow);" data-aos>
+            <table style="width: 100%; border-collapse: collapse; font-size: 1.1rem; text-align: left;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #EEE;">
+                        <th style="padding: 15px;">道具名稱</th>
+                        <th style="padding: 15px;">額位</th>
+                        <th style="padding: 15px;">重生 CD</th>
+                        <th style="padding: 15px;">詳細效果說明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid #F5F5F5;">
+                        <td style="padding: 15px; font-weight: 900; color: #F57F17;">🍄 巨大蘑菇</td>
+                        <td style="padding: 15px;">2</td>
+                        <td style="padding: 15px;">25s</td>
+                        <td style="padding: 15px;">體型 1.5x。獲得<strong>「免疫截斷」</strong>霸體，無視加速截斷。</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #F5F5F5;">
+                        <td style="padding: 15px; font-weight: 900; color: #1565C0;">🌀 磁力漩渦</td>
+                        <td style="padding: 15px;">2</td>
+                        <td style="padding: 15px;">20s</td>
+                        <td style="padding: 15px;">瞬間啟動強磁，將 R=400 內所有食物暴力吸入。</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #F5F5F5;">
+                        <td style="padding: 15px; font-weight: 900; color: #6A1B9A;">👻 幽靈披風</td>
+                        <td style="padding: 15px;">2</td>
+                        <td style="padding: 15px;">25s</td>
+                        <td style="padding: 15px;">10s 透明狀態，可穿過所有蛇身，適合突圍或攔截。</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #F5F5F5;">
+                        <td style="padding: 15px; font-weight: 900; color: #2E7D32;">7️⃣ 幸運 7</td>
+                        <td style="padding: 15px;">1</td>
+                        <td style="padding: 15px;">45s</td>
+                        <td style="padding: 15px;">攝取食物價值翻 **7 倍**。搭配磁鐵可快速暴漲。</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #F5F5F5;">
+                        <td style="padding: 15px; font-weight: 900; color: #00838F;">🥤 活力蘇打</td>
+                        <td style="padding: 15px;">3</td>
+                        <td style="padding: 15px;">15s</td>
+                        <td style="padding: 15px;">瞬間補滿 **100 點體力**，是解除超載的關鍵物資。</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 15px; font-weight: 900; color: #E65100;">⏳ 時光沙漏</td>
+                        <td style="padding: 15px;">2</td>
+                        <td style="padding: 15px;">20s</td>
+                        <td style="padding: 15px;">瞬間恢復至本局 Session Max 長度。即使死亡也能回榜。</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+        <h2 data-aos style="font-size: 3rem; font-weight: 900; color: var(--secondary); text-align: center;">05. 決勝關鍵 (Victory)</h2>
+        <div style="padding: 60px; border-radius: 50px; border: 8px dashed var(--primary); text-align: center; margin-top: 40px;" data-aos>
+            <p style="font-size: 2.2rem; font-weight: 900; color: var(--text);"><strong>180 秒，誰能奪下最終皇冠？</strong></p>
+            <p style="margin-top: 20px; font-size: 1.4rem; color: #666; max-width: 800px; margin-left: auto; margin-right: auto;">這不只是生存，更是一場關於長度的積分競技。即便在最後 10 秒，只要利用「幸運 7」與一次精準的「截斷」，任何人都具備逆轉封王的可能！</p>
+        </div>
+    </section>
+
+    <footer>
+        <p>SNAKE.IO: COMBAT EVOLVED | 2026 PROPOSAL</p>
+    </footer>
+
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('[data-aos]').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
