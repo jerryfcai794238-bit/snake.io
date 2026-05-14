@@ -361,23 +361,33 @@ export class Renderer {
     }
 
     drawInkOverlay(alpha) {
-        const ctx = this.ctx; const w = this.canvas.width; const h = this.canvas.height;
+        const ctx = this.ctx;
+        const dpr = window.devicePixelRatio || 1;
+        // 使用 CSS 像素寬度以對齊 setTransform(dpr)
+        const w = this.canvas.width / dpr;
+        const h = this.canvas.height / dpr;
+        
         ctx.save(); 
         
-        // 由 Alpha (0-1) 驅動的過渡邏輯 (v4.5.6)
-        // alpha=0 為清晰, alpha=1 為致盲
-        const innerMin = 160;
-        const outerMin = 500;
-        const maxDist = 1000;
+        // 由 Alpha (0-1) 驅動的過渡邏輯
+        // 響應式半徑：根據螢幕較短邊計算
+        const baseSize = Math.min(w, h);
+        const innerMin = baseSize * 0.15; // 核心可視區
+        const outerMin = baseSize * 0.45; // 漸變邊緣
+        const maxDist = baseSize * 1.5;   // 展開後的距離
 
-        // 使用平方曲線讓過渡更自然
         const ease = 1 - Math.pow(alpha, 2); 
         const innerRadius = innerMin + ease * maxDist;
         const outerRadius = outerMin + ease * maxDist;
 
+        // 座標中心必須對齊螢幕中央 (w/2, h/2)
         const grad = ctx.createRadialGradient(w / 2, h / 2, innerRadius, w / 2, h / 2, outerRadius);
-        grad.addColorStop(0, 'rgba(0, 0, 0, 0)'); grad.addColorStop(1, 'rgba(0, 0, 0, 0.95)');
-        ctx.fillStyle = grad; ctx.fillRect(0, 0, w, h); ctx.restore();
+        grad.addColorStop(0, 'rgba(0, 0, 0, 0)'); 
+        grad.addColorStop(1, 'rgba(0, 0, 0, 0.98)');
+        
+        ctx.fillStyle = grad; 
+        ctx.fillRect(0, 0, w, h); 
+        ctx.restore();
     }
 
     drawLeaderMarker(state, leader) {
