@@ -4,7 +4,7 @@ export const CONFIG = {
     SOLO_TIME: 150, 
     HEAD_RADIUS: 15,
 
-    // Snake Stats (GDD v2.2.0)
+    // Snake Stats (GDD v4.5.0)
     BASE_SPEED: 4,
     DASH_MULTIPLIER: 1.25,
     INITIAL_LENGTH: 50,
