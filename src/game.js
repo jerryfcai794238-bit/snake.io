@@ -28,6 +28,8 @@ export class Game {
         };
         this.itemRespawnQueue = []; // { type, time }
         this.heatSpots = []; // { x, y, time, radius }
+        this.foodGrid = new Map(); // 空間網格 (v4.5.0)
+        this.gridSize = 200;
     }
 
     init() {
@@ -174,7 +176,8 @@ export class Game {
             x = (Math.random() - 0.5) * (size - 80); y = (Math.random() - 0.5) * (size - 80);
         }
         if (Math.abs(x) > size / 2 - 20 || Math.abs(y) > size / 2 - 20) return;
-        for (const s of this.stones) { if ((x - s.x) ** 2 + (y - s.y) ** 2 < s.radius ** 2) return; }
+        // 修正：增加 30px 安全邊距，防止蛇頭因碰撞彈開而吃不到 (v4.4.1)
+        for (const s of this.stones) { if ((x - s.x) ** 2 + (y - s.y) ** 2 < (s.radius + 30) ** 2) return; }
         let type = 'SMALL';
         if (isNearStone || terrainType === 'river') type = Math.random() < 0.3 ? 'LARGE' : 'MEDIUM';
         else { if (Math.random() < 0.05) type = 'LARGE'; else if (Math.random() < 0.2) type = 'MEDIUM'; }
@@ -186,6 +189,9 @@ export class Game {
         if (value < 0.1) return;
         const pos = snake.getTailPosition();
         if (!pos) return;
+        // 遺產食物也要避開石頭 (v4.4.1)
+        const inStone = this.stones.some(s => (pos.x - s.x)**2 + (pos.y - s.y)**2 < (s.radius + 20)**2);
+        if (inStone) return;
         this.food.push({ x: pos.x, y: pos.y, size: 3.5, value: value });
     }
 
@@ -206,6 +212,17 @@ export class Game {
                 this.food[i].expires -= dt;
                 if (this.food[i].expires <= 0) this.food.splice(i, 1);
             }
+        }
+
+        // 更新空間網格 (v4.5.0)
+        this.foodGrid.clear();
+        for (let i = 0; i < this.food.length; i++) {
+            const f = this.food[i];
+            const gx = Math.floor(f.x / this.gridSize);
+            const gy = Math.floor(f.y / this.gridSize);
+            const key = `${gx},${gy}`;
+            if (!this.foodGrid.has(key)) this.foodGrid.set(key, []);
+            this.foodGrid.get(key).push(i);
         }
 
         // 更新熱點計時 (v4.1.0)
@@ -270,55 +287,58 @@ export class Game {
             }
         }
 
-        // 食物吸力邏輯 (效能優化：預先過濾過遠的食物 v4.3.0)
-        for (let i = this.food.length - 1; i >= 0; i--) {
-            const f = this.food[i];
+        // 食物吸力邏輯 (空間網格優化 O(1) 查詢 v4.5.0)
+        const eatenIndices = new Set();
+        this.snakes.forEach(snake => {
+            if (snake.isDead) return;
             
-            // 找出最靠近的蛇 (只計算頭部周遭 400px 內的蛇)
-            for (const snake of this.snakes) {
-                if (snake.isDead) continue;
-                
-                const dx = snake.head.x - f.x;
-                const dy = snake.head.y - f.y;
-                // 快速粗略過濾
-                if (Math.abs(dx) > 400 || Math.abs(dy) > 400) continue;
-                
-                const distSq = dx * dx + dy * dy;
-                
-                // 演出級吸力 (磁力漩渦道具效果)
-                if (f.vortexTarget === snake) {
-                    const dist = Math.sqrt(distSq);
-                    if (dist < 15) {
-                        const multiplier = (snake.lucky7Time > 0) ? CONFIG.ITEM_TYPES.LUCKY7.multiplier : 1;
-                        const val = f.value * multiplier;
-                        snake.targetLength += val;
-                        snake.totalEaten += val;
-                        this.food.splice(i, 1);
-                    } else {
-                        const baseSpeed = 10;
-                        const acceleration = (1 - dist / 400) * 25; 
-                        const currentSpeed = (baseSpeed + acceleration) * dt * 60;
-                        const moveX = (dx / dist) * Math.min(dist, currentSpeed);
-                        const moveY = (dy / dist) * Math.min(dist, currentSpeed);
-                        f.x += moveX;
-                        f.y += moveY;
-                    }
-                    break; // 已經被吸住了，不需檢查下一條蛇
-                }
+            const gx = Math.floor(snake.head.x / this.gridSize);
+            const gy = Math.floor(snake.head.y / this.gridSize);
+            const suctionRadius = (snake.magnetTime > 0) ? 120 : 45;
+            const checkRange = Math.ceil(suctionRadius / this.gridSize);
 
-                // 基礎吸力
-                const isMagnetActive = snake.magnetTime > 0;
-                const suctionRadius = isMagnetActive ? 120 : 45;
-                const suctionSpeed = isMagnetActive ? 18 : 12;
-                if (distSq < suctionRadius * suctionRadius) {
-                    const dist = Math.sqrt(distSq);
-                    if (dist > 5) {
-                        f.x += (dx / dist) * suctionSpeed;
-                        f.y += (dy / dist) * suctionSpeed;
+            for (let ox = -1; ox <= 1; ox++) {
+                for (let oy = -1; oy <= 1; oy++) {
+                    const key = `${gx + ox},${gy + oy}`;
+                    const indices = this.foodGrid.get(key);
+                    if (!indices) continue;
+
+                    for (let j = indices.length - 1; j >= 0; j--) {
+                        const idx = indices[j];
+                        if (eatenIndices.has(idx)) continue;
+                        const f = this.food[idx];
+                        
+                        const dx = snake.head.x - f.x;
+                        const dy = snake.head.y - f.y;
+                        const distSq = dx * dx + dy * dy;
+
+                        if (f.vortexTarget === snake) {
+                            const dist = Math.sqrt(distSq);
+                            if (dist < 15) {
+                                eatenIndices.add(idx);
+                                const multiplier = (snake.lucky7Time > 0) ? CONFIG.ITEM_TYPES.LUCKY7.multiplier : 1;
+                                snake.targetLength += f.value * multiplier;
+                                snake.totalEaten += f.value * multiplier;
+                            } else {
+                                const speed = (10 + (1 - dist/400)*25) * dt * 60;
+                                f.x += (dx/dist) * Math.min(dist, speed);
+                                f.y += (dy/dist) * Math.min(dist, speed);
+                            }
+                        } else if (distSq < suctionRadius**2) {
+                            const dist = Math.sqrt(distSq);
+                            if (dist > 5) {
+                                const speed = (snake.magnetTime > 0 ? 18 : 12);
+                                f.x += (dx/dist) * speed;
+                                f.y += (dy/dist) * speed;
+                            }
+                        }
                     }
                 }
             }
-        }
+        });
+        // 統一刪除被吃掉的食物
+        const sortedIndices = Array.from(eatenIndices).sort((a, b) => b - a);
+        sortedIndices.forEach(idx => this.food.splice(idx, 1));
 
         this.snakes.forEach(snake => {
             let speedMod = 1.0, currentTerrain = null;
@@ -327,8 +347,9 @@ export class Game {
             const wantsDash = snake === this.player ? input.isDashing : false;
             snake.update(targetAngle, wantsDash, dt, {
                 snakes: this.snakes, stones: this.stones, food: this.food,
+                foodGrid: this.foodGrid, gridSize: this.gridSize, // 傳入網格上下文 (v4.5.0)
                 terrain: currentTerrain, speedMod: speedMod,
-                effects: this.effects, // 補上特效陣列 (v4.3.1)
+                effects: this.effects,
                 onDropFood: (s, v) => this.dropTailFood(s, v)
             });
         });
@@ -339,7 +360,7 @@ export class Game {
                     if (snake.id === e.ownerId) return;
                     const dx = snake.head.x - e.x;
                     const dy = snake.head.y - e.y;
-                    if (dx * dx + dy * dy < e.radius * e.radius) snake.inkTime = 3.0;
+                    if (dx * dx + dy * dy < e.radius * e.radius) snake.inkTime = 5.0;
                 }
             });
         });
@@ -375,8 +396,8 @@ export class Game {
             // 邊界檢查
             if (Math.abs(x) > size / 2 - 60 || Math.abs(y) > size / 2 - 60) { attempts++; continue; }
             
-            // 石頭檢查
-            const inStone = this.stones.some(s => Math.sqrt((x - s.x)**2 + (y - s.y)**2) < s.radius + 50);
+            // 石頭檢查：道具需要比食物更大的安全間距 (v4.4.2)
+            const inStone = this.stones.some(s => (x - s.x)**2 + (y - s.y)**2 < (s.radius + 60)**2);
             if (inStone) { attempts++; continue; }
 
             // 與同類道具間距檢查
@@ -398,6 +419,19 @@ export class Game {
         const half = CONFIG.WORLD_SIZE / 2 - 50;
         x = Math.max(-half, Math.min(half, x));
         y = Math.max(-half, Math.min(half, y));
+        
+        // 二度檢查：確保邊界校準後不會壓在石頭上 (v4.4.2)
+        for (const s of this.stones) {
+            const dx = x - s.x;
+            const dy = y - s.y;
+            const distSq = dx*dx + dy*dy;
+            const minDist = s.radius + 60;
+            if (distSq < minDist * minDist) {
+                const angle = Math.atan2(dy, dx);
+                x = s.x + Math.cos(angle) * minDist;
+                y = s.y + Math.sin(angle) * minDist;
+            }
+        }
         
         this.items.push({
             id: type,
@@ -468,6 +502,7 @@ export class Game {
         }
         
         // 拾取音效/特效
+        if (snake === this.player) this.triggerHaptic('ITEM_PICKUP');
         this.effects.push({
             type: 'ITEM_PICKUP',
             x: item.x, y: item.y, color: cfg.color, life: 0.8
@@ -491,6 +526,7 @@ export class Game {
                 snake.targetLength = Math.max(CONFIG.INITIAL_LENGTH, snake.targetLength - penalty);
                 snake.length = Math.max(CONFIG.INITIAL_LENGTH, snake.length - penalty);
                 this.spark(snake.head.x, snake.head.y, '#FFFFFF');
+                if (snake === this.player) this.triggerHaptic('BUMP');
                 return;
             }
 
@@ -508,6 +544,7 @@ export class Game {
                     snake.targetLength = Math.max(CONFIG.INITIAL_LENGTH, snake.targetLength - penalty);
                     snake.length = Math.max(CONFIG.INITIAL_LENGTH, snake.length - penalty);
                     this.spark(snake.head.x, snake.head.y, '#FFFFFF');
+                    if (snake === this.player) this.triggerHaptic('BUMP');
                 }
             });
 
@@ -571,7 +608,11 @@ export class Game {
     cut(snake, idx, killer) {
         if (snake.titanTime > 0) return; // 雙重保護
         snake.hitTimer = 0.5;
-        if (killer) killer.cuts++;
+        if (killer) {
+            killer.cuts++;
+            if (killer === this.player) this.triggerHaptic('CUT');
+        }
+        if (snake === this.player) this.triggerHaptic('BEING_CUT');
         const legacy = snake.points.slice(idx);
         snake.points = snake.points.slice(0, idx);
         const lostLength = legacy.length * 2;
@@ -580,7 +621,15 @@ export class Game {
         const foodValuePerItem = totalFoodValue / (legacy.length / dropRate);
         snake.length = snake.points.length * 2;
         snake.targetLength = snake.length;
-        legacy.forEach((p, i) => { if (i % dropRate === 0) this.food.push({ x: p.x, y: p.y, size: 4, value: foodValuePerItem, color: snake.color }); });
+        legacy.forEach((p, i) => { 
+            if (i % dropRate === 0) {
+                // 檢查是否掉在石頭裡，若是則跳過 (v4.4.1)
+                const inStone = this.stones.some(s => (p.x - s.x)**2 + (p.y - s.y)**2 < (s.radius + 20)**2);
+                if (!inStone) {
+                    this.food.push({ x: p.x, y: p.y, size: 4, value: foodValuePerItem, color: snake.color }); 
+                }
+            }
+        });
         this.spark(snake.head.x, snake.head.y, snake.color);
 
         // 截斷也會產生小型熱點 (v4.1.0)
@@ -598,7 +647,11 @@ export class Game {
         snake.hitTimer = 0.5;
         snake.isDead = true;
         snake.deaths++;
-        if (killer) killer.kills++;
+        if (killer) {
+            killer.kills++;
+            if (killer === this.player) this.triggerHaptic('KILL');
+        }
+        if (snake === this.player) this.triggerHaptic('DEATH');
         const originalLength = snake.length;
         const penaltyLength = Math.max(CONFIG.INITIAL_LENGTH, originalLength * 0.5);
         const lostLength = originalLength - penaltyLength;
@@ -608,7 +661,14 @@ export class Game {
         snake.maxLength = penaltyLength; 
         const dropRate = 6;
         const foodValuePerItem = totalFoodValue / (snake.points.length / dropRate);
-        snake.points.forEach((p, i) => { if (i % dropRate === 0) this.food.push({ x: p.x, y: p.y, size: 4, value: foodValuePerItem, expires: 8.0, color: snake.color }); });
+        snake.points.forEach((p, i) => { 
+            if (i % dropRate === 0) {
+                const inStone = this.stones.some(s => (p.x - s.x)**2 + (p.y - s.y)**2 < (s.radius + 20)**2);
+                if (!inStone) {
+                    this.food.push({ x: p.x, y: p.y, size: 4, value: foodValuePerItem, expires: 8.0, color: snake.color }); 
+                }
+            }
+        });
         this.spark(snake.head.x, snake.head.y, snake.color);
         this.respawnQueue.push({ snake, time: CONFIG.RESPAWN_TIME });
 
@@ -642,7 +702,14 @@ export class Game {
 
     endGame() {
         this.isGameOver = true;
+        this.triggerHaptic('DEATH');
         const finalScore = Math.floor(this.player.totalEaten);
         if (finalScore > this.bestScore) { this.bestScore = finalScore; localStorage.setItem('snake_best', this.bestScore); }
+    }
+
+    triggerHaptic(type) {
+        if (!navigator.vibrate) return;
+        const pattern = CONFIG.HAPTIC_PATTERNS[type];
+        if (pattern) navigator.vibrate(pattern);
     }
 }

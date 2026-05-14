@@ -58,7 +58,7 @@ export class Renderer {
 
         ctx.restore();
 
-        if (player.inkTime > 0) this.drawInkOverlay(player.inkTime);
+        if (player.blindnessAlpha > 0) this.drawInkOverlay(player.blindnessAlpha);
         this.drawLeaderMarker(state, leader);
     }
 
@@ -360,9 +360,22 @@ export class Renderer {
         ctx.globalAlpha = 1.0;
     }
 
-    drawInkOverlay(time) {
+    drawInkOverlay(alpha) {
         const ctx = this.ctx; const w = this.canvas.width; const h = this.canvas.height;
-        ctx.save(); const grad = ctx.createRadialGradient(w / 2, h / 2, 50, w / 2, h / 2, 350);
+        ctx.save(); 
+        
+        // 由 Alpha (0-1) 驅動的過渡邏輯 (v4.5.6)
+        // alpha=0 為清晰, alpha=1 為致盲
+        const innerMin = 160;
+        const outerMin = 500;
+        const maxDist = 1000;
+
+        // 使用平方曲線讓過渡更自然
+        const ease = 1 - Math.pow(alpha, 2); 
+        const innerRadius = innerMin + ease * maxDist;
+        const outerRadius = outerMin + ease * maxDist;
+
+        const grad = ctx.createRadialGradient(w / 2, h / 2, innerRadius, w / 2, h / 2, outerRadius);
         grad.addColorStop(0, 'rgba(0, 0, 0, 0)'); grad.addColorStop(1, 'rgba(0, 0, 0, 0.95)');
         ctx.fillStyle = grad; ctx.fillRect(0, 0, w, h); ctx.restore();
     }

@@ -39,5 +39,13 @@ export const CONFIG = {
     },
     ITEM_SPAWN_INTERVAL: 3000, 
     ITEM_MAX_COUNT: 12,        
-    ITEM_TEASER_TIME: 3.0      
+    ITEM_TEASER_TIME: 3.0,
+    HAPTIC_PATTERNS: {
+        ITEM_PICKUP: 30,
+        BUMP: 50,
+        CUT: 70,
+        KILL: [40, 40, 40],
+        BEING_CUT: [20, 20, 20, 20, 20],
+        DEATH: 200
+    }
 };
