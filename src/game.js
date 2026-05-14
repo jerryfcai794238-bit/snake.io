@@ -72,15 +72,31 @@ export class Game {
     }
 
     getSafeSpawnPoint() {
-        const margin = 100;
-        const minSnakeDist = 400; 
+        const margin = 150; // 增加邊距緩衝
+        const minSnakeDist = 500; // 增加安全半徑
+        const minBodyDist = 120;  // 新增：與蛇身的最小安全距離
         let x, y, safe = false;
         let attempts = 0;
-        while (!safe && attempts < 100) {
+
+        while (!safe && attempts < 150) {
             x = (Math.random() - 0.5) * (CONFIG.WORLD_SIZE - margin * 2);
             y = (Math.random() - 0.5) * (CONFIG.WORLD_SIZE - margin * 2);
-            const stoneSafe = !this.stones.some(s => Math.sqrt((x - s.x) ** 2 + (y - s.y) ** 2) < s.radius + 80);
-            const snakeSafe = !this.snakes.some(s => !s.isDead && Math.sqrt((x - s.head.x) ** 2 + (y - s.head.y) ** 2) < minSnakeDist);
+
+            // 1. 檢查石頭
+            const stoneSafe = !this.stones.some(s => Math.sqrt((x - s.x) ** 2 + (y - s.y) ** 2) < s.radius + 100);
+            
+            // 2. 檢查所有敵對蛇的頭部與身體 (關鍵修正)
+            const snakeSafe = !this.snakes.some(s => {
+                if (s.isDead) return false;
+                
+                // 檢查頭部距離
+                const distHead = Math.sqrt((x - s.head.x) ** 2 + (y - s.head.y) ** 2);
+                if (distHead < minSnakeDist) return true;
+
+                // 檢查身體所有節點 (避免重生在長蛇陣中間)
+                return s.points.some(p => Math.sqrt((x - p.x) ** 2 + (y - p.y) ** 2) < minBodyDist);
+            });
+
             safe = stoneSafe && snakeSafe;
             attempts++;
         }
@@ -690,10 +706,10 @@ export class Game {
         snake.isDead = false;
         snake.isDashing = false;
         snake.angle = this.calculateBestStartAngle(pos.x, pos.y);
-        // 重置 Buff
+        // 重置 Buff 並給予重生保護 (v4.5.7)
         snake.lucky7Time = 0;
         snake.titanTime = 0;
-        snake.ghostTime = 0;
+        snake.ghostTime = 2.5; // 2.5 秒重生幽靈保護
     }
 
     spark(x, y, color) {
