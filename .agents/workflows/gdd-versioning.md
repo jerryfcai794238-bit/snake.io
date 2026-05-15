@@ -9,6 +9,7 @@ description: 規範重大更新時的實作計畫同步、GDD 進版、反向稽
 - **遵循 [GDD 反向同步協議](file:///c:/Users/fanchunkao/Documents/Antigravity/snake.io/.agents/rules/gdd_reverse_sync_policy.md)**。
 - **禁止規格簡化**：嚴禁將數值表格、綁定或參數替換為模糊文字。
 - **核准機制**：新版 GDD 產出後，必須等待使用者說「OK」或「開始」才能動工。
+- **編輯保全**：遵循 [Agent Safe Rules: EDIT SAFETY](file:///c:/Users/fanchunkao/Documents/Antigravity/snake.io/.agents/rules/agent_safe_rules.md)，嚴禁誤刪已存在的機制區塊。
 
 ## 執行流程
 
