@@ -1,7 +1,7 @@
 export const CONFIG = {
     WORLD_SIZE: 2200, // 擴大至 2200x2200 (v4.0)
     FPS: 60,
-    SOLO_TIME: 150, 
+    SOLO_TIME: 180, 
     HEAD_RADIUS: 15,
 
     // Snake Stats (GDD v4.5.0)

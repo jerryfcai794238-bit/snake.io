@@ -603,8 +603,8 @@ export class Game {
                     const p = other.points[i];
                     if ((snake.head.x - p.x) ** 2 + (snake.head.y - p.y) ** 2 < (snake.radius + 10) ** 2) {
                         if (snake.isDashing) {
-                            if (other.titanTime > 0) {
-                                // 巨大蘑菇免疫截斷：改為回彈
+                            if (other.titanTime > 0 || other.isDashing) {
+                                // 巨大蘑菇免疫截斷，或對方也在衝刺 (v4.5.7)：改為回彈
                                 const angle = Math.atan2(snake.head.y - p.y, snake.head.x - p.x);
                                 snake.angle = angle;
                                 snake.head.x += Math.cos(angle) * 30;
