@@ -89,6 +89,11 @@
     <section id="ui-layout">
         <h2 data-aos style="font-size: 3rem; font-weight: 900; color: var(--secondary);">01. 介面佈局 (UI Layout)</h2>
         <p style="margin-bottom: 30px; font-weight: 700; color: #888;">對齊競技手遊規格的 HUD 配置</p>
+        
+        <div style="text-align: center; margin-bottom: 40px;" data-aos>
+            <img src="images/Gemini_Generated_Image_4e8erd4e8erd4e8e.png" alt="UI Layout Reference" style="width: 100%; max-width: 1000px; border-radius: 30px; border: 10px solid white; box-shadow: var(--card-shadow);">
+        </div>
+
         <div class="layout-display" data-aos>
             <div class="layout-info-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
                 <div class="info-tag" style="background: white; padding: 25px; border-radius: 25px; box-shadow: var(--card-shadow); border-top: 8px solid var(--primary);">
@@ -146,8 +151,58 @@
         </div>
     </section>
 
+    <section id="combat-matrix">
+        <h2 data-aos style="font-size: 3rem; font-weight: 900; color: var(--secondary);">03. 核心碰撞矩陣 (Combat Matrix)</h2>
+        <div style="margin-top: 40px; background: white; padding: 40px; border-radius: 40px; box-shadow: var(--card-shadow); border-top: 12px solid var(--secondary);" data-aos>
+            <table style="width: 100%; border-collapse: collapse; font-size: 1.1rem; text-align: left;">
+                <thead>
+                    <tr style="border-bottom: 3px solid #EEE;">
+                        <th style="padding: 15px; color: #888;">碰撞情境</th>
+                        <th style="padding: 15px; color: var(--secondary); font-weight: 900;">🔥 雙方衝刺 (Dash)</th>
+                        <th style="padding: 15px; color: var(--accent); font-weight: 900;">⚡ 僅一方衝刺</th>
+                        <th style="padding: 15px; color: #666; font-weight: 900;">🐢 皆未衝刺</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid #F5F5F5;">
+                        <td style="padding: 20px; font-weight: 900; color: var(--text); background: #FAFAFA;">頭對頭 (Head-to-Head)</td>
+                        <td style="padding: 20px; color: #444;">雙方強力回彈</td>
+                        <td style="padding: 20px; color: #444; font-weight: 900;">衝刺方獲勝</td>
+                        <td style="padding: 20px; color: #444;">長度大者獲勝</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 20px; font-weight: 900; color: var(--text); background: #FAFAFA;">頭對身 (Head-to-Body)</td>
+                        <td style="padding: 20px; color: #444;">攻擊方回彈</td>
+                        <td style="padding: 20px; color: #444; font-weight: 900;">截斷 (Cut) 成功</td>
+                        <td style="padding: 20px; color: #444;">攻擊方死亡</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="margin-top: 25px; color: #AAA; font-size: 0.9rem; text-align: center;">* 註：幽靈披風狀態下無視所有碰撞；重生後享有 2.5s 重生保護。</p>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 30px;" data-aos>
+            <div style="background: #FFF3F8; padding: 30px; border-radius: 30px; border-left: 10px solid var(--secondary);">
+                <h5 style="font-size: 1.4rem; margin-bottom: 10px; color: var(--secondary);">💀 死亡代價與復活</h5>
+                <p style="font-size: 1.1rem; color: #444;">死亡立即<strong>縮減 50% 長度</strong>，並進入 <strong>3s 復活倒數</strong>。此機制確保戰場資源循環，避免強者恆強。</p>
+            </div>
+            <div style="background: #F0FEFF; padding: 30px; border-radius: 30px; border-left: 10px solid var(--accent);">
+                <h5 style="font-size: 1.4rem; margin-bottom: 10px; color: var(--accent);">🛰️ 安全重生演算法 (Safe Spawn)</h5>
+                <p style="font-size: 1.1rem; color: #444;">系統自動避開石頭，並與敵蛇頭部保持 <strong>500px</strong>、身體 <strong>120px</strong> 的絕對安全距離，防止出生即碰撞。</p>
+            </div>
+            <div style="background: #F5FFF0; padding: 30px; border-radius: 30px; border-left: 10px solid #66CC00;">
+                <h5 style="font-size: 1.4rem; margin-bottom: 10px; color: #66CC00;">🧭 航向自動優化</h5>
+                <p style="font-size: 1.1rem; color: #444;">重生瞬間自動朝向視野最開闊、威脅度最低的區域，為玩家爭取反應時間。</p>
+            </div>
+            <div style="background: white; padding: 30px; border-radius: 30px; box-shadow: var(--card-shadow); border-left: 10px solid #AAA;">
+                <h5 style="font-size: 1.4rem; margin-bottom: 10px; color: #666;">🛡️ 2.5s 重生幽靈保護</h5>
+                <p style="font-size: 1.1rem; color: #444;">重生後獲得短暫<strong>穿透屬性</strong>。可調整航向並游離危險區，此狀態下無法進行攻擊。</p>
+            </div>
+        </div>
+    </section>
+
     <section id="skills">
-        <h2 data-aos style="font-size: 3rem; font-weight: 900; color: var(--secondary);">03. 戰術技能 (Tactical Skills)</h2>
+        <h2 data-aos style="font-size: 3rem; font-weight: 900; color: var(--secondary);">04. 戰術技能 (Tactical Skills)</h2>
         <div class="skills-pro-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 40px;">
             <div class="skill-pro-card" data-aos style="background: white; padding: 40px; border-radius: 40px; box-shadow: var(--card-shadow); border-top: 12px solid var(--accent); text-align: center;">
                 <span style="font-size: 4rem; display: block; margin-bottom: 20px;">🧲</span>
@@ -171,7 +226,7 @@
     </section>
 
     <section id="items">
-        <h2 data-aos style="font-size: 3rem; font-weight: 900; color: var(--secondary);">04. 關鍵道具系統 (Key Items)</h2>
+        <h2 data-aos style="font-size: 3rem; font-weight: 900; color: var(--secondary);">05. 關鍵道具系統 (Key Items)</h2>
         <div style="margin-top: 40px; background: white; padding: 30px; border-radius: 40px; box-shadow: var(--card-shadow);" data-aos>
             <table style="width: 100%; border-collapse: collapse; font-size: 1.1rem; text-align: left;">
                 <thead>
@@ -228,48 +283,6 @@
                     </tr>
                 </tbody>
             </table>
-        </div>
-    </section>
-
-    <section id="combat-matrix">
-        <h2 data-aos style="font-size: 3rem; font-weight: 900; color: var(--secondary);">05. 核心碰撞矩陣 (Combat Matrix)</h2>
-        <div style="margin-top: 40px; background: #1A1A1A; padding: 40px; border-radius: 40px; box-shadow: var(--card-shadow);" data-aos>
-            <table style="width: 100%; border-collapse: separate; border-spacing: 5px; color: white;">
-                <thead>
-                    <tr>
-                        <th style="padding: 15px; text-align: left; background: #333; border-radius: 15px 0 0 15px;">碰撞情境</th>
-                        <th style="padding: 15px; background: var(--secondary);">雙方衝刺 (Dash)</th>
-                        <th style="padding: 15px; background: var(--accent); color: #1A1A1A;">僅一方衝刺</th>
-                        <th style="padding: 15px; background: #555; border-radius: 0 15px 15px 0;">皆未衝刺</th>
-                    </tr>
-                </thead>
-                <tbody style="text-align: center;">
-                    <tr>
-                        <td style="padding: 20px; text-align: left; font-weight: 900; background: #222; border-radius: 15px;">頭對頭 (Head-to-Head)</td>
-                        <td style="padding: 20px; background: #FFF; color: #333; border-radius: 15px;">雙方強力回彈</td>
-                        <td style="padding: 20px; background: #FFF; color: #333; border-radius: 15px;">衝刺方獲勝</td>
-                        <td style="padding: 20px; background: #FFF; color: #333; border-radius: 15px;">長度大者獲勝</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 20px; text-align: left; font-weight: 900; background: #222; border-radius: 15px;">頭對身 (Head-to-Body)</td>
-                        <td style="padding: 20px; background: #FFF; color: #333; border-radius: 15px;">攻擊方回彈</td>
-                        <td style="padding: 20px; background: #FFF; color: #333; border-radius: 15px;">截斷 (Cut) 成功</td>
-                        <td style="padding: 20px; background: #FFF; color: #333; border-radius: 15px;">攻擊方死亡</td>
-                    </tr>
-                </tbody>
-            </table>
-            <p style="margin-top: 25px; color: #AAA; font-size: 0.9rem; text-align: center;">* 註：幽靈披風狀態下無視所有碰撞；重生後享有 2.5s 重生保護。</p>
-        </div>
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px;" data-aos>
-            <div style="background: white; padding: 30px; border-radius: 30px; box-shadow: var(--card-shadow); border-left: 10px solid var(--primary);">
-                <h5 style="font-size: 1.4rem; margin-bottom: 10px;">⏱️ 3s 復活延遲</h5>
-                <p>死亡後進入 3 秒整備期，系統自動演算全場最安全的重生座標。</p>
-            </div>
-            <div style="background: white; padding: 30px; border-radius: 30px; box-shadow: var(--card-shadow); border-left: 10px solid var(--accent);">
-                <h5 style="font-size: 1.4rem; margin-bottom: 10px;">🛡️ 2.5s 幽靈保護</h5>
-                <p>重生後自動開啟穿透狀態。此期間可無視碰撞並自由移動，確保順利突圍。</p>
-            </div>
         </div>
     </section>
 
