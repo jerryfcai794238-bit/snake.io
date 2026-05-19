@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake.io 競技場 ── 項目提案簡報 v5.0.0</title>
+    <!-- 引入高品質字型 -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Fredoka:wght@500;700&family=Inter:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* 全域設計系統變數 */
+        :root {
+            --bg-pearl: #F8F9FA;
+            --text-dark: #2B2D42;
+            --text-muted: #5C677D;
+            --nintendo-red: #E60012;
+            --yoshi-green: #3CD070;
+            --coin-yellow: #FFD000;
+            --card-bg: #FFFFFF;
+            --card-shadow: 0 12px 40px rgba(0, 0, 0, 0.04), 0 2px 10px rgba(0, 0, 0, 0.02);
+            --inset-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.8), inset 0 -2px 4px rgba(0, 0, 0, 0.05);
+            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* 基礎重設與排版 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-pearl);
+            color: var(--text-dark);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 700;
+        }
+
+        /* 頂部導航列 */
+        .top-navbar {
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            z-index: 100;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-badge {
+            background: var(--nintendo-red);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 12px rgba(230, 0, 18, 0.3);
+        }
+
+        .deck-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .fullscreen-btn {
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition-smooth);
+        }
+
+        .fullscreen-btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--nintendo-red);
+            color: var(--nintendo-red);
+        }
+
+        /* 簡報幻燈片主容器 */
+        .slides-viewport {
+            flex-grow: 1;
+            position: relative;
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1200px;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 90%;
+            max-width: 1200px;
+            height: 85%;
+            max-height: 700px;
+            background: var(--card-bg);
+            border-radius: 30px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            position: absolute;
+            display: flex;
+            flex-direction: row;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateX(100px) scale(0.95);
+            transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* 不同的排版變化 (Layout Variations) */
+        .slide-container.reverse {
+            flex-direction: row-reverse;
+        }
+
+        .slide-container.top-bottom {
+            flex-direction: column;
+        }
+
+        .slide-container.grid-layout {
+            flex-direction: column;
+            padding: 40px 60px;
+        }
+
+        .slide-container.full-bg {
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slide-container.active {
+            opacity: 1;
+            transform: translateX(0) scale(1) rotateY(0);
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        .slide-container.prev-active {
+            opacity: 0;
+            transform: translateX(-100px) scale(0.95);
+            z-index: 2;
+        }
+
+        /* 投影片結構佈局 */
+        .slide-left {
+            width: 55%;
+            padding: 50px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 25px;
+        }
+
+        .slide-right {
+            width: 45%;
+            background: linear-gradient(135deg, #F0F4F8 0%, #E2E8F0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            position: relative;
+            border-left: 1px solid rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        /* 針對 Top-Bottom 版面 */
+        .slide-container.top-bottom .slide-left {
+            width: 100%;
+            height: 38%;
+            padding: 25px 60px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .slide-container.top-bottom .slide-left .text-content {
+            width: 45%;
+        }
+
+        .slide-container.top-bottom .slide-left .bullet-list {
+            width: 50%;
+        }
+
+        .slide-container.top-bottom .slide-right {
+            width: 100%;
+            height: 62%;
+            border-left: none;
+        }
+
+        .slide-container.top-bottom .real-image {
+            object-fit: contain;
+        }
+
+        /* 針對 Reverse 版面 (圖左字右) */
+        .slide-container.reverse .slide-right {
+            border-left: none;
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        /* 針對 Grid Layout 版面 */
+        .grid-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 35px;
+        }
+
+        .grid-cards {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .grid-cards .bullet-item {
+            flex: 1;
+            background: white;
+            box-shadow: var(--card-shadow);
+            border-radius: 20px;
+            padding: 25px;
+            border-left-width: 8px;
+        }
+
+        .grid-image-area {
+            flex: none;
+            width: 100%;
+            height: 340px;
+            background: transparent;
+            border-radius: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            padding: 0;
+            box-shadow: none;
+        }
+
+        .grid-image-area img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.6s ease;
+            transform: scale(1);
+        }
+
+        .grid-image-area:hover img {
+            transform: scale(1);
+        }
+
+        /* 針對 Full-Background 版面 */
+        .slide-container.full-bg .real-image {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            filter: brightness(0.6);
+        }
+
+        .slide-container.full-bg .content-overlay {
+            position: relative;
+            z-index: 1;
+            width: 90%;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(15px);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .slide-container.full-bg .bullet-list {
+            flex-direction: row;
+            gap: 20px;
+        }
+
+        .slide-container.full-bg .bullet-item {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        /* 文字樣式 */
+        .slide-page-num {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            color: var(--nintendo-red);
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .slide-page-num::after {
+            content: '';
+            display: inline-block;
+            width: 30px;
+            height: 2px;
+            background: var(--nintendo-red);
+        }
+
+        .slide-title {
+            font-size: 2.5rem;
+            color: var(--text-dark);
+            line-height: 1.2;
+        }
+
+        .slide-subtitle {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: -10px;
+        }
+
+        /* 條列卡片排版 */
+        .bullet-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            list-style: none;
+        }
+
+        .bullet-item {
+            background: var(--bg-pearl);
+            padding: 16px 20px;
+            border-radius: 16px;
+            border-left: 6px solid var(--text-muted);
+            box-shadow: var(--inset-shadow);
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .bullet-item:hover {
+            transform: translateY(-4px);
+            background: white;
+            box-shadow: var(--card-shadow);
+        }
+
+        .bullet-item.add {
+            border-left-color: var(--yoshi-green);
+        }
+
+        .bullet-item.core {
+            border-left-color: var(--nintendo-red);
+        }
+
+        .bullet-item.coin {
+            border-left-color: var(--coin-yellow);
+        }
+
+        .bullet-icon {
+            font-size: 1.3rem;
+            line-height: 1.2;
+        }
+
+        .bullet-text strong {
+            color: var(--text-dark);
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 700;
+        }
+
+        .bullet-text p {
+            font-size: 0.92rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        /* 右側圖片容器 */
+        .illustration-card {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: var(--transition-smooth);
+            position: relative;
+        }
+
+        .illustration-card:hover {
+            transform: translateY(-5px) rotate(0.5deg);
+            box-shadow: 0 25px 55px rgba(0, 0, 0, 0.12);
+        }
+
+        .illustration-header {
+            padding: 10px 20px;
+            background: #F1F5F9;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            z-index: 2;
+        }
+
+        .illustration-body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #FFFFFF 0%, #F8FAFC 100%);
+        }
+
+        /* 真實圖片樣式 */
+        .real-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            transition: transform 0.6s ease;
+        }
+
+        .illustration-card:hover .real-image {
+            transform: scale(1.05);
+        }
+
+        /* 預留防呆圖標 */
+        .fallback-icon {
+            font-size: 3rem;
+            opacity: 0.2;
+            position: absolute;
+            z-index: 0;
+        }
+
+        /* 底部導航與控制面板 */
+        .bottom-controls {
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            z-index: 100;
+        }
+
+        .prev-next-btns {
+            display: flex;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            width: 48px;
+            height: 48px;
+            background: white;
+            border: 2px solid rgba(0, 0, 0, 0.08);
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+            transition: var(--transition-smooth);
+            font-size: 1.2rem;
+        }
+
+        .nav-btn:hover {
+            border-color: var(--nintendo-red);
+            color: var(--nintendo-red);
+            transform: scale(1.08);
+            box-shadow: 0 8px 20px rgba(230, 0, 18, 0.15);
+        }
+
+        /* 指示點 Dot Indicators */
+        .dots-container {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 9999px;
+            background: #E2E8F0;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .dot.active {
+            background: var(--nintendo-red);
+            width: 28px;
+            box-shadow: 0 2px 8px rgba(230, 0, 18, 0.3);
+        }
+
+        /* 客製化字體與標籤 */
+        .cover-title {
+            font-size: 3.5rem;
+            color: var(--nintendo-red);
+            text-shadow: 0 4px 0px rgba(230, 0, 18, 0.1);
+        }
+
+        .start-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--yoshi-green);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(60, 208, 112, 0.25);
+            align-self: flex-start;
+        }
+
+        .keyboard-tip-bar {
+            background: rgba(0, 0, 0, 0.03);
+            padding: 6px 16px;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .keyboard-key {
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            border-bottom: 3px solid rgba(0, 0, 0, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 0.72rem;
+            font-family: monospace;
+            color: var(--text-dark);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 頂部導航列 -->
+    <header class="top-navbar">
+        <div class="logo-area">
+            <span class="logo-badge">SNAKE</span>
+            <span class="deck-title">競技場 ── 項目提案簡報</span>
+        </div>
+        <div class="keyboard-tip-bar">
+            <span>使用鍵盤</span>
+            <span class="keyboard-key">←</span>
+            <span class="keyboard-key">→</span>
+            <span>或</span>
+            <span class="keyboard-key">Space</span>
+            <span>切換投影片</span>
+        </div>
+        <div class="nav-controls">
+            <button class="fullscreen-btn" onclick="toggleFullscreen()">
+                <span>🖥️</span> <b>全螢幕展示</b>
+            </button>
+        </div>
+    </header>
+
+    <!-- 投影片視窗容器 -->
+    <main class="slides-viewport" id="viewport">
+
+        <!-- Slide 1: 封面 -->
+        <section class="slide-container active" data-slide="1"
+            style="justify-content: center; align-items: center; text-align: center; flex-direction: column;">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+                <span class="slide-page-num" style="justify-content: center;">Page 01</span>
+                <h1 class="cover-title">貪食蛇</h1>
+                <p class="slide-subtitle" style="font-size: 1.4rem;">極致輕量・快節奏的 3D 休閒競技場</p>
+            </div>
+        </section>
+
+        <!-- Slide 2: 項目總覽 (新增頁面) -->
+        <section class="slide-container reverse" data-slide="2">
+            <div class="slide-left">
+                <span class="slide-page-num">Page 02</span>
+                <h2 class="slide-title">項目總覽</h2>
+                <p class="slide-subtitle">核心定位與商業模式</p>
+                <ul class="bullet-list">
+                    <li class="bullet-item core">
+                        <span class="bullet-icon">🎯</span>
+                        <div class="bullet-text"><strong>核心定位</strong>
+                            <p>隨配隨玩、強對抗爽感的多人互動。</p>
+                        </div>
+                    </li>
+                    <li class="bullet-item add">
+                        <span class="bullet-icon">🎨</span>
+                        <div class="bullet-text"><strong>美術風格</strong>
+                            <p>任天堂系 3D 卡通黏土與霧面塑料質感。</p>
+                        </div>
+                    </li>
+                    <li class="bullet-item coin">
+                        <span class="bullet-icon">💡</span>
+                        <div class="bullet-text"><strong>商業閉環</strong>
+                            <p>局外雙軌技能養成 ＋ 3合1 皮膚融合金幣回收。</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="slide-right" style="padding: 20px;">
+                <div class="illustration-card">
+                    <div class="illustration-header"><span>🌟</span> 項目總覽</div>
+                    <div class="illustration-body">
+                        <span class="fallback-icon">🎯</span>
+                        <!-- 複用第一張視覺圖作為總覽意象 -->
+                        <img src="images/slide_1.png" alt="Overview" class="real-image"
+                            onerror="this.style.display='none'">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 3: 參考競品 (反向排版: 圖左字右) -->
+        <section class="slide-container" data-slide="3">
+            <div class="slide-left">
+                <span class="slide-page-num">Page 03</span>
+                <h2 class="slide-title">參考競品與加減法策略</h2>
+                <p class="slide-subtitle">以「技巧勝過數值」填補休閒競技市場空白</p>
+                <ul class="bullet-list">
+                    <li class="bullet-item add">
+                        <span class="bullet-icon">⚡</span>
+                        <div class="bullet-text"><strong>對比 Snake Clash </strong>
+                            <p>導入衝刺截斷與「安全碰撞回彈」機制，以技巧打破純數值壓制。</p>
+                        </div>
+                    </li>
+                    <li class="bullet-item add">
+                        <span class="bullet-icon">📂</span>
+                        <div class="bullet-text"><strong>對比 Snake.io </strong>
+                            <p>導入「成長之路」局外進度與金幣科技樹，大幅延伸局外策略長線。</p>
+                        </div>
+                    </li>
+                    <li class="bullet-item add">
+                        <span class="bullet-icon">💎</span>
+                        <div class="bullet-text"><strong>對比 Snake Merge </strong>
+                            <p>保留皮膚合成的成癮性，但完全剝離數值，捍衛純外觀公平競技。</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="slide-right" style="padding: 20px;">
+                <div class="illustration-card">
+                    <div class="illustration-header"><span>⚔️</span> 對抗概念示意圖</div>
+                    <div class="illustration-body">
+                        <span class="fallback-icon">⚡</span>
+                        <img src="images/slide_2.png" alt="Competitors" class="real-image"
+                            onerror="this.style.display='none'">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 4: 核心玩法與極簡操控 (上字下圖排版) -->
+        <section class="slide-container top-bottom" data-slide="4">
+            <div class="slide-left"
+                style="height: 45%; padding: 30px 60px; flex-direction: column; justify-content: center; align-items: stretch; border-bottom: none;">
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <span class="slide-page-num" style="justify-content: center;">Page 04</span>
+                    <h2 class="slide-title">核心玩法與極簡操控</h2>
+                    <p class="slide-subtitle">極致絲滑的雙鍵掌上電競體驗</p>
+                </div>
+                <ul class="bullet-list" style="flex-direction: row; gap: 20px; width: 100%;">
+                    <li class="bullet-item core" style="flex: 1;">
+                        <span class="bullet-icon">👾</span>
+                        <div class="bullet-text"><strong>左手搖桿：動態控制</strong>
+                            <p>隨滑隨動、零延遲，支援最精細的微操躲避與戰術走位空間。</p>
+                        </div>
+                    </li>
+                    <li class="bullet-item core" style="flex: 1;">
+                        <span class="bullet-icon">⚡</span>
+                        <div class="bullet-text"><strong>右手大鍵：極速 Dash</strong>
+                            <p>瞬間爆發 1.25x 速度，消耗精力進行高速截殺。</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="slide-right" style="padding: 0; height: 100%; width: 100%;">
+                <div class="illustration-card" style="border-radius: 0; border: none; box-shadow: none; width: 100%;">
+                    <div class="illustration-body" style="background: var(--bg-pearl);">
+                        <img src="images/slide_3_wide.png" alt="Gameplay" class="real-image"
+                            onerror="this.style.display='none'" style="object-fit: cover; object-position: center;">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 5: 三大競技遊戲模式 (上字下圖新設計) -->
+        <section class="slide-container top-bottom" data-slide="5">
+            <div class="slide-left"
+                style="height: 45%; padding: 30px 60px; flex-direction: column; justify-content: center; align-items: stretch; border-bottom: none;">
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <span class="slide-page-num" style="justify-content: center;">Page 05</span>
+                    <h2 class="slide-title">三大競技遊戲模式</h2>
+                    <p class="slide-subtitle">層次分明、豐富多元的遞進對抗體驗</p>
+                </div>
+                <ul class="bullet-list" style="flex-direction: row; gap: 20px; width: 100%;">
+                    <li class="bullet-item" style="flex: 1; border-left-color: var(--yoshi-green);">
+                        <span class="bullet-icon">🟢</span>
+                        <div class="bullet-text"><strong>Solo 模式</strong>
+                            <p>熟悉操作的無壓樂園</p>
+                        </div>
+                    </li>
+                    <li class="bullet-item core" style="flex: 1;">
+                        <span class="bullet-icon">🔵</span>
+                        <div class="bullet-text"><strong>大亂鬥</strong>
+                            <p>衝擊排名的核心賽場</p>
+                        </div>
+                    </li>
+                    <li class="bullet-item coin" style="flex: 1;">
+                        <span class="bullet-icon">🟡</span>
+                        <div class="bullet-text"><strong>團體賽</strong>
+                            <p>紅白積分互相掠奪</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="slide-right" style="padding: 0; height: 100%; width: 100%;">
+                <div class="illustration-card" style="border-radius: 0; border: none; box-shadow: none; width: 100%;">
+                    <div class="illustration-body" style="background: var(--bg-pearl);">
+                        <img src="images/slide_5_new.png" alt="Modes" class="real-image"
+                            onerror="this.style.display='none'" style="object-fit: cover; object-position: center 50%;">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 6: 局內機制：技能與隨機道具 (圖左字右) -->
+        <section class="slide-container reverse" data-slide="6">
+            <div class="slide-left">
+                <span class="slide-page-num">Page 06</span>
+                <h2 class="slide-title">局內機制：技能與隨機道具</h2>
+                <p class="slide-subtitle">加入精力超載機制與隨機道具，增加博弈深度</p>
+                <ul class="bullet-list">
+                    <li class="bullet-item core">
+                        <span class="bullet-icon">⚡</span>
+                        <div class="bullet-text"><strong>主動技能 (HUD雙配置)</strong>
+                            <p><b>【Dash衝刺】</b>精力超載保護，用完須等回滿。<br><b>【磁力漩渦】</b>瞬間強吸周圍的所有食物。</p>
+                        </div>
+                    </li>
+                    <li class="bullet-item add">
+                        <span class="bullet-icon">🍄</span>
+                        <div class="bullet-text"><strong>三大隨機地圖道具 (持續 10 秒)</strong>
+                            <p><b>【巨大蘑菇】</b>體型1.5倍獲免死霸體，但減速。<br><b>【磁鐵】</b>吸附食物。<br><b>【幸運7】</b>得分加倍。</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="slide-right" style="padding: 20px;">
+                <div class="illustration-card">
+                    <div class="illustration-header"><span>🎒</span> 局內戰術道具</div>
+                    <div class="illustration-body">
+                        <span class="fallback-icon">🍄</span>
+                        <img src="images/slide_5.png" alt="Items" class="real-image"
+                            onerror="this.style.display='none'">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 7: 局外雙軌養成系統 (字左圖右) -->
+        <section class="slide-container" data-slide="7">
+            <div class="slide-left">
+                <span class="slide-page-num">Page 07</span>
+                <h2 class="slide-title">局外雙軌養成系統</h2>
+                <p class="slide-subtitle">打造讓休閒與硬核玩家都欲罷不能的成長</p>
+                <ul class="bullet-list">
+                    <li class="bullet-item add">
+                        <span class="bullet-icon">🟢</span>
+                        <div class="bullet-text"><strong>路徑一：成長之路 (基礎人權屬性)</strong>
+                            <p>隨遊戲進度解鎖養成。提升核心技能的效果。</p>
+                        </div>
+                    </li>
+                    <li class="bullet-item coin">
+                        <span class="bullet-icon">🟡</span>
+                        <div class="bullet-text"><strong>路徑二：局外攜帶式 Perks 科技樹</strong>
+                            <p>裝備式策略 Perks。可消耗金幣點亮攜帶式技能。</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="slide-right" style="padding: 20px;">
+                <div class="illustration-card">
+                    <div class="illustration-header"><span>🎒</span> 局外策略 Perks 整備</div>
+                    <div class="illustration-body">
+                        <span class="fallback-icon">🎒</span>
+                        <img src="images/slide_6.png" alt="Progression" class="real-image"
+                            onerror="this.style.display='none'">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 8: 6+6 選品與容錯策略 (圖左字右) -->
+        <section class="slide-container reverse" data-slide="8">
+            <div class="slide-left">
+                <span class="slide-page-num">Page 08</span>
+                <h2 class="slide-title">6+6 選品與容錯策略</h2>
+                <p class="slide-subtitle">撞牆彈跳緩衝，將新手挫敗感降到最低</p>
+                <ul class="bullet-list">
+                    <li class="bullet-item core">
+                        <span class="bullet-icon">🛡️</span>
+                        <div class="bullet-text"><strong>主題換新．經典再造：直覺撞牆「安全回彈」</strong>
+                            <p>改變一碰即死的挫敗設定。撞牆時產生 Q彈安全碰撞回彈，大幅提升操作寬容度與留存率。</p>
+                        </div>
+                    </li>
+                    <li class="bullet-item add">
+                        <span class="bullet-icon">⏳</span>
+                        <div class="bullet-text"><strong>熟悉與新奇的黃金平衡：快速復活 ＋ 幽靈無敵保護</strong>
+                            <p>快速重生、附帶無敵透明穿透保護，徹底消除死亡挫折，將單局爽快競技徹底拉滿。</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="slide-right" style="padding: 20px;">
+                <div class="illustration-card">
+                    <div class="illustration-header"><span>🛡️</span> 安全回彈</div>
+                    <div class="illustration-body">
+                        <span class="fallback-icon">🛡️</span>
+                        <img src="images/slide_7.png" alt="Strategy" class="real-image"
+                            onerror="this.style.display='none'">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 9: 金幣回收與極限合成 (字左圖右) -->
+        <section class="slide-container" data-slide="9">
+            <div class="slide-left">
+                <span class="slide-page-num">Page 09</span>
+                <h2 class="slide-title">金幣回收與極限合成</h2>
+                <p class="slide-subtitle">戰術與虛榮雙向驅動的健康經濟閉環</p>
+                <ul class="bullet-list">
+                    <li class="bullet-item core">
+                        <span class="bullet-icon">🔄</span>
+                        <div class="bullet-text"><strong>健康商業化閉環</strong>
+                            <p>玩遊戲 ➔ 消耗金幣點亮科技樹 ➔ 排名結算 ➔ 獲得皮膚獎勵 ➔ 皮膚融合消耗金幣 ➔ 炫耀外觀。</p>
+                        </div>
+                    </li>
+                    <li class="bullet-item coin">
+                        <span class="bullet-icon">💰</span>
+                        <div class="bullet-text"><strong>日常消耗 Perks 與 3合1 皮膚合成黑洞</strong>
+                            <p>皮膚分 1-5 星。必須用 3 個同星級皮膚隨機升星，星級越高、手續費越指數暴增。</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="slide-right" style="padding: 20px;">
+                <div class="illustration-card">
+                    <div class="illustration-header"><span>🔄</span> 經濟大循環</div>
+                    <div class="illustration-body">
+                        <span class="fallback-icon">⚙️</span>
+                        <img src="images/slide_8.png" alt="Economy" class="real-image"
+                            onerror="this.style.display='none'">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 10: 美術風格與視覺爽感 (上下排版: 上圖下字) -->
+        <section class="slide-container top-bottom" data-slide="10" style="flex-direction: column-reverse;">
+            <div class="slide-left" style="height: 35%; padding: 20px 60px;">
+                <div class="text-content" style="width: 35%;">
+                    <span class="slide-page-num">Page 10</span>
+                    <h2 class="slide-title">美術風格與視覺爽感</h2>
+                    <p class="slide-subtitle">打造極具任天堂親和力的 3D 微黏土手遊標竿</p>
+                </div>
+                <ul class="bullet-list" style="width: 60%; flex-direction: row;">
+                    <li class="bullet-item add" style="flex:1;">
+                        <div class="bullet-text"><strong>核心視覺美術</strong>
+                            <p>高對比現代卡通 ＋ Q彈圓潤黏土材質。</p>
+                        </div>
+                    </li>
+                    <li class="bullet-item core" style="flex:1;">
+                        <div class="bullet-text"><strong>極致視覺回饋</strong>
+                            <p>星級越高，衝刺流光粒子特效越華麗，滿足虛榮。</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="slide-right" style="height: 65%; padding: 0;">
+                <div class="illustration-card" style="border-radius: 0; border: none; box-shadow: none;">
+                    <div class="illustration-body">
+                        <span class="fallback-icon">✨</span>
+                        <img src="images/slide_9.png" alt="Art Style" class="real-image"
+                            onerror="this.style.display='none'">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 11: Q&A (純圖壓字設計) -->
+        <section class="slide-container" data-slide="11">
+            <div class="slide-right" style="width: 100%; padding: 0;">
+                <img src="images/slide_10.png" class="real-image" alt="Q&A" onerror="this.style.display='none'"
+                    style="filter: brightness(0.7);">
+                <div
+                    style="position: absolute; z-index: 5; text-align: center; color: white; display: flex; flex-direction: column; align-items: center; gap: 20px;">
+                    <span class="slide-page-num" style="color:var(--coin-yellow);">Page 11</span>
+                    <h2 class="slide-title"
+                        style="font-size: 5rem; color: white; text-shadow: 0 4px 20px rgba(0,0,0,0.5);">Q&A</h2>
+                    <div
+                        style="background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); padding: 30px 50px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.2); max-width: 800px; margin-top: 20px;">
+                        <p style="font-size: 1.2rem; color: white; line-height: 1.6;">
+                            我們致力於將 <b>「長線的養成深度」</b> 與 <b>「純技巧性的公平競技」</b> 完美融合。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 底部控制面板 -->
+    <footer class="bottom-controls">
+        <div class="prev-next-btns">
+            <button class="nav-btn" onclick="prevSlide()">←</button>
+            <button class="nav-btn" onclick="nextSlide()">→</button>
+        </div>
+        <div class="dots-container" id="dotsContainer"></div>
+        <div style="font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 0.95rem; color: var(--text-muted);">
+            SNAKE.IO <span style="color:var(--nintendo-red);">競技場</span> v5.0.0
+        </div>
+    </footer>
+
+    <!-- 簡報互動腳本 -->
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 11;
+        const slides = document.querySelectorAll('.slide-container');
+        const dotsContainer = document.getElementById('dotsContainer');
+
+        function initDots() {
+            dotsContainer.innerHTML = '';
+            for (let i = 1; i <= totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = `dot ${i === 1 ? 'active' : ''}`;
+                dot.onclick = () => goToSlide(i);
+                dotsContainer.appendChild(dot);
+            }
+        }
+
+        function goToSlide(slideNum) {
+            if (slideNum < 1 || slideNum > totalSlides) return;
+            slides.forEach(slide => {
+                if (slide.dataset.slide == currentSlide) {
+                    slide.classList.remove('active'); slide.classList.add('prev-active');
+                } else {
+                    slide.classList.remove('prev-active');
+                }
+            });
+            currentSlide = slideNum;
+            setTimeout(() => {
+                slides.forEach(slide => {
+                    if (slide.dataset.slide == currentSlide) slide.classList.add('active');
+                    else slide.classList.remove('active');
+                });
+            }, 50);
+            document.querySelectorAll('.dot').forEach((dot, idx) => {
+                if (idx + 1 === currentSlide) dot.classList.add('active');
+                else dot.classList.remove('active');
+            });
+        }
+
+        function nextSlide() { if (currentSlide < totalSlides) goToSlide(currentSlide + 1); else goToSlide(1); }
+        function prevSlide() { if (currentSlide > 1) goToSlide(currentSlide - 1); else goToSlide(totalSlides); }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') { e.preventDefault(); nextSlide(); }
+            else if (e.key === 'ArrowLeft' || e.key === 'Backspace') { e.preventDefault(); prevSlide(); }
+        });
+
+        function toggleFullscreen() {
+            const viewport = document.getElementById('viewport');
+            if (!document.fullscreenElement) viewport.requestFullscreen().catch(err => alert(`無法切換為全螢幕模式: ${err.message}`));
+            else document.exitFullscreen();
+        }
+
+        initDots();
+    </script>
+</body>
+
+</html>

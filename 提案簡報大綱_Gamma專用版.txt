@@ -1,0 +1,181 @@
+# 項目提案簡報：Snake.io 競技場 (Gamma 極簡自適應版)
+
+* 提示：這份大綱經過「文字極簡化」與「生圖專門化」深度優化。
+* 每一頁標題皆已標明「Page X」，首頁封面已設為「Page 1」，後續投影片依序順延，確保 Gamma 導入時能完美識別並切分每一頁投影片！
+
+---
+
+## 🎨 全域自訂主題樣式提示詞 (Custom Style Prompt)
+*提示：請直接複製下方代碼框的內容，貼入 Gamma 的「自訂樣式描述 (Custom Style Description)」或圖片風格提示框中，即可全域鎖定任天堂活力 3D 風格與配色！*
+
+```text
+Premium 3D claymation and matte plastic toy render. Rich vibrant colors, soft volumetric studio lighting, smooth matte vinyl surfaces, round chubby proportions, inspired by high-end Nintendo game art. Color palette features warm pearl white background (#F8F9FA), slate gray text (#495057), off-white cards (#E9ECEF), and vibrant accents of Nintendo Red (#E60012), Yoshi Green (#3CD070), and Gold Coin Yellow (#FFD000). Modern playful professional layout. NO outlines, NO watermarks, NO text, NO logos.
+```
+
+---
+
+## ## Page 1: Snake.io 競技場 ── 項目提案簡報
+### 極致輕量・快節奏的 3D 休閒競技場
+- **🎯 核心定位**：
+  隨配隨玩、強對抗爽感的 3D 輕量電競。
+- **🎨 美術風格**：
+  任天堂系 3D 卡通黏土與霧面塑料質感。
+- **💡 商業閉環**：
+  局外雙軌 Perks 養成 ＋ 3合1 皮膚融合金幣回收。
+
+```text
+⚠️ [此框僅用於生圖，請勿貼入簡報文字]
+【插圖主旨】：簡報封面（戴著黃金皇冠的可愛 3D 萌蛇在彩色賽道中央對著觀眾微笑，周圍有金幣與星星浮空）
+【核心動作提示詞】(直接複製貼入 Gamma 生圖框即可)：
+An epic and cheerful 3D mobile game cover key art. A cute, chubby green snake wearing a shiny golden crown is sliding dynamically in the center of a bright, colorful grid arena, looking forward at the viewer with a big happy smile. Floating gold coins and sparkling yellow star particles drift in the air. Saturated vibrant colors, smooth matte clay and vinyl textures, bright cheerful lighting, clean light gray background.
+```
+
+---
+
+## ## Page 2: 參考競品與加減法策略
+### 以「技巧勝過數值」填補市場空白
+- **對比 Snake Clash**：
+  **【加法】** 衝刺截斷與撞牆安全回彈，以操作技巧反殺純數值壓制。
+- **對比 Snake.io**：
+  **【加法】** 導入「成長之路」局外進度與金幣科技樹，大幅拉長生命週期。
+- **對比 Snake Merge**：
+  **【加法】** 保留外觀融合合成快感，但與局內戰力完全剝離，確保絕對公平。
+
+```text
+⚠️ [此框僅用於生圖，請勿貼入簡報文字]
+【插圖主旨】：技巧勝過數值（小巧靈活的 3D 藍蛇精準 Dash 甩尾攔截巨大震驚的 LV.99 紅蛇）
+【核心動作提示詞】(直接複製貼入 Gamma 生圖框即可)：
+A humorous 3D game concept illustration. A massive, slow-looking red dragon-snake decorated with numeric 'LV.99' labels looks shocked as a tiny, highly agile blue snake slickly dashes right in front of its head, cutting it off with a cartoonish white wind trail. High-contrast vibrant colors, bright clean studio background.
+```
+
+---
+
+## ## Page 3: 核心玩法與極簡操控
+### 極致絲滑的雙鍵電競體驗
+- **👾 左手搖桿：動態操作**
+  隨滑隨動、零延遲，提供細密微操與硬核走位避險空間。
+- **⚡ 右手大鍵：極速 Dash**
+  爆發 1.25x 速度，創造瞬間超前截斷對手動線的「極速反殺」爽感。
+
+```text
+⚠️ [此框僅用於生圖，請勿貼入簡報文字]
+【插圖主旨】：極速衝刺截斷對手（可愛綠蛇快速甩尾擋在胖橘蛇前方，碰撞處迸發卡通黃色星星特效）
+【核心動作提示詞】(直接複製貼入 Gamma 生圖框即可)：
+A dynamic 3D mobile game concept illustration showcasing a combat moment. An agile green snake is executing a high-speed curved turn, cutting off a chubby orange snake. The orange snake's head bumps into the green snake's body, producing sparkling yellow cartoon collision star effects. In the corners, a semi-transparent mobile game HUD overlay (joystick on left, red button on right) is subtly visible. Professional clean studio background.
+```
+
+---
+
+## ## Page 4: 三大競技遊戲模式
+### 層次分明、豐富多元的競技體驗
+- **🟢 Solo 模式 (單人練習)**
+  1P vs 7 BOTs。新手熟悉操作與挑戰極限分數的無壓樂園，即開即玩。
+- **🔵 大亂鬥 (競技對抗)**
+  1P vs 1P(或AI) vs 6 BOTs。衝擊天梯排行榜的核心賽場，考驗對撞策略。
+- **🟡 團體賽 (陣營對抗)**
+  4 vs 4 紅白大對抗。隊友跟隨玩家，追求團隊總積分壓制，開創輕團戰。
+
+```text
+⚠️ [此框僅用於生圖，請勿貼入簡報文字]
+【插圖主旨】：玩家成長三階段（左側 Solo 草地吃金幣 ➔ 中間亂鬥競技場對碰 ➔ 右側紅白團戰包圍大金蘑菇）
+【核心動作提示詞】(直接複製貼入 Gamma 生圖框即可)：
+A premium 3D presentation infographic split into three side-by-side rounded viewing portals, with a glowing gold arrow pointing horizontally from left to right across all three. Left portal shows a happy green snake sliding in a grassy field. Center portal shows an agile blue snake competing against an orange snake in a stadium. Right portal shows a group of red snakes cooperating to surround a huge golden mushroom. Saturated colors, smooth matte clay, bright clean lighting, professional light grey background.
+```
+
+---
+
+## ## Page 5: 局內機制：技能與隨機道具
+### 用隨機道具與冷卻機制增加策略深度
+- **⚡ 核心主動技能 (HUD)**
+  - **Dash 衝刺**：消耗體力。具備「超載機制」，用盡後須等待完全恢復。
+  - **磁力漩渦**：30s 冷卻。瞬間吸附周圍半徑 200px 內所有發光食物。
+- **🍄 三大隨機道具 (持續 10 秒)**
+  - **巨大蘑菇**：體型 1.5x 且免疫截斷，但移動速度下降 20%。
+  - **地圖磁鐵**：自動吸附食物，引導玩家走向高風險爭奪熱區。
+  - **幸運 7**：食物價值翻 7 倍，創造短期分數暴漲的競技高潮。
+
+```text
+⚠️ [此框僅用於生圖，請勿貼入簡報文字]
+【插圖主旨】：三大核心道具陳列（紅斑巨大蘑菇、釋放磁力波紋的紅色馬蹄鐵磁鐵、刻有數字 7 的亮金幣）
+【核心動作提示詞】(直接複製貼入 Gamma 生圖框即可)：
+A high-quality 3D game asset showcase. Three power-up items are displayed on a clean white pedestal: a cute red-and-white spotted 'Giant Mushroom', a red horseshoe magnet releasing soft blue magnetic waves, and a shiny gold coin engraved with a lucky number '7'. Matte clay textures, under bright professional studio lighting, clean background.
+```
+
+---
+
+## ## Page 6: 局外雙軌養成系統
+### 滿足收集控與策略玩家的長線追求
+- **🟢 路徑一：成長之路 (基礎角色培養)**
+  隨遊戲進度解鎖。升級體力上限、體力回復速率與磁力漩渦基礎半徑。
+- **🟡 路徑二：科技樹 Perks (功能被動)**
+  裝備式天賦。如【鷹眼】（視野變大）、【免死金牌】（單局防截斷自殺豁免）、【道具增幅】（延長 Buff 時間並降低副作用）。
+
+```text
+⚠️ [此框僅用於生圖，請勿貼入簡報文字]
+【插圖主旨】：小蛇的戰前準備更衣室（黃色小蛇戴著鷹眼飛行護鏡、背著小巧磁鐵背包準備上場）
+【核心動作提示詞】(直接複製貼入 Gamma 生圖框即可)：
+A playful 3D game concept illustration. A cute yellow snake is preparing for battle inside a toy-like 'Locker Room'. The snake is proudly wearing tactical gear: glowing high-tech aviator goggles (Eagle Eye) and a small red backpack magnet (Magnet Boost). Floating gold stars and round green perk icons hover around the character. Saturated colors, soft studio lighting, clean studio background.
+```
+
+---
+
+## ## Page 7: 6+6 選品與容錯策略
+### 降低挫敗感，實現極致高留存
+- **🛡️ 首創直覺撞牆「安全回彈」**
+  撞牆產生 Q彈金星碰撞回彈而不致死，有效免除新手的生硬挫敗感。
+- **⏳ 2 秒極速復活與幽靈保護**
+  無敵透明保護 2 秒，消除玩家死亡時的失去感，讓爽快競技毫不中斷。
+
+```text
+⚠️ [此框僅用於生圖，請勿貼入簡報文字]
+【插圖主旨】：安全碰撞回彈（可愛圓滾滾胖蛇撞在軟綿綿白色牆壁上，露出眼花俏皮表情安全回彈）
+【核心動作提示詞】(直接複製貼入 Gamma 生圖框即可)：
+A high-quality 3D game concept. A cute, chubby snake bounces safely off a soft, pillowy white brick wall, producing playful yellow cartoon star impact ripples. The snake is smiling happily with a dizzy but cheerful expression. Stylized background, vibrant saturated colors, bright lighting, clean studio background.
+```
+
+---
+
+## ## Page 8: 金幣回收與極限合成
+### 雙向並進的健康經濟回收閉環
+- **🔄 經濟閉環流程**：
+  `玩遊戲 ➔ 消耗金幣升級 Perks ➔ 刷天梯 ➔ 賽季皮膚獎勵 ➔ 3合1合成升星 ➔ 局內秀外觀`
+- **💰 兩大金幣回收黑洞**：
+  - **日常升級**：Perks 科技樹屬性升級的剛性金幣消耗。
+  - **皮膚融合**：3合1 隨機升星皮膚（1-5星外觀無數值差異）。星級越高成功率越低，且手續費呈指數暴增，完美吸納多餘貨幣。
+
+```text
+⚠️ [此框僅用於生圖，請勿貼入簡報文字]
+【插圖主旨】：皮膚工坊合成（三個同款 1 星藍小蛇玩具被送入玻璃融聚艙，融合成 2 星紫龍蛇，金幣雨飄落）
+【核心動作提示詞】(直接複製貼入 Gamma 生圖框即可)：
+A premium 3D game UI concept showcasing a 'Skin Fusion Workshop'. In the center, three identical cute 1-star blue snake figurines are combining into a glowing, sparkling 2-star purple dragon-snake inside a glossy, futuristic toy capsule fusion machine. Gold coins rain down in the background amid playful yellow sparks. Vibrant saturated colors, smooth matte textures, warm playful lighting, clean background.
+```
+
+---
+
+## ## Page 9: 美術風格與視覺爽感
+### 任天堂系高級視覺與震撼爽感反饋
+- **🎨 美術核心**：
+  - **【現代 3D 卡通】** 色彩明快、高對比高飽和，展現極致精緻度。
+  - **【微黏土質感】** 圓潤 Q 彈有彈性，營造實體玩具般的沉浸觸感。
+- **✨ 視覺爽感**：
+  - 拾取資源時伴隨縮放與清脆音效；擊殺瞬間對手炸裂為發光星海。
+  - **【皮膚星級越高，Dash與磁力漩渦的粒子特效與軌跡越無比華麗】**，極致滿足虛榮心。
+
+```text
+⚠️ [此框僅用於生圖，請勿貼入簡報文字]
+【插圖主旨】：高階炫耀外觀粒子流光拖尾（頂級 5 星黃金飛龍蛇在衝刺，身後拖曳極其華麗的星星與彩虹粒子）
+【核心動作提示詞】(直接複製貼入 Gamma 生圖框即可)：
+A premium 3D game concept illustration showcasing an ultra-premium 5-star golden dragon-skin snake character in dynamic action. The snake is dashing forward, leaving a spectacular sparkling trail of floating gold coins, bright colorful stars, and glowing rainbow particle trails. Glossy gold textures, incredible magical particle effects, bright lighting, and a clean light gray background.
+```
+
+---
+
+## ## Page 10: Q&A
+- **提問與交流**：歡迎各位評委與合作夥伴提問交流。
+
+```text
+⚠️ [此框僅用於生圖，請勿貼入簡報文字]
+【插圖主旨】：感謝聆聽群體微笑（紅、綠、藍 Q版胖蛇齊聚向觀眾揮手微笑，中央懸浮巨大金色 3D 問號標誌）
+【核心動作提示詞】(直接複製貼入 Gamma 生圖框即可)：
+A warm and welcoming 3D illustration. A group of cute, chubby colorful snakes (one red, one green, one blue) are smiling happily and waving together. In the center, a large, glossy golden question mark symbol floats in the air surrounded by sparkling gold stars and soft confetti. Saturated colors, smooth matte textures, bright cheerful lighting, clean light gray background.
+```
