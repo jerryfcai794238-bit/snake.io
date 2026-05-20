@@ -168,6 +168,37 @@
             border: none;
         }
 
+        /* 全螢幕模式下 top-bottom 版面優化 (減少留白) */
+        :fullscreen .slide-container.top-bottom .slide-left {
+            height: 35%;
+            padding: 15px 50px;
+        }
+
+        :fullscreen .slide-container.top-bottom .slide-right {
+            height: 65%;
+            padding: 15px 40px;
+        }
+
+        /* 全螢幕模式下表格與模式卡片優化 */
+        :fullscreen .mode-row {
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        :fullscreen .rules-table-container {
+            padding: 12px;
+        }
+
+        :fullscreen .rules-table th {
+            padding: 8px 10px;
+            font-size: 0.95rem;
+        }
+
+        :fullscreen .rules-table td {
+            padding: 8px 10px;
+            font-size: 0.9rem;
+        }
+
         /* 不同的排版變化 (Layout Variations) */
         .slide-container.reverse {
             flex-direction: row-reverse;
@@ -175,11 +206,6 @@
 
         .slide-container.top-bottom {
             flex-direction: column;
-        }
-
-        .slide-container.grid-layout {
-            flex-direction: column;
-            padding: 40px 60px;
         }
 
         .slide-container.full-bg {
@@ -391,7 +417,7 @@
         .real-image {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
             position: absolute;
             top: 0;
             left: 0;
@@ -401,6 +427,22 @@
 
         .illustration-card:hover .real-image {
             transform: scale(1.05);
+        }
+
+        /* Demo video style (fits inside container without cropping) */
+        .demo-video {
+            width: auto;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            transform: translateY(-20px);
+            display: block;
+            margin: 0 auto;
+            background: transparent;
         }
 
         /* 底部導航與控制面板 */
@@ -558,16 +600,16 @@
         }
 
         .divider-title.green {
-            color: var(--yoshi-green);
+            color: var(--nintendo-red);
         }
 
         .divider-title.yellow {
-            color: var(--coin-yellow);
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            color: var(--nintendo-red);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
         }
 
         .divider-title.slate {
-            color: var(--text-muted);
+            color: var(--nintendo-red);
         }
 
         .divider-subtitle {
@@ -625,15 +667,77 @@
         .mode-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
+            gap: 10px;
             margin-bottom: 25px;
+            max-width: 1180px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .mode-detail-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+            max-width: 1180px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .mode-detail-box {
+            background: white;
+            border: 1px solid rgba(229, 62, 62, 0.55);
+            border-radius: 18px;
+            padding: 18px;
+            min-height: 110px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .mode-detail-box strong {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+        }
+
+        .mode-detail-box p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin: 0;
         }
 
         .rules-table-container {
             background: var(--bg-pearl);
             border-radius: 20px;
-            padding: 20px;
+            padding: 10px;
             box-shadow: var(--inset-shadow);
+            max-width: 1180px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .slide-container.top-bottom .slide-left,
+        .slide-container.top-bottom .slide-right {
+            /* 保持預設 stretched 對齊，避免 page 05 / page 06 標題被置中遮蔽 */
+            align-items: stretch;
+        }
+
+        .slide-container.grid-layout {
+            flex-direction: column;
+            padding: 40px 60px;
+            align-items: center;
+            justify-content: flex-start;
+            text-align: center;
+        }
+
+        .slide-container.grid-layout > div:first-child {
+            max-width: 980px;
+            width: 100%;
+            margin-bottom: 25px;
         }
 
         .rules-table {
@@ -663,10 +767,17 @@
             display: flex;
             gap: 30px;
             height: 100%;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 1230px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .six-six-column {
-            flex: 1;
+            flex: 1 1 420px;
+            min-width: 320px;
             display: flex;
             flex-direction: column;
             gap: 20px;
@@ -1032,11 +1143,10 @@
         <section class="slide-container active" data-slide="1"
             style="justify-content: center; align-items: center; text-align: center; flex-direction: column;">
             <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
-                <span class="slide-page-num" style="justify-content: center;">Page 01</span>
-                <h1 class="cover-title">提案簡報─貪食蛇</h1>
+                <h1 class="cover-title">貪食蛇提案說明</h1>
                 <div
                     style="background: rgba(0,0,0,0.03); padding: 8px 24px; border-radius: 9999px; font-size: 0.95rem; font-weight: 600; margin-top: 10px; color: var(--text-muted);">
-                    參加者：提案組 + 運營
+                    線上研三 開發二組
                 </div>
             </div>
         </section>
@@ -1046,7 +1156,7 @@
             style="flex-direction: column; padding: 60px 80px; justify-content: center;">
             <span class="slide-page-num">Page 02</span>
             <div style="margin-bottom: 30px;">
-                <h2 class="slide-title" style="font-size: 3rem; color: var(--nintendo-red);">多人亂鬥 X 體力控管 X 截斷反殺</h2>
+                <h2 class="slide-title">多人亂鬥 X 體力控管 X 截斷反殺</h2>
                 <p class="slide-subtitle" style="font-size: 1.25rem; margin-top: 4px;">本品特色核心玩法與選品定位</p>
             </div>
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-bottom: 35px;">
@@ -1087,7 +1197,7 @@
             style="flex-direction: column; padding: 60px 80px; justify-content: center;">
             <div style="text-align: center; margin-bottom: 35px;">
                 <span class="slide-page-num" style="justify-content: center;">Page 03</span>
-                <h2 class="slide-title">大綱 (1/1)：項目議題總覽</h2>
+                <h2 class="slide-title">大綱：項目總覽</h2>
             </div>
             <div class="agenda-grid">
                 <div class="agenda-item active">
@@ -1135,7 +1245,8 @@
             "
         >
             <div class="divider-title">1. 核心玩法</div>
-            <div class="divider-subtitle">多人亂鬥與極限操作</div>
+            <div class="divider-subtitle">基本操作</div>
+            <div class="divider-subtitle">遊戲模式</div>
         </section>
 
         <!-- Slide 05: 1. 核心玩法 (1/2)：基本操作 -->
@@ -1261,27 +1372,24 @@
                     align-items: center;
                 "
             >
-                <img 
-                    src="../presentation_v5.0.0/images/貪食蛇 sample.png" 
-                    alt="實機畫面" 
-                    onerror="this.style.display='none'"
-                    style="
-                        max-width: 100%;
-                        max-height: 100%;
-                        object-fit: contain;
-                        border-radius: 16px;
-                        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-                        border: 1px solid rgba(0, 0, 0, 0.08);
-                        transform: translateY(-20px);
-                    "
-                >
+                <video class="demo-video" autoplay muted loop playsinline onerror="this.style.display='none'">
+                    <source src="Demo_01.mp4" type="video/mp4">
+                    您的瀏覽器不支援影片播放。
+                </video>
             </div>
         </section>
         
         <!-- Slide 06: 1. 核心玩法 (2/2)：三大模式與簡易規則 -->
         <section class="slide-container top-bottom" data-slide="6">
             <div class="slide-left"
-                style="width: 100%; height: 48%; padding: 25px 60px; flex-direction: column; justify-content: center; align-items: stretch; border-bottom: none;">
+                style="
+                width: 100%; 
+                height: 100%; 
+                padding: 120px 60px 20px 60px; 
+                flex-direction: column; 
+                justify-content: center; 
+                align-items: stretch; 
+                border-bottom: none;">
                 <div
                     style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
                     <div>
@@ -1309,36 +1417,48 @@
                         </p>
                     </div>
                 </div>
+                <div class="mode-detail-row">
+                    <div class="mode-detail-box">
+                        <p>配置：1P vs 7 BOT<br>最基礎的模式，BOT 反應較慢，適合新手熟悉操作。</p>
+                    </div>
+                    <div class="mode-detail-box">
+                        <p>配置：1P vs 1 AI vs 6 BOT<br>與一名強力對手競爭，考驗玩家在混亂中的生存與獵殺能力。</p>
+                    </div>
+                    <div class="mode-detail-box">
+                        <p>配置：1名玩家+3名BOT vs 1名AI+3名BOT<br>紅白大對抗，隊友之間共享積分和地圖道具。</p>
+                    </div>
+                </div>
             </div>
             <div class="slide-right"
-                style="height: 52%; width: 100%; border-left: none; padding: 0 40px 20px 40px; background: white;">
+                style="height: 100%; width: 100%; border-left: none; padding: 0px 60px 20px 60px; background: white;">
                 <div class="rules-table-container">
                     <table class="rules-table">
                         <thead>
                             <tr>
                                 <th style="width: 25%;">碰撞類型</th>
-                                <th style="width: 45%;">判定與勝負規則</th>
+                                <th style="width: 45%;">勝負判定</th>
                                 <th style="width: 30%;">懲罰/緩衝</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><b>頭撞擊他人身體</b></td>
-                                <td>撞擊方立即死亡，遺骸化作 50% 體型的食物。</td>
-                                <td>即死，進入 2 秒復活計時。</td>
+                                <td><b>撞擊他人身體</b></td>
+                                <td>撞擊方立即死亡。</td>
+                                <td>死亡後進入 2 秒復活計時。</td>
                             </tr>
                             <tr>
-                                <td><b>頭對頭對撞 (皆未衝刺)</b></td>
+                                <td><b>頭部對撞 (皆未衝刺)</b></td>
                                 <td>蛇身總長度大者獲勝擊殺對方，小者即死。</td>
                                 <td>大蛇贏，小蛇死。</td>
                             </tr>
                             <tr>
-                                <td><b>頭對頭對撞 (衝刺/特殊)</b></td>
-                                <td>一方衝刺則衝刺方贏；若雙方皆在衝刺中對撞，觸發「安全回彈」。</td>
+                                <td><b>頭部對撞 (Dash)</b></td>
+                                <td>一方衝刺則衝刺方贏；<br>若雙方皆在衝刺中對撞，觸發「回彈」。</td>
                                 <td>安全回彈，兩者皆不致死。</td>
                             </tr>
                         </tbody>
                     </table>
+                    <h5><i><p style="color: #a6b4ce;"> *死亡後進入 2 秒復活計時，遺骸化作 50% 體型的食物，散落在地圖上供玩家拾取成長。</p></i></h5>
                 </div>
             </div>
         </section>
@@ -1351,7 +1471,7 @@
         </section>
 
         <!-- Slide 08: 2. 6+6選品策略 (1/1)：經典再造與心理驅動 -->
-        <section class="slide-container grid-layout" data-slide="8" style="justify-content: center;">
+        <section class="slide-container grid-layout" data-slide="8" style="justify-content: flex-start;">
             <span class="slide-page-num">Page 08</span>
             <div style="margin-bottom: 25px;">
                 <h2 class="slide-title">2. 6+6選品策略 (1/1)：經典再造與心理驅動</h2>
