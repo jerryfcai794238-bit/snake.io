@@ -2,17 +2,9 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "msedge",
+            "type": "pwa-chrome",
             "request": "launch",
-            "name": "Launch Edge (Snake.io)",
-            "url": "http://localhost:3000",
-            "webRoot": "${workspaceFolder}",
-            "preLaunchTask": "Start Server"
-        },
-        {
-            "type": "chrome",
-            "request": "launch",
-            "name": "Launch Chrome (Snake.io)",
+            "name": "Launch Snake.io (local server)",
             "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}",
             "preLaunchTask": "Start Server"
