@@ -148,6 +148,16 @@
             z-index: 1;
         }
 
+        /* 全螢幕模式下移除寬高限制與圓角，實現真正無邊框全螢幕 */
+        :fullscreen .slide-container {
+            width: 100vw;
+            height: 100vh;
+            max-width: none;
+            max-height: none;
+            border-radius: 0;
+            border: none;
+        }
+
         /* 不同的排版變化 (Layout Variations) */
         .slide-container.reverse {
             flex-direction: row-reverse;
@@ -663,26 +673,86 @@
             </div>
         </section>
 
-        <!-- Slide 3: 參考競品 (反向排版: 圖左字右) -->
-        <section class="slide-container" data-slide="3">
+        <!-- Slide 3: 競品市場下載數據分析 -->
+        <section class="slide-container" data-slide="3" style="flex-direction: column; padding: 40px 60px;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <span class="slide-page-num" style="justify-content: center;">Page 03</span>
+                <h2 class="slide-title">競品市場下載數據分析</h2>
+                <p class="slide-subtitle">主流休閒 .io 龐大的用戶基數潛力（截至 2026 年最新統計）</p>
+            </div>
+            <div
+                style="display: flex; gap: 30px; height: 100%; align-items: stretch; justify-content: center; margin-top: 20px;">
+                <div
+                    style="flex: 1; display: flex; flex-direction: column; gap: 15px; background: rgba(230,0,18,0.05); border-left: 5px solid var(--nintendo-red); padding: 25px 30px; border-radius: 16px; box-shadow: var(--card-shadow); justify-content: flex-start;">
+                    <h3 style="font-size: 1.6rem; color: var(--nintendo-red); margin-bottom: 2px; font-weight: 800;">
+                        Snake.io</h3>
+                    <div style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 15px;">by Kooapps</div>
+                    <div
+                        style="font-size: 1.2rem; margin-bottom: 15px; font-weight: 700; color: var(--text-dark); line-height: 1.4;">
+                        Play 商店標籤：<span style="font-size: 1.5rem; color: var(--nintendo-red);">1 億+ 下載</span><br>
+                        <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: normal;">(官方公佈全球跨平台累計已達 4
+                            億~5 億+)</span>
+                    </div>
+                    <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; margin: 0;">
+                        Android 端下載量級為 100M+；Kooapps 官方新聞稿及 Snapchat 合作案指出，結合 iOS、網頁端及 Netflix 版本，全球累計已超越 5 億用戶。
+                    </p>
+                </div>
+                <div
+                    style="flex: 1; display: flex; flex-direction: column; gap: 15px; background: rgba(60,208,112,0.05); border-left: 5px solid var(--yoshi-green); padding: 25px 30px; border-radius: 16px; box-shadow: var(--card-shadow); justify-content: flex-start;">
+                    <h3 style="font-size: 1.6rem; color: var(--yoshi-green); margin-bottom: 2px; font-weight: 800;">
+                        Snake Clash!</h3>
+                    <div style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 15px;">by Supercent</div>
+                    <div
+                        style="font-size: 1.2rem; margin-bottom: 15px; font-weight: 700; color: var(--text-dark); line-height: 1.4;">
+                        Play 商店標籤：<span style="font-size: 1.5rem; color: var(--yoshi-green);">1 億+ 下載</span><br>
+                        <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: normal;">(雙平台估算累計約 1.1 億
+                            ~ 1.3 億)</span>
+                    </div>
+                    <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; margin: 0;">
+                        2023 年發行的市場黑馬，Android 商店僅用一年多便跨越 100M+ 標籤；iOS 端下載量經 Sensor Tower 推估約 1500 萬 ~ 2500 萬次。
+                    </p>
+                </div>
+                <div
+                    style="flex: 1; display: flex; flex-direction: column; gap: 15px; background: rgba(255,208,0,0.05); border-left: 5px solid var(--coin-yellow); padding: 25px 30px; border-radius: 16px; box-shadow: var(--card-shadow); justify-content: flex-start;">
+                    <h3 style="font-size: 1.6rem; color: var(--coin-yellow); margin-bottom: 2px; font-weight: 800;">
+                        Snake Merge</h3>
+                    <div style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 15px;">by Hippo Lab</div>
+                    <div
+                        style="font-size: 1.2rem; margin-bottom: 15px; font-weight: 700; color: var(--text-dark); line-height: 1.4;">
+                        Play 商店標籤：<span style="font-size: 1.5rem; color: var(--coin-yellow);">5,000 萬+ 下載</span><br>
+                        <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: normal;">(雙平台估算累計約 5,200
+                            萬 ~ 5,500 萬)</span>
+                    </div>
+                    <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; margin: 0;">
+                        商店註冊全名為 Worms Merge-io。Android 標籤達 50M+。iOS 端因買量側重不同，推估累計下載約在 100 萬至 300 萬次之間。
+                    </p>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 30px; font-size: 0.85rem; color: var(--text-muted);">
+                <b>數據查證指標：</b>Google Play 商店公開顯示之安裝量級區間 (100M+ / 50M+)，以及 Sensor Tower、AppMagic 與發行商官方公佈之跨平台彙整。
+            </div>
+        </section>
+
+        <!-- Slide 4: 參考競品 (反向排版: 圖左字右) -->
+        <section class="slide-container" data-slide="4">
             <div class="slide-left">
-                <span class="slide-page-num">Page 03</span>
+                <span class="slide-page-num">Page 04</span>
                 <h2 class="slide-title">參考競品與加減法策略</h2>
                 <p class="slide-subtitle">以「技巧勝過數值」填補休閒競技市場空白</p>
                 <ul class="bullet-list">
-                    <li class="bullet-item add">
-                        <span class="bullet-icon">⚡</span>
-                        <div class="bullet-text"><strong>對比 Snake Clash </strong>
-                            <p>導入衝刺截斷與「安全碰撞回彈」機制，以技巧打破純數值壓制。</p>
-                        </div>
-                    </li>
-                    <li class="bullet-item add">
+                    <li class="bullet-item core">
                         <span class="bullet-icon">📂</span>
                         <div class="bullet-text"><strong>對比 Snake.io </strong>
                             <p>導入「成長之路」局外進度與金幣科技樹，大幅延伸局外策略長線。</p>
                         </div>
                     </li>
                     <li class="bullet-item add">
+                        <span class="bullet-icon">⚡</span>
+                        <div class="bullet-text"><strong>對比 Snake Clash </strong>
+                            <p>導入衝刺截斷與「安全碰撞回彈」機制，以技巧打破純數值壓制。</p>
+                        </div>
+                    </li>
+                    <li class="bullet-item coin">
                         <span class="bullet-icon">💎</span>
                         <div class="bullet-text"><strong>對比 Snake Merge </strong>
                             <p>保留皮膚合成的成癮性，但完全剝離數值，捍衛純外觀公平競技。</p>
@@ -702,12 +772,58 @@
             </div>
         </section>
 
-        <!-- Slide 4: 核心玩法與極簡操控 (上字下圖排版) -->
-        <section class="slide-container top-bottom" data-slide="4">
+        <!-- Slide 5: 競品視覺展示 -->
+        <section class="slide-container" data-slide="5" style="flex-direction: column; padding: 40px 60px;">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <span class="slide-page-num" style="justify-content: center;">Page 05</span>
+                <h2 class="slide-title">參考競品畫面展示</h2>
+            </div>
+            <div style="display: flex; gap: 20px; height: 100%; align-items: stretch; justify-content: center;">
+                <div
+                    style="flex: 1; display: flex; flex-direction: column; gap: 15px; background: var(--bg-pearl); border-left: 5px solid var(--nintendo-red); border-radius: 16px; padding: 15px; box-shadow: var(--card-shadow);">
+                    <img src="images/snake io sample.png"
+                        style="width: 100%; height: 0; flex-grow: 1; object-fit: contain; border-radius: 8px;"
+                        onerror="this.style.display='none'">
+                    <div style="text-align: center; font-weight: 700; color: var(--text-dark); font-size: 1.2rem;">
+                        Snake.io</div>
+                </div>
+                <div
+                    style="flex: 1; display: flex; flex-direction: column; gap: 15px; background: var(--bg-pearl); border-left: 5px solid var(--yoshi-green); border-radius: 16px; padding: 15px; box-shadow: var(--card-shadow);">
+                    <img src="images/snake clash sample.png"
+                        style="width: 100%; height: 0; flex-grow: 1; object-fit: contain; border-radius: 8px;"
+                        onerror="this.style.display='none'">
+                    <div style="text-align: center; font-weight: 700; color: var(--text-dark); font-size: 1.2rem;">Snake
+                        Clash</div>
+                </div>
+                <div
+                    style="flex: 1; display: flex; flex-direction: column; gap: 15px; background: var(--bg-pearl); border-left: 5px solid var(--coin-yellow); border-radius: 16px; padding: 15px; box-shadow: var(--card-shadow);">
+                    <img src="images/snake merge sample.png"
+                        style="width: 100%; height: 0; flex-grow: 1; object-fit: contain; border-radius: 8px;"
+                        onerror="this.style.display='none'">
+                    <div style="text-align: center; font-weight: 700; color: var(--text-dark); font-size: 1.2rem;">Snake
+                        Merge</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 6: 本品視覺展示 (滿版) -->
+        <section class="slide-container full-bg" data-slide="6">
+            <img src="images/貪食蛇 sample.png" alt="Our Game" class="real-image" onerror="this.style.display='none'"
+                style="object-fit: cover; filter: brightness(0.95); object-position: center;">
+            <div class="content-overlay"
+                style="position: absolute; top: 40px; left: 40px; width: auto; max-width: 500px; text-align: left; background: rgba(255,255,255,0.5); padding: 25px 35px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+                <span class="slide-page-num" style="justify-content: flex-start; color: var(--nintendo-red);">Page
+                    06</span>
+                <h2 class="slide-title" style="font-size: 2.5rem; margin-bottom: 10px;">貪食蛇 Demo展示</h2>
+            </div>
+        </section>
+
+        <!-- Slide 7: 核心玩法與極簡操控 (上字下圖排版) -->
+        <section class="slide-container top-bottom" data-slide="7">
             <div class="slide-left"
                 style="height: 45%; padding: 30px 60px; flex-direction: column; justify-content: center; align-items: stretch; border-bottom: none;">
                 <div style="text-align: center; margin-bottom: 25px;">
-                    <span class="slide-page-num" style="justify-content: center;">Page 04</span>
+                    <span class="slide-page-num" style="justify-content: center;">Page 07</span>
                     <h2 class="slide-title">核心玩法與極簡操控</h2>
                     <p class="slide-subtitle">極致絲滑的雙鍵掌上電競體驗</p>
                 </div>
@@ -736,12 +852,12 @@
             </div>
         </section>
 
-        <!-- Slide 5: 三大競技遊戲模式 (上字下圖新設計) -->
-        <section class="slide-container top-bottom" data-slide="5">
+        <!-- Slide 8: 三大競技遊戲模式 (上字下圖新設計) -->
+        <section class="slide-container top-bottom" data-slide="8">
             <div class="slide-left"
                 style="height: 45%; padding: 30px 60px; flex-direction: column; justify-content: center; align-items: stretch; border-bottom: none;">
                 <div style="text-align: center; margin-bottom: 25px;">
-                    <span class="slide-page-num" style="justify-content: center;">Page 05</span>
+                    <span class="slide-page-num" style="justify-content: center;">Page 08</span>
                     <h2 class="slide-title">三大競技遊戲模式</h2>
                     <p class="slide-subtitle">層次分明、豐富多元的遞進對抗體驗</p>
                 </div>
@@ -776,23 +892,23 @@
             </div>
         </section>
 
-        <!-- Slide 6: 局內機制：技能與隨機道具 (圖左字右) -->
-        <section class="slide-container reverse" data-slide="6">
+        <!-- Slide 9: 局內機制：技能與隨機道具 (圖左字右) -->
+        <section class="slide-container reverse" data-slide="9">
             <div class="slide-left">
-                <span class="slide-page-num">Page 06</span>
+                <span class="slide-page-num">Page 09</span>
                 <h2 class="slide-title">局內機制：技能與隨機道具</h2>
-                <p class="slide-subtitle">加入精力超載機制與隨機道具，增加博弈深度</p>
+                <p class="slide-subtitle">加入體力超載機制與隨機道具，增加博弈深度</p>
                 <ul class="bullet-list">
                     <li class="bullet-item core">
                         <span class="bullet-icon">⚡</span>
                         <div class="bullet-text"><strong>主動技能 (HUD雙配置)</strong>
-                            <p><b>【Dash衝刺】</b>精力超載保護，用完須等回滿。<br><b>【磁力漩渦】</b>瞬間強吸周圍的所有食物。</p>
+                            <p><b>【Dash衝刺】</b>體力超載保護，用完須等回滿。<br><b>【磁力漩渦】</b>瞬間強吸周圍的所有食物。</p>
                         </div>
                     </li>
                     <li class="bullet-item add">
                         <span class="bullet-icon">🍄</span>
                         <div class="bullet-text"><strong>三大隨機地圖道具 (持續 10 秒)</strong>
-                            <p><b>【巨大蘑菇】</b>體型1.5倍獲免死霸體，但減速。<br><b>【磁鐵】</b>吸附食物。<br><b>【幸運7】</b>得分加倍。</p>
+                            <p><b>【巨大蘑菇】</b>減速換取體型霸體。<br><b>【磁鐵】</b>吸附食物。<br><b>【幸運7】</b>得分加倍。</p>
                         </div>
                     </li>
                 </ul>
@@ -809,10 +925,10 @@
             </div>
         </section>
 
-        <!-- Slide 7: 局外雙軌養成系統 (字左圖右) -->
-        <section class="slide-container" data-slide="7">
+        <!-- Slide 10: 局外雙軌養成系統 (字左圖右) -->
+        <section class="slide-container" data-slide="10">
             <div class="slide-left">
-                <span class="slide-page-num">Page 07</span>
+                <span class="slide-page-num">Page 10</span>
                 <h2 class="slide-title">局外雙軌養成系統</h2>
                 <p class="slide-subtitle">打造讓休閒與硬核玩家都欲罷不能的成長</p>
                 <ul class="bullet-list">
@@ -842,10 +958,10 @@
             </div>
         </section>
 
-        <!-- Slide 8: 6+6 選品與容錯策略 (圖左字右) -->
-        <section class="slide-container reverse" data-slide="8">
+        <!-- Slide 11: 6+6 選品與容錯策略 (圖左字右) -->
+        <section class="slide-container reverse" data-slide="11">
             <div class="slide-left">
-                <span class="slide-page-num">Page 08</span>
+                <span class="slide-page-num">Page 11</span>
                 <h2 class="slide-title">6+6 選品與容錯策略</h2>
                 <p class="slide-subtitle">撞牆彈跳緩衝，將新手挫敗感降到最低</p>
                 <ul class="bullet-list">
@@ -875,10 +991,10 @@
             </div>
         </section>
 
-        <!-- Slide 9: 金幣回收與極限合成 (字左圖右) -->
-        <section class="slide-container" data-slide="9">
+        <!-- Slide 12: 金幣回收與極限合成 (字左圖右) -->
+        <section class="slide-container" data-slide="12">
             <div class="slide-left">
-                <span class="slide-page-num">Page 09</span>
+                <span class="slide-page-num">Page 12</span>
                 <h2 class="slide-title">金幣回收與極限合成</h2>
                 <p class="slide-subtitle">戰術與虛榮雙向驅動的健康經濟閉環</p>
                 <ul class="bullet-list">
@@ -908,11 +1024,11 @@
             </div>
         </section>
 
-        <!-- Slide 10: 美術風格與視覺爽感 (上下排版: 上圖下字) -->
-        <section class="slide-container top-bottom" data-slide="10" style="flex-direction: column-reverse;">
+        <!-- Slide 13: 美術風格與視覺爽感 (上下排版: 上圖下字) -->
+        <section class="slide-container top-bottom" data-slide="13" style="flex-direction: column-reverse;">
             <div class="slide-left" style="height: 35%; padding: 20px 60px;">
                 <div class="text-content" style="width: 35%;">
-                    <span class="slide-page-num">Page 10</span>
+                    <span class="slide-page-num">Page 13</span>
                     <h2 class="slide-title">美術風格與視覺爽感</h2>
                     <p class="slide-subtitle">打造極具任天堂親和力的 3D 微黏土手遊標竿</p>
                 </div>
@@ -940,14 +1056,14 @@
             </div>
         </section>
 
-        <!-- Slide 11: Q&A (純圖壓字設計) -->
-        <section class="slide-container" data-slide="11">
+        <!-- Slide 14: Q&A (純圖壓字設計) -->
+        <section class="slide-container" data-slide="14">
             <div class="slide-right" style="width: 100%; padding: 0;">
                 <img src="images/slide_10.png" class="real-image" alt="Q&A" onerror="this.style.display='none'"
                     style="filter: brightness(0.7);">
                 <div
                     style="position: absolute; z-index: 5; text-align: center; color: white; display: flex; flex-direction: column; align-items: center; gap: 20px;">
-                    <span class="slide-page-num" style="color:var(--coin-yellow);">Page 11</span>
+                    <span class="slide-page-num" style="color:var(--coin-yellow);">Page 14</span>
                     <h2 class="slide-title"
                         style="font-size: 5rem; color: white; text-shadow: 0 4px 20px rgba(0,0,0,0.5);">Q&A</h2>
                     <div
@@ -977,7 +1093,7 @@
     <!-- 簡報互動腳本 -->
     <script>
         let currentSlide = 1;
-        const totalSlides = 11;
+        const totalSlides = 14;
         const slides = document.querySelectorAll('.slide-container');
         const dotsContainer = document.getElementById('dotsContainer');
 
