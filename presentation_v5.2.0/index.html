@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-TW">
 
 <head>
@@ -669,10 +669,8 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
             margin-bottom: 25px;
-            max-width: 1180px;
+            max-width: 100%;
             width: 100%;
-            margin-left: auto;
-            margin-right: auto;
         }
 
         .mode-detail-row {
@@ -680,10 +678,8 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
             margin-bottom: 20px;
-            max-width: 1180px;
+            max-width: 100%;
             width: 100%;
-            margin-left: auto;
-            margin-right: auto;
         }
 
         .mode-detail-box {
@@ -714,10 +710,8 @@
             border-radius: 20px;
             padding: 10px;
             box-shadow: var(--inset-shadow);
-            max-width: 1180px;
+            max-width: 100%;
             width: 100%;
-            margin-left: auto;
-            margin-right: auto;
         }
 
         .slide-container.top-bottom .slide-left,
@@ -734,7 +728,7 @@
             text-align: center;
         }
 
-        .slide-container.grid-layout > div:first-child {
+        .slide-container.grid-layout>div:first-child {
             max-width: 980px;
             width: 100%;
             margin-bottom: 25px;
@@ -1179,17 +1173,6 @@
                         利用蛇身切斷對手動線，奪取其殘骸迅速反超積分，實現以小博大。</p>
                 </div>
             </div>
-            <div
-                style="background: #F1F3F5; padding: 20px 30px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between;">
-                <span style="font-weight: 700; color: var(--text-muted); font-size: 1rem;">會前競品參考連結：</span>
-                <div class="link-group">
-                    <a href="Snake.io - Google Play 應用程式.html" target="_blank" class="btn-link red-btn">Snake.io</a>
-                    <a href="Snake Clash - Google Play 應用程式.html" target="_blank" class="btn-link green-btn">Snake
-                        Clash</a>
-                    <a href="Snake Merge - Google Play 應用程式.html" target="_blank" class="btn-link yellow-btn">Snake
-                        Merge</a>
-                </div>
-            </div>
         </section>
 
         <!-- Slide 03: 簡報大綱 (嚴禁裝飾圖) -->
@@ -1236,28 +1219,19 @@
         </section>
 
         <!-- Slide 04: 主題過渡頁 - 1 -->
-        <section 
-            class="slide-container divider-style full-bg" 
-            data-slide="4"
-            style="
+        <section class="slide-container divider-style full-bg" data-slide="4" style="
                 background: white; 
                 flex-direction: column;
-            "
-        >
+            ">
             <div class="divider-title">1. 核心玩法</div>
             <div class="divider-subtitle">基本操作</div>
             <div class="divider-subtitle">遊戲模式</div>
         </section>
 
         <!-- Slide 05: 1. 核心玩法 (1/2)：基本操作 -->
-        <section 
-            class="slide-container top-bottom" 
-            data-slide="5"
-        >
+        <section class="slide-container top-bottom" data-slide="5">
             <!-- 左側文字區域 -->
-            <div 
-                class="slide-left"
-                style="
+            <div class="slide-left" style="
                     height: 48%;
                     width: 100%;
                     padding: 30px 60px 20px 60px;
@@ -1265,55 +1239,43 @@
                     justify-content: center;
                     align-items: stretch;
                     border-bottom: none;
-                "
-            >
-                <div
-                    style="
+                ">
+                <div style="
                         display: flex;
                         justify-content: space-between;
                         align-items: flex-start;
                         margin-bottom: 15px;
-                    "
-                >
+                    ">
                     <div>
                         <span class="slide-page-num">Page 05</span>
-                        <h2 
-                            class="slide-title" 
-                            style="font-size: 2.2rem;"
-                        >
+                        <h2 class="slide-title" style="font-size: 2.2rem;">
                             1. 核心玩法 (1/2)：基本操作
                         </h2>
                     </div>
-                    <span
-                        style="
+                    <span style="
                             font-weight: 700;
                             color: var(--nintendo-red);
                             font-size: 0.95rem;
                             background: rgba(230,0,18,0.1);
                             padding: 4px 12px;
                             border-radius: 9999px;
-                        "
-                    >
+                        ">
                         基本雙鍵操作與超載保護
                     </span>
                 </div>
 
-                <div 
-                    style="
+                <div style="
                         display: grid;
                         grid-template-columns: repeat(3, 1fr);
                         gap: 20px;
-                    "
-                >
+                    ">
                     <!-- 動態虛擬搖桿 -->
-                    <div
-                        style="
+                    <div style="
                             background: var(--bg-pearl);
                             padding: 15px;
                             border-radius: 16px;
                             border-left: 5px solid var(--nintendo-red);
-                        "
-                    >
+                        ">
                         <h3 style="font-size: 1.1rem; margin-bottom: 4px; color: var(--text-dark);">
                             動態虛擬搖桿 (左手)
                         </h3>
@@ -1323,14 +1285,12 @@
                     </div>
 
                     <!-- 極速 Dash 衝刺 -->
-                    <div
-                        style="
+                    <div style="
                             background: var(--bg-pearl);
                             padding: 15px;
                             border-radius: 16px;
                             border-left: 5px solid var(--yoshi-green);
-                        "
-                    >
+                        ">
                         <h3 style="font-size: 1.1rem; margin-bottom: 4px; color: var(--text-dark);">
                             極速 Dash 衝刺 (右手)
                         </h3>
@@ -1340,14 +1300,12 @@
                     </div>
 
                     <!-- 疲勞超載 -->
-                    <div
-                        style="
+                    <div style="
                             background: var(--bg-pearl);
                             padding: 15px;
                             border-radius: 16px;
                             border-left: 5px solid var(--coin-yellow);
-                        "
-                    >
+                        ">
                         <h3 style="font-size: 1.1rem; margin-bottom: 4px; color: var(--text-dark);">
                             疲勞超載 (Overload)
                         </h3>
@@ -1359,9 +1317,7 @@
             </div>
 
             <!-- 右側圖片區域 -->
-            <div 
-                class="slide-right"
-                style="
+            <div class="slide-right" style="
                     height: 52%;
                     width: 100%;
                     border-left: none;
@@ -1370,22 +1326,23 @@
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                "
-            >
+                ">
                 <video class="demo-video" autoplay muted loop playsinline onerror="this.style.display='none'">
                     <source src="Demo_01.mp4" type="video/mp4">
                     您的瀏覽器不支援影片播放。
                 </video>
             </div>
         </section>
-        
+
         <!-- Slide 06: 1. 核心玩法 (2/2)：三大模式與簡易規則 -->
         <section class="slide-container top-bottom" data-slide="6">
-            <div class="slide-left"
-                style="
+            <div class="slide-left" style="
                 width: 100%; 
                 height: 100%; 
-                padding: 120px 60px 20px 60px; 
+                padding-top: 120px;
+                padding-right: 60px;
+                padding-bottom: 20px;
+                padding-left: 60px !important;
                 flex-direction: column; 
                 justify-content: center; 
                 align-items: stretch; 
@@ -1397,40 +1354,31 @@
                         <h2 class="slide-title" style="font-size: 2.2rem;">1. 核心玩法 (2/2)：遊戲模式</h2>
                     </div>
                 </div>
-                <div class="mode-row">
+                <div class="mode-row"
+                    style="margin-left: 0 !important; width: 100% !important; max-width: 100% !important;">
                     <div
                         style="background: var(--bg-pearl); padding: 12px 18px; border-radius: 16px; border-left: 5px solid var(--yoshi-green);">
                         <strong style="font-size: 1rem; color: var(--text-dark);">Solo 模式 (單人練習)</strong>
                         <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">1P vs 7
-                            BOTs，無壓熟悉操作並收集基本資源。</p>
+                            BOTs<br>最基礎的模式，BOT 反應較慢，適合新手熟悉操作。</p>
                     </div>
                     <div
                         style="background: var(--bg-pearl); padding: 12px 18px; border-radius: 16px; border-left: 5px solid var(--nintendo-red);">
                         <strong style="font-size: 1rem; color: var(--text-dark);">大亂鬥 (競技對抗)</strong>
                         <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">1P vs 1擬人AI vs 6
-                            BOTs，強競技衝刺排行榜。</p>
+                            BOTs<br>與一名強力對手競爭，考驗玩家在混亂中的生存與獵殺能力。</p>
                     </div>
                     <div
                         style="background: var(--bg-pearl); padding: 12px 18px; border-radius: 16px; border-left: 5px solid var(--coin-yellow);">
                         <strong style="font-size: 1rem; color: var(--text-dark);">團體賽 (陣營對抗)</strong>
-                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">4v4 紅白大作戰，協作包圍敵隊掠奪地圖積分。
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">1名玩家+3名BOT vs
+                            1名AI+3名BOT<br>紅白大對抗，隊友之間共享積分和地圖道具。
                         </p>
-                    </div>
-                </div>
-                <div class="mode-detail-row">
-                    <div class="mode-detail-box">
-                        <p>配置：1P vs 7 BOT<br>最基礎的模式，BOT 反應較慢，適合新手熟悉操作。</p>
-                    </div>
-                    <div class="mode-detail-box">
-                        <p>配置：1P vs 1 AI vs 6 BOT<br>與一名強力對手競爭，考驗玩家在混亂中的生存與獵殺能力。</p>
-                    </div>
-                    <div class="mode-detail-box">
-                        <p>配置：1名玩家+3名BOT vs 1名AI+3名BOT<br>紅白大對抗，隊友之間共享積分和地圖道具。</p>
                     </div>
                 </div>
             </div>
             <div class="slide-right"
-                style="height: 100%; width: 100%; border-left: none; padding: 0px 60px 20px 60px; background: white;">
+                style="height: 100%; width: 100%; border-left: none; padding-top: 0; padding-right: 60px; padding-bottom: 80px; padding-left: 60px !important; background: white;">
                 <div class="rules-table-container">
                     <table class="rules-table">
                         <thead>
@@ -1458,7 +1406,9 @@
                             </tr>
                         </tbody>
                     </table>
-                    <h5><i><p style="color: #a6b4ce;"> *死亡後進入 2 秒復活計時，遺骸化作 50% 體型的食物，散落在地圖上供玩家拾取成長。</p></i></h5>
+                    <h5><i>
+                            <p style="color: #a6b4ce;"> *死亡後進入 2 秒復活計時，遺骸化作 50% 體型的食物，散落在地圖上供玩家拾取成長。</p>
+                        </i></h5>
                 </div>
             </div>
         </section>
@@ -1466,7 +1416,7 @@
         <!-- Slide 07: 主題過渡頁 - 2 -->
         <section class="slide-container divider-style full-bg" data-slide="7"
             style="background: white; flex-direction: column;">
-            <div class="divider-title green">2. 6+6 (選品策略)</div>
+            <div class="divider-title green">2. 6+6 選品策略</div>
             <div class="divider-subtitle">經典再造與心理驅動</div>
         </section>
 
@@ -1474,7 +1424,7 @@
         <section class="slide-container grid-layout" data-slide="8" style="justify-content: flex-start;">
             <span class="slide-page-num">Page 08</span>
             <div style="margin-bottom: 25px;">
-                <h2 class="slide-title">2. 6+6選品策略 (1/1)：經典再造與心理驅動</h2>
+                <h2 class="slide-title">2. 6+6 選品策略 (1/1)：經典再造與心理驅動</h2>
                 <p class="slide-subtitle">深入休閒競技用戶痛點的核心設計論點</p>
             </div>
             <div class="six-six-container">
@@ -1484,18 +1434,13 @@
                         落實三大成功策略</h3>
 
                     <div class="six-six-card strategy">
-                        <h3>主題換新．經典再造</h3>
-                        <p>經典貪食蛇玩法 + 任天堂風 3D 黏土視覺（Joy-con 雙色美學，強攻全年齡層與女性收集控）。</p>
-                    </div>
-
-                    <div class="six-six-card strategy">
                         <h3>玩法深化．體驗升級</h3>
-                        <p>精品化 3D 戰場，<b>搭配死亡復活機制降低挫敗感</b>，提升操作上限與技巧深度。</p>
+                        <p>透過極速復活徹底消除死亡結束的挫敗感，確保玩家全程處於高頻競技的心流中。</p>
                     </div>
 
                     <div class="six-six-card strategy">
                         <h3>玩法融合．創造藍海</h3>
-                        <p>經典 IO 競技 + 類《噠噠特攻》進化科技樹，<b>並加入 DASH & 磁力漩渦技能增加競技感</b>。</p>
+                        <p>經典 IO + 局外強化。導入衝刺與磁力漩渦等技能，把休閒走位昇華為更具互動的多人體驗。</p>
                     </div>
                 </div>
 
@@ -1506,17 +1451,17 @@
 
                     <div class="six-six-card psychology">
                         <h3>ASMR效應與感官滿足</h3>
-                        <p>食物拾取縮放與 Q 彈音效，<b>擊殺瞬間爆炸的演出（不會噴金幣），以及觸碰互動的震動反饋</b>。</p>
+                        <p>拾取食物的美術反饋、擊殺瞬間的爆炸衝擊，搭配觸覺震動，提供極致紓壓的純粹爽感。</p>
                     </div>
 
                     <div class="six-six-card psychology">
                         <h3>掌控感與秩序建立</h3>
-                        <p><b>吃食物增加貪食蛇長度的視覺反饋，以及體力消耗的精準控制</b>，獲得完美掌控局勢的多巴胺。</p>
+                        <p>在混亂的大亂鬥戰場中，利用「磁力漩渦」瞬間清空滿地殘骸帶來強烈的歸位滿足感。</p>
                     </div>
 
                     <div class="six-six-card psychology">
                         <h3>熟悉與新奇黃金平衡</h3>
-                        <p><b>簡單的貪食蛇 IO 操作搭配競技的技能使用</b>。（註：此處無撞牆回彈與死亡重生內容）。</p>
+                        <p>零學習成本的直覺操作融入衝刺博弈與技能養成，在舒適圈內創造加倍的成就感。</p>
                     </div>
                 </div>
             </div>
@@ -1531,30 +1476,42 @@
 
         <!-- Slide 10: 3. 參考競品資訊 (1/1)：市場數據與加減法定位 -->
         <section class="slide-container" data-slide="10">
-            <div class="slide-left" style="width: 55%; padding: 40px 50px; justify-content: flex-start; gap: 15px;">
+            <div class="slide-left" style="width: 55%; padding: 40px 50px; justify-content: center; gap: 15px;">
                 <span class="slide-page-num">Page 10</span>
                 <h2 class="slide-title" style="font-size: 2.1rem; margin-bottom: 5px;">3. 參考競品資訊 (1/1)：數據與加減法定位</h2>
                 <div class="competitor-list">
-                    <div class="competitor-card snake-io">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <h3>Snake.io</h3>
-                            <span class="competitor-tag red">Google Play 1億+ 下載 (累計5億)</span>
+                    <div class="competitor-card snake-io" style="display: flex; align-items: center; gap: 15px;">
+                        <img src="SnakeIO_AppIcon.jpg" alt="Snake.io Icon"
+                            style="width: 64px; height: 64px; border-radius: 12px; object-fit: contain; flex-shrink: 0;">
+                        <div style="flex: 1;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <h3>Snake.io</h3>
+                                <span class="competitor-tag red">Google Play 1億+ 下載 (累計5億)</span>
+                            </div>
+                            <p class="competitor-text"><b>【加法】</b>導入局外「玩星派對風格」成長之路與戰前金幣被動 Perks，拉長局外長線遊玩目標。</p>
                         </div>
-                        <p class="competitor-text"><b>【加法】</b>導入局外「玩星派對風格」成長之路與戰前金幣被動 Perks，拉長局外長線遊玩目標。</p>
                     </div>
-                    <div class="competitor-card snake-clash">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <h3>Snake Clash!</h3>
-                            <span class="competitor-tag green">Google Play 1億+ 下載 (累計1.2億)</span>
+                    <div class="competitor-card snake-clash" style="display: flex; align-items: center; gap: 15px;">
+                        <img src="SnakeClash_App_Icon.jpg" alt="Snake Clash! Icon"
+                            style="width: 64px; height: 64px; border-radius: 12px; object-fit: contain; flex-shrink: 0;">
+                        <div style="flex: 1;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <h3>Snake Clash!</h3>
+                                <span class="competitor-tag green">Google Play 1億+ 下載 (累計1.2億)</span>
+                            </div>
+                            <p class="competitor-text"><b>【加法】</b>引入 Dash 衝刺截殺與「安全碰撞回彈」機制，以技巧走位打破純數值壓制。</p>
                         </div>
-                        <p class="competitor-text"><b>【加法】</b>引入 Dash 衝刺截殺與「安全碰撞回彈」機制，以技巧走位打破純數值壓制。</p>
                     </div>
-                    <div class="competitor-card snake-merge">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <h3>Snake Merge</h3>
-                            <span class="competitor-tag yellow">Google Play 5000萬+ 下載</span>
+                    <div class="competitor-card snake-merge" style="display: flex; align-items: center; gap: 15px;">
+                        <img src="SnakeMerge_AppIcon.jpg" alt="Snake Merge Icon"
+                            style="width: 64px; height: 64px; border-radius: 12px; object-fit: contain; flex-shrink: 0;">
+                        <div style="flex: 1;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <h3>Snake Merge</h3>
+                                <span class="competitor-tag yellow">Google Play 5000萬+ 下載</span>
+                            </div>
+                            <p class="competitor-text"><b>【減法】</b>保留外觀升星融合的成癮性，但完全剝離戰力數值，維持局內絕對公平競技。</p>
                         </div>
-                        <p class="competitor-text"><b>【減法】</b>保留外觀升星融合的成癮性，但完全剝離戰力數值，維持局內絕對公平競技。</p>
                     </div>
                 </div>
             </div>
@@ -1648,21 +1605,15 @@
         </section>
 
         <!-- Slide 14: 5. 成長之路結合 (1/1)：成長之路里程碑 -->
-        <section 
-            class="slide-container" 
-            data-slide="14"
-        >
+        <section class="slide-container" data-slide="14">
             <!-- 左側文字與獎勵清單 -->
-            <div 
-                class="slide-left" 
-                style="
+            <div class="slide-left" style="
                     width: 55%; 
                     padding: 40px 50px; 
                     justify-content: center; 
                     gap: 15px;
                     border-right: none;
-                "
-            >
+                ">
                 <span class="slide-page-num">Page 14</span>
                 <div style="margin-bottom: 5px;">
                     <h2 class="slide-title" style="font-size: 2.1rem;">
@@ -1674,15 +1625,13 @@
                 </div>
 
                 <!-- 機制說明 -->
-                <div
-                    style="
+                <div style="
                         background: var(--bg-pearl); 
                         padding: 15px 20px; 
                         border-radius: 16px; 
                         border-left: 6px solid var(--yoshi-green); 
                         box-shadow: var(--inset-shadow);
-                    "
-                >
+                    ">
                     <h3 style="font-size: 1.1rem; margin-bottom: 4px; color: var(--text-dark);">
                         等級里程碑機制
                     </h3>
@@ -1692,27 +1641,24 @@
                 </div>
 
                 <!-- 等級 Perks 獎勵列表 (預留空間) -->
-                <div
-                    style="
+                <div style="
                         background: var(--bg-pearl); 
                         padding: 15px 20px; 
                         border-radius: 16px; 
                         border-left: 6px solid var(--nintendo-red); 
                         box-shadow: var(--inset-shadow);
-                    "
-                >
+                    ">
                     <h3 style="font-size: 1.1rem; margin-bottom: 8px; color: var(--text-dark);">
                         里程碑等級解鎖與屬性獎勵 (規劃預留)
                     </h3>
-                    <div 
-                        style="
+                    <div style="
                             display: grid; 
                             grid-template-columns: repeat(2, 1fr); 
                             gap: 10px;
-                        "
-                    >
+                        ">
                         <div style="font-size: 0.85rem; color: var(--text-dark);">
-                            <b>Lv.3</b> ── 體力回復速度 +10% <span style="color:var(--nintendo-red); font-size:0.75rem;">(範例)</span>
+                            <b>Lv.3</b> ── 體力回復速度 +10% <span
+                                style="color:var(--nintendo-red); font-size:0.75rem;">(範例)</span>
                         </div>
                         <div style="font-size: 0.85rem; color: var(--text-muted);">
                             <b>Lv.5</b> ── [ Perks 獎勵預留 ]
@@ -1728,30 +1674,23 @@
             </div>
 
             <!-- 右側參考圖片 -->
-            <div 
-                class="slide-right" 
-                style="
+            <div class="slide-right" style="
                     width: 45%; 
                     padding: 25px;
                     border-left: none;
-                "
-            >
+                ">
                 <div class="illustration-card">
                     <div class="illustration-header">
                         <span>📈</span> 成長之路
                     </div>
                     <div class="illustration-body">
-                        <img 
-                            src="玩星派對_成長之路_圖.png" 
-                            alt="成長之路參考圖" 
-                            class="real-image"
-                            onerror="this.src='../presentation_v5.0.0/images/slide_5.png'"
-                        >
+                        <img src="玩星派對_成長之路_圖.png" alt="成長之路參考圖" class="real-image"
+                            onerror="this.src='../presentation_v5.0.0/images/slide_5.png'">
                     </div>
                 </div>
             </div>
         </section>
-        
+
         <!-- Slide 15: 主題過渡頁 - 6 -->
         <section class="slide-container divider-style full-bg" data-slide="15"
             style="background: white; flex-direction: column;">
@@ -1787,8 +1726,7 @@
                 <div class="illustration-card">
                     <div class="illustration-header"><span>🧬</span> 進化科技樹 (Dada_TechTree.jpg)</div>
                     <div class="illustration-body">
-                        <img src="Dada_TechTree.jpg" alt="Dada TechTree" class="real-image"
-                            style="object-fit: contain;"
+                        <img src="Dada_TechTree.jpg" alt="Dada TechTree" class="real-image" style="object-fit: contain;"
                             onerror="this.src='../presentation_v5.0.0/images/slide_6.png'">
                     </div>
                 </div>
