@@ -23,6 +23,9 @@
             --card-shadow: 0 12px 40px rgba(0, 0, 0, 0.04), 0 2px 10px rgba(0, 0, 0, 0.02);
             --inset-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.8), inset 0 -2px 4px rgba(0, 0, 0, 0.05);
             --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+            /* 競品下載量截圖寬度，可調整範圍建議 60% ~ 100% */
+            --download-img-scale: 72%;
         }
 
         html {
@@ -1425,7 +1428,6 @@
             <span class="slide-page-num">Page 08</span>
             <div style="margin-bottom: 25px;">
                 <h2 class="slide-title">2. 6+6 選品策略 (1/1)：經典再造與心理驅動</h2>
-                <p class="slide-subtitle">深入休閒競技用戶痛點的核心設計論點</p>
             </div>
             <div class="six-six-container">
                 <!-- 左側：落實三大成功策略 -->
@@ -1471,7 +1473,9 @@
         <section class="slide-container divider-style full-bg" data-slide="9"
             style="background: white; flex-direction: column;">
             <div class="divider-title green">3. 參考競品資訊</div>
-            <div class="divider-subtitle">市場數據與加減法定位</div>
+            <div class="divider-subtitle">Snake.io</div>
+            <div class="divider-subtitle">Snake Clash!</div>
+            <div class="divider-subtitle">Snake Merge (Worms Merge-io&idle snake game)</div>
         </section>
 
 
@@ -1495,6 +1499,8 @@
                         「憑走位突圍」：聚焦最純粹的短局期純手感競技。
                     </p>
                 </div>
+                <img src="SnakeIO_download.png" alt="Snake.io 下載量數據"
+                    style="width: var(--download-img-scale); border-radius: 12px; object-fit: contain; margin-top: 4px;">
             </div>
             <div class="slide-right"
                 style="width: 55%; padding: 30px; display: flex; align-items: center; justify-content: center;">
@@ -1530,6 +1536,8 @@
                         「以數值壓制」：聚焦局外養成帶來的開局優勢。
                     </p>
                 </div>
+                <img src="SnakeClash_download.png" alt="Snake Clash! 下載量數據"
+                    style="width: var(--download-img-scale); border-radius: 12px; object-fit: contain; margin-top: 4px;">
             </div>
             <div class="slide-right"
                 style="width: 55%; padding: 30px; display: flex; align-items: center; justify-content: center;">
@@ -1566,6 +1574,8 @@
                         「靠技能反轉」：聚焦隨機道具帶來的局內戰術。
                     </p>
                 </div>
+                <img src="SnakeMerge_download.png" alt="Snake Merge 下載量數據"
+                    style="width: var(--download-img-scale); border-radius: 12px; object-fit: contain; margin-top: 4px;">
             </div>
             <div class="slide-right"
                 style="width: 55%; padding: 30px; display: flex; align-items: center; justify-content: center;">
@@ -1603,12 +1613,12 @@
                     核心主動技能 (HUD 按鈕)</h3>
                 <div class="skills-grid-top">
                     <div class="skill-item-card red-border">
-                        <h3>1. Dash (衝刺)</h3>
-                        <p>消耗體力值獲得 1.25x 爆發加速。若體力值歸零進入疲勞超載狀態，則在回滿 100 點前(約12秒)禁止再次加速。</p>
+                        <h3>1. Dash</h3>
+                        <p>消耗體力值獲得 25% 加速。若體力值歸零進入疲勞超載狀態，則在回滿 100 點前(約12秒)禁止再次加速。</p>
                     </div>
                     <div class="skill-item-card red-border">
-                        <h3>2. 磁力漩渦 (CD 30s)</h3>
-                        <p>主動點擊冷卻 30 秒。瞬間暴力吸入半徑 200px 內的所有食物，在混戰與大蛇死亡時反超積分的殺手鐧。</p>
+                        <h3>2. 磁力漩渦</h3>
+                        <p>主動點擊冷卻 30 秒。瞬間暴力吸入半徑 200px 內的所有食物。</p>
                     </div>
                 </div>
             </div>
@@ -1619,15 +1629,15 @@
                     隨機地圖道具 (持續 10 秒)</h3>
                 <div class="items-grid-bottom">
                     <div class="skill-item-card green-border">
-                        <h3>1. 磁鐵 (Magnet)</h3>
+                        <h3>1. 磁鐵</h3>
                         <p>自動吸附周圍食物，引導玩家深入高風險對抗爭奪區獲取大量點數。</p>
                     </div>
                     <div class="skill-item-card green-border">
-                        <h3>2. 巨大蘑菇 (Giant Mushroom)</h3>
-                        <p>體型變大 1.5 倍並獲得「免疫截斷霸體」（不被截斷），但移速降低 20%。</p>
+                        <h3>2. 巨大蘑菇</h3>
+                        <p>體型變大 1.5 倍並獲得「免疫截斷霸體」，但移速降低 20%。</p>
                     </div>
                     <div class="skill-item-card green-border">
-                        <h3>3. 幸運 7 (Lucky 7)</h3>
+                        <h3>3. 幸運 7</h3>
                         <p>吃下的食物價值翻倍，製造得分爆發期的短期高潮，誘發激進圍堵。</p>
                     </div>
                 </div>
@@ -1693,7 +1703,7 @@
                             grid-template-columns: repeat(2, 1fr); 
                             gap: 10px;
                         ">
-                        <div style="font-size: 0.85rem; color: var(--text-dark);">
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">
                             <b>Dash 1</b> ── 體力上限 +10
                         </div>
                         <div style="font-size: 0.85rem; color: var(--text-muted);">
@@ -1732,13 +1742,14 @@
             style="background: white; flex-direction: column;">
             <div class="divider-title">6. 金流回收方式</div>
             <div class="divider-subtitle">局前消耗與天賦升級</div>
+            <div class="divider-subtitle">Skin 系統</div>
         </section>
 
         <!-- Slide 18: 6. 金流回收方式 (1/1)：戰前消耗與科技進化 -->
         <section class="slide-container" data-slide="18">
             <div class="slide-left" style="width: 55%; padding: 40px 50px; justify-content: center; gap: 20px;">
                 <span class="slide-page-num">Page 18</span>
-                <h2 class="slide-title" style="font-size: 2.2rem; margin-bottom: 5px;">6. 金流回收方式 (1/1)：局前消耗與天賦升級</h2>
+                <h2 class="slide-title" style="font-size: 2.2rem; margin-bottom: 5px;">6. 金流回收方式 (1/2)：局前消耗與天賦升級</h2>
 
                 <div
                     style="background: var(--bg-pearl); padding: 20px; border-radius: 16px; border-left: 6px solid var(--coin-yellow); box-shadow: var(--inset-shadow);">
@@ -1746,6 +1757,15 @@
                     </h3>
                     <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">
                         開局前，玩家可消耗金幣自選不同被動技能。如：「鷹眼」視野變大、「磁鐵增幅」吸附半徑增加、「巨大蘑菇」速度降低減少、「幸運 7 增幅」倍率提升
+                    </p>
+                </div>
+
+                <div
+                    style="background: var(--bg-pearl); padding: 20px; border-radius: 16px; border-left: 6px solid var(--nintendo-red); box-shadow: var(--inset-shadow);">
+                    <h3 style="font-size: 1.2rem; margin-bottom: 6px; color: var(--text-dark);">回收二：永久天賦升級 (長線深度回收)
+                    </h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">
+                        參考《弓箭傳說》天賦系統。消耗金幣隨機升級被動技能效果。如：視野變大、地圖道具效果增強、基礎跑速提升。
                     </p>
                 </div>
 
@@ -1763,17 +1783,74 @@
             </div>
         </section>
 
-        <!-- Slide 19: 主題過渡頁 - 7 -->
-        <section class="slide-container divider-style full-bg" data-slide="19"
+        <!-- Slide 19: 6. 金流回收方式 (2/2)：Skin 系統 -->
+        <section class="slide-container" data-slide="19">
+            <div class="slide-left" style="width: 50%; padding: 40px 50px; justify-content: center; gap: 18px;">
+                <span class="slide-page-num">Page 19</span>
+                <h2 class="slide-title" style="font-size: 2.1rem; margin-bottom: 5px;">6. 金流回收方式 (2/2)：Skin 系統</h2>
+
+                <div
+                    style="background: var(--bg-pearl); padding: 20px; border-radius: 16px; border-left: 6px solid var(--coin-yellow); box-shadow: var(--inset-shadow);">
+                    <h3 style="font-size: 1.15rem; margin-bottom: 8px; color: var(--text-dark);">個性化外觀 (Skin) 系統</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6;">
+                        提供多種獨特的 3D 黏土風格蛇身皮膚。
+                    </p>
+                </div>
+
+                <div
+                    style="background: var(--bg-pearl); padding: 20px; border-radius: 16px; border-left: 6px solid var(--yoshi-green); box-shadow: var(--inset-shadow);">
+                    <h3 style="font-size: 1.15rem; margin-bottom: 12px; color: var(--text-dark);">Skin 獲取管道</h3>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div
+                            style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: white; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
+                            <div>
+                                <div style="font-size: 0.9rem; font-weight: 700; color: var(--text-dark);">里程碑贈送</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">成長之路，免費解鎖限定外觀</div>
+                            </div>
+                        </div>
+                        <div
+                            style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: white; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
+                            <div>
+                                <div style="font-size: 0.9rem; font-weight: 700; color: var(--text-dark);">局內獎勵</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">完成局內遊玩，獲取皮膚碎片</div>
+                            </div>
+                        </div>
+                        <div
+                            style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: white; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
+                            <div>
+                                <div style="font-size: 0.9rem; font-weight: 700; color: var(--text-dark);">局外金幣商店兌換
+                                </div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">大量金幣直購，快速享有特色外觀</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-right"
+                style="width: 50%; padding: 30px; display: flex; align-items: center; justify-content: center;">
+                <div class="illustration-card" style="width: 100%; height: 100%;">
+                    <div class="illustration-header"><span>🎨</span> Skin 系統實機展示</div>
+                    <div class="illustration-body" style="padding: 0; background: black;">
+                        <video class="real-image" autoplay muted loop playsinline
+                            style="object-fit: contain; width: 100%; height: 100%;">
+                            <source src="skin系統.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 20: 主題過渡頁 - 7 -->
+        <section class="slide-container divider-style full-bg" data-slide="20"
             style="background: white; flex-direction: column;">
             <div class="divider-title slate">7. 美術視覺</div>
             <div class="divider-subtitle">任天堂風格</div>
         </section>
 
-        <!-- Slide 20: 7. 美術視覺與爽感回饋 (1/1)：任天堂 3D 微黏土風 -->
-        <section class="slide-container" data-slide="20">
+        <!-- Slide 21: 7. 美術視覺與爽感回饋 (1/1)：任天堂 3D 微黏土風 -->
+        <section class="slide-container" data-slide="21">
             <div class="slide-left" style="width: 40%; padding: 40px; justify-content: center; gap: 20px;">
-                <span class="slide-page-num">Page 20</span>
+                <span class="slide-page-num">Page 21</span>
                 <h2 class="slide-title" style="font-size: 2.2rem; color: var(--text-dark);">7. 美術視覺 (1/1)：任天堂風格</h2>
 
                 <div
@@ -1811,8 +1888,8 @@
             </div>
         </section>
 
-        <!-- Slide 21: Q&A (最後一頁，嚴禁內容與插圖) -->
-        <section class="slide-container full-bg" data-slide="21" style="background: white;">
+        <!-- Slide 22: Q&A (最後一頁，嚴禁內容與插圖) -->
+        <section class="slide-container full-bg" data-slide="22" style="background: white;">
             <div class="divider-title" style="font-size: 6rem; letter-spacing: 5px;">Q&A</div>
         </section>
 
@@ -1833,7 +1910,7 @@
     <!-- 簡報互動腳本 -->
     <script>
         let currentSlide = 1;
-        const totalSlides = 21;
+        const totalSlides = 22;
         const slides = document.querySelectorAll('.slide-container');
         const dotsContainer = document.getElementById('dotsContainer');
 
