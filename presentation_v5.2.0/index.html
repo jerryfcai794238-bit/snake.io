@@ -763,10 +763,10 @@
         .six-six-container {
             display: flex;
             gap: 30px;
-            height: 100%;
+            height: auto;
             flex-wrap: wrap;
             justify-content: center;
-            max-width: 1230px;
+            max-width: 100%;
             width: 100%;
             margin-left: auto;
             margin-right: auto;
@@ -1160,20 +1160,20 @@
                 <div
                     style="background: var(--bg-pearl); padding: 25px; border-radius: 20px; border-left: 6px solid var(--nintendo-red); box-shadow: var(--inset-shadow);">
                     <h3 style="font-size: 1.3rem; margin-bottom: 8px; color: var(--text-dark);">多人亂鬥</h3>
-                    <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5;">120 秒快節奏混戰，多人與擬真 AI
-                        同場競技，體驗無延遲的極速衝突。</p>
+                    <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5;">
+                        120 秒快節奏混戰，多人同場競技，體驗無延遲的極速衝突。</p>
                 </div>
                 <div
                     style="background: var(--bg-pearl); padding: 25px; border-radius: 20px; border-left: 6px solid var(--yoshi-green); box-shadow: var(--inset-shadow);">
                     <h3 style="font-size: 1.3rem; margin-bottom: 8px; color: var(--text-dark);">體力控管</h3>
-                    <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5;">Dash
-                        衝刺與疲勞超載（Overload）機制的精密走位博弈，拒絕無腦加速。</p>
+                    <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5;">
+                        消耗體力進行衝刺（Dash）與疲勞超載（Overload），進行走位博弈。</p>
                 </div>
                 <div
                     style="background: var(--bg-pearl); padding: 25px; border-radius: 20px; border-left: 6px solid var(--coin-yellow); box-shadow: var(--inset-shadow);">
                     <h3 style="font-size: 1.3rem; margin-bottom: 8px; color: var(--text-dark);">截斷反殺</h3>
                     <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5;">
-                        利用蛇身切斷對手動線，奪取其殘骸迅速反超積分，實現以小博大。</p>
+                        利用Dash截斷對手，奪取其殘骸迅速反超積分，實現以小博大。</p>
                 </div>
             </div>
         </section>
@@ -1233,12 +1233,12 @@
         </section>
 
         <!-- Slide 05: 1. 核心玩法 (1/2)：基本操作 -->
-        <section class="slide-container top-bottom" data-slide="5">
+        <section class="slide-container top-bottom" data-slide="5" style="justify-content: center; gap: 80px;">
             <!-- 左側文字區域 -->
             <div class="slide-left" style="
-                    height: 48%;
+                    height: auto;
                     width: 100%;
-                    padding: 30px 60px 20px 60px;
+                    padding: 25px 60px 0 60px;
                     flex-direction: column;
                     justify-content: center;
                     align-items: stretch;
@@ -1256,16 +1256,6 @@
                             1. 核心玩法 (1/2)：基本操作
                         </h2>
                     </div>
-                    <span style="
-                            font-weight: 700;
-                            color: var(--nintendo-red);
-                            font-size: 0.95rem;
-                            background: rgba(230,0,18,0.1);
-                            padding: 4px 12px;
-                            border-radius: 9999px;
-                        ">
-                        基本雙鍵操作與超載保護
-                    </span>
                 </div>
 
                 <div style="
@@ -1322,10 +1312,10 @@
 
             <!-- 右側圖片區域 -->
             <div class="slide-right" style="
-                    height: 52%;
+                    height: auto;
                     width: 100%;
                     border-left: none;
-                    padding: 0 60px 25px 60px;
+                    padding: 15px 60px 25px 60px;
                     background: white;
                     display: flex;
                     justify-content: center;
@@ -1339,13 +1329,13 @@
         </section>
 
         <!-- Slide 06: 1. 核心玩法 (2/2)：三大模式與簡易規則 -->
-        <section class="slide-container top-bottom" data-slide="6">
+        <section class="slide-container top-bottom" data-slide="6" style="justify-content: center; gap: 10px;">
             <div class="slide-left" style="
                 width: 100%; 
-                height: 100%; 
-                padding-top: 120px;
+                height: auto; 
+                padding-top: 25px;
                 padding-right: 60px;
-                padding-bottom: 20px;
+                padding-bottom: 0px;
                 padding-left: 60px !important;
                 flex-direction: column; 
                 justify-content: center; 
@@ -1382,7 +1372,7 @@
                 </div>
             </div>
             <div class="slide-right"
-                style="height: 100%; width: 100%; border-left: none; padding-top: 0; padding-right: 60px; padding-bottom: 80px; padding-left: 60px !important; background: white;">
+                style="height: auto; width: 100%; border-left: none; padding-top: 15px; padding-right: 60px; padding-bottom: 30px; padding-left: 60px !important; background: white;">
                 <div class="rules-table-container">
                     <table class="rules-table">
                         <thead>
@@ -1410,9 +1400,9 @@
                             </tr>
                         </tbody>
                     </table>
-                    <h5><i>
-                            <p style="color: #a6b4ce;"> *死亡後進入 2 秒復活計時，遺骸化作 50% 體型的食物，散落在地圖上供玩家拾取成長。</p>
-                        </i></h5>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px; font-style: italic;">
+                        *死亡後進入 2 秒復活計時，遺骸化作 50% 體型的食物，散落在地圖上供玩家拾取成長。
+                    </p>
                 </div>
             </div>
         </section>
@@ -1425,7 +1415,7 @@
         </section>
 
         <!-- Slide 08: 2. 6+6選品策略 (1/1)：經典再造與心理驅動 -->
-        <section class="slide-container grid-layout" data-slide="8" style="justify-content: flex-start;">
+        <section class="slide-container grid-layout" data-slide="8" style="justify-content: center;">
             <span class="slide-page-num">Page 08</span>
             <div style="margin-bottom: 25px;">
                 <h2 class="slide-title">2. 6+6 選品策略 (1/1)：經典再造與心理驅動</h2>
@@ -1611,9 +1601,9 @@
         </section>
 
         <!-- Slide 14: 4. 技能/道具設計 (1/1)：主動爆發與隨機道具 -->
-        <section class="slide-container top-bottom" data-slide="14">
+        <section class="slide-container top-bottom" data-slide="14" style="justify-content: center; gap: 10px;">
             <div class="slide-left"
-                style="width: 100%; height: 100%; padding: 25px 60px; flex-direction: column; justify-content: center; align-items: stretch; border-bottom: none;">
+                style="width: 100%; height: auto; padding: 25px 60px 0 60px; flex-direction: column; justify-content: center; align-items: stretch; border-bottom: none;">
                 <div
                     style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                     <div>
@@ -1636,7 +1626,7 @@
                 </div>
             </div>
             <div class="slide-right"
-                style="height: 52%; width: 100%; border-left: none; padding: 0 60px 30px 60px; background: white; flex-direction: column; align-items: stretch; justify-content: flex-start;">
+                style="height: auto; width: 100%; border-left: none; padding: 15px 60px 30px 60px; background: white; flex-direction: column; align-items: stretch; justify-content: flex-start;">
                 <h3
                     style="font-size: 1.1rem; color: var(--yoshi-green); margin-bottom: 10px; font-family: 'Fredoka', sans-serif; text-align: left;">
                     隨機地圖道具 (持續 10 秒)</h3>
