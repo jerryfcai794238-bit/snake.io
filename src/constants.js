@@ -32,7 +32,7 @@ export const CONFIG = {
     ITEM_TYPES: {
         HOURGLASS: { type: 'RECOVERY', name: '時光沙漏', color: '#00FFFF', icon: '⏳', instant: true },
         SODA: { type: 'RECOVERY', name: '活力蘇打', color: '#00FF00', icon: '🥤', instant: true },
-        VORTEX: { type: 'RESOURCE', name: '磁力漩渦', color: '#BC13FE', icon: '🌀', instant: true, radius: 400 },
+        VORTEX: { type: 'RESOURCE', name: '磁鐵', color: '#BC13FE', icon: '🧲', duration: 10 },
         LUCKY7: { type: 'RESOURCE', name: '幸運7', color: '#FFFF00', icon: '7', duration: 10, multiplier: 7 },
         MUSHROOM: { type: 'COMBAT', name: '巨大蘑菇', color: '#FF0000', icon: '🍄', duration: 10, sizeMod: 1.5, speedMod: 0.75 },
         CLOAK: { type: 'COMBAT', name: '幽靈披風', color: '#AAAAAA', icon: '👻', duration: 10 }

@@ -46,6 +46,9 @@ export class Snake {
         this.aiTargetAngle = this.angle;
         this.aiRandomAngle = 0;
         this.aiRandomTimer = 0;
+
+        // 磁吸漩渦主動技標記
+        this.triggerVortexFlag = false;
     }
 
     update(targetAngle, wantsToDash, dt, world) {
@@ -60,6 +63,16 @@ export class Snake {
         if (this.lucky7Time > 0) this.lucky7Time -= dt;
         if (this.titanTime > 0) this.titanTime -= dt;
         if (this.ghostTime > 0) this.ghostTime -= dt;
+
+        if (this.triggerVortexFlag) {
+            this.triggerVortexFlag = false;
+            if (world && world.food) {
+                world.food.forEach(f => {
+                    const d2 = (f.x - this.head.x)**2 + (f.y - this.head.y)**2;
+                    if (d2 < 400**2) f.vortexTarget = this;
+                });
+            }
+        }
 
         const animSpeed = 2.5;
         if (this.inkTime > 0) {
@@ -140,7 +153,8 @@ export class Snake {
             const dot = dx * Math.cos(this.angle) + dy * Math.sin(this.angle);
             return (dx*dx + dy*dy) < 180**2 && dot < 0;
         });
-        if (enemyBehind) this.triggerInkCloud(effects || []);
+        // 技能已關閉，禁用 AI 噴墨
+        // if (enemyBehind) this.triggerInkCloud(effects || []);
 
         // 導航探測 (細化步進為 40px)
         const rayAngles = [-75, -45, -20, 0, 20, 45, 75].map(a => a * Math.PI / 180);
@@ -169,10 +183,38 @@ export class Snake {
                         }
                     });
                 }
-                const p = snakes.find(s => s.id === 'player');
-                if (p && !p.isDead && (rx - p.head.x)**2 + (ry - p.head.y)**2 < 120**2) {
-                    if (this.length > p.length + 50) { score += 15000; shouldDash = true; }
-                    else { score -= 40000; }
+                // 檢查其他蛇的頭部與身體 (跳躍取樣優化效能)
+                let hitBody = false;
+                for (let s of snakes) {
+                    if (s === this || s.isDead) continue;
+                    if (s.ghostTime > 0) continue; // 幽靈狀態無視碰撞
+
+                    // 檢查對方頭部周圍 (正面衝突)
+                    const distToHeadSq = (rx - s.head.x)**2 + (ry - s.head.y)**2;
+                    if (distToHeadSq < 150**2) {
+                        if (this.length > s.length + 30) { 
+                            score += 15000; 
+                            shouldDash = true; 
+                        } else { 
+                            score -= 50000; 
+                        }
+                    }
+
+                    // 檢查對方身體節點 (每 3 個節點取樣一次)
+                    for (let i = 0; i < s.points.length; i += 3) {
+                        const pt = s.points[i];
+                        const safeDist = s.radius + 35;
+                        if ((rx - pt.x)**2 + (ry - pt.y)**2 < safeDist**2) {
+                            hitBody = true;
+                            break;
+                        }
+                    }
+                    if (hitBody) break;
+                }
+
+                if (hitBody) {
+                    score -= 80000; // 視為死路
+                    break;
                 }
             }
             if (score > bestScore) { bestScore = score; bestAngle = rayAngle; }
@@ -194,24 +236,18 @@ export class Snake {
 
     triggerMagnet() {
         if (this.magnetCooldown <= 0) {
-            this.magnetTime = 8; this.magnetCooldown = 30;
+            this.triggerVortexFlag = true; 
+            this.magnetCooldown = 30;
             return true;
         }
         return false;
     }
     triggerEagleEye() {
-        if (this.eagleEyeCooldown <= 0) {
-            this.eagleEyeTime = 12; this.eagleEyeCooldown = 25;
-            return true;
-        }
+        // 技能已關閉
         return false;
     }
     triggerInkCloud(effects) {
-        if (this.inkCooldown <= 0) {
-            effects.push({ type: 'INK_CLOUD', ownerId: this.id, x: this.head.x, y: this.head.y, life: 6, maxLife: 6, radius: 80 });
-            this.inkCooldown = 20;
-            return true;
-        }
+        // 技能已關閉
         return false;
     }
 

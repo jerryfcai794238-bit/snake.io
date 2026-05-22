@@ -21,10 +21,10 @@ export class Game {
         this.itemQuotas = {
             'LUCKY7': { max: 1, cd: 45, ring: 'CORE' },
             'MUSHROOM': { max: 2, cd: 25, ring: 'MID' },
-            'CLOAK': { max: 2, cd: 25, ring: 'MID' },
+            'CLOAK': { max: 0, cd: 25, ring: 'MID' }, // 暫時關閉幽靈
             'VORTEX': { max: 2, cd: 20, ring: 'MID' },
-            'HOURGLASS': { max: 2, cd: 20, ring: 'OUTER' },
-            'SODA': { max: 3, cd: 15, ring: 'OUTER' }
+            'HOURGLASS': { max: 0, cd: 20, ring: 'OUTER' }, // 暫時關閉時間沙漏
+            'SODA': { max: 0, cd: 15, ring: 'OUTER' } // 暫時關閉能量飲料
         };
         this.itemRespawnQueue = []; // { type, time }
         this.heatSpots = []; // { x, y, time, radius }
@@ -492,13 +492,8 @@ export class Game {
                 snake.isOverloaded = false;
                 break;
             case 'VORTEX':
-                // 瞬間標記 R=400 內所有食物，使其飛向蛇頭
-                this.food.forEach(f => {
-                    const d2 = (f.x - item.x)**2 + (f.y - item.y)**2;
-                    if (d2 < 400**2) {
-                        f.vortexTarget = snake;
-                    }
-                });
+                // 改成磁鐵效果
+                snake.magnetTime = cfg.duration || 10;
                 break;
             case 'LUCKY7':
                 snake.lucky7Time = cfg.duration;

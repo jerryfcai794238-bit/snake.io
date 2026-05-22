@@ -31,8 +31,9 @@ class Main {
         document.getElementById('joystick-zone').classList.remove('hidden');
         document.getElementById('dash-btn').classList.remove('hidden');
         document.getElementById('magnet-btn').classList.remove('hidden');
-        document.getElementById('eagleeye-btn').classList.remove('hidden');
-        document.getElementById('ink-btn').classList.remove('hidden');
+        // 暫時隱藏鷹眼和噴墨按鈕
+        // document.getElementById('eagleeye-btn').classList.remove('hidden');
+        // document.getElementById('ink-btn').classList.remove('hidden');
         document.getElementById('game-over').classList.add('hidden');
     }
 
