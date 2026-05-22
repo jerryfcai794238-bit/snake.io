@@ -1,0 +1,1980 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake.io 競技場 ── 項目提案簡報 v5.2.0</title>
+    <!-- 引入高品質字型 -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Fredoka:wght@500;700&family=Inter:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* 全域設計系統變數 */
+        :root {
+            --bg-pearl: #F8F9FA;
+            --text-dark: #2B2D42;
+            --text-muted: #5C677D;
+            --nintendo-red: #E60012;
+            --yoshi-green: #3CD070;
+            --coin-yellow: #FFD000;
+            --card-bg: #FFFFFF;
+            --card-shadow: 0 12px 40px rgba(0, 0, 0, 0.04), 0 2px 10px rgba(0, 0, 0, 0.02);
+            --inset-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.8), inset 0 -2px 4px rgba(0, 0, 0, 0.05);
+            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+            /* 競品下載量截圖寬度，可調整範圍建議 60% ~ 100% */
+            --download-img-scale: 72%;
+        }
+
+        html {
+            font-size: 20px;
+            transition: font-size 0.3s ease;
+        }
+
+        /* 投影全螢幕模式下根字型大幅放大，避免文字顯得太小 */
+        html:has(:fullscreen) {
+            font-size: 28px;
+        }
+
+        /* 基礎重設與排版 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-pearl);
+            color: var(--text-dark);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 700;
+        }
+
+        /* 頂部導航列 */
+        .top-navbar {
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            z-index: 100;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-badge {
+            background: var(--nintendo-red);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 12px rgba(230, 0, 18, 0.3);
+        }
+
+        .deck-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .fullscreen-btn {
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition-smooth);
+        }
+
+        .fullscreen-btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--nintendo-red);
+            color: var(--nintendo-red);
+        }
+
+        /* 簡報幻燈片主容器 */
+        .slides-viewport {
+            flex-grow: 1;
+            position: relative;
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1200px;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 92%;
+            max-width: 1400px;
+            height: 88%;
+            max-height: 850px;
+            background: var(--card-bg);
+            border-radius: 30px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            position: absolute;
+            display: flex;
+            flex-direction: row;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateX(100px) scale(0.95);
+            transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* 全螢幕模式下移除寬高限制與圓角，實現真正無邊框全螢幕 */
+        :fullscreen .slide-container {
+            width: 100vw;
+            height: 100vh;
+            max-width: none;
+            max-height: none;
+            border-radius: 0;
+            border: none;
+        }
+
+        /* 全螢幕模式下 top-bottom 版面優化 (減少留白) */
+        :fullscreen .slide-container.top-bottom .slide-left {
+            height: 35%;
+            padding: 15px 50px;
+        }
+
+        :fullscreen .slide-container.top-bottom .slide-right {
+            height: 65%;
+            padding: 15px 40px;
+        }
+
+        /* 全螢幕模式下表格與模式卡片優化 */
+        :fullscreen .mode-row {
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        :fullscreen .rules-table-container {
+            padding: 12px;
+        }
+
+        :fullscreen .rules-table th {
+            padding: 8px 10px;
+            font-size: 1.15rem;
+        }
+
+        :fullscreen .rules-table td {
+            padding: 8px 10px;
+            font-size: 1.1rem;
+        }
+
+        /* 不同的排版變化 (Layout Variations) */
+        .slide-container.reverse {
+            flex-direction: row-reverse;
+        }
+
+        .slide-container.top-bottom {
+            flex-direction: column;
+        }
+
+        .slide-container.full-bg {
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slide-container.active {
+            opacity: 1;
+            transform: translateX(0) scale(1) rotateY(0);
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        .slide-container.prev-active {
+            opacity: 0;
+            transform: translateX(-100px) scale(0.95);
+            z-index: 2;
+        }
+
+        /* 投影片結構佈局 */
+        .slide-left {
+            width: 55%;
+            padding: 50px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 25px;
+        }
+
+        .slide-right {
+            width: 45%;
+            background: linear-gradient(135deg, #F0F4F8 0%, #E2E8F0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            position: relative;
+            border-left: 1px solid rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        /* 針對 Top-Bottom 版面 */
+        .slide-container.top-bottom .slide-left {
+            width: 100%;
+            height: 38%;
+            padding: 25px 60px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .slide-container.top-bottom .slide-left .text-content {
+            width: 45%;
+        }
+
+        .slide-container.top-bottom .slide-left .bullet-list {
+            width: 50%;
+        }
+
+        .slide-container.top-bottom .slide-right {
+            width: 100%;
+            height: 62%;
+            border-left: none;
+        }
+
+        /* 針對 Reverse 版面 (圖左字右) */
+        .slide-container.reverse .slide-right {
+            border-left: none;
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        /* 文字樣式 */
+        .slide-page-num {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            color: var(--nintendo-red);
+            font-size: 1.15rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .slide-page-num::after {
+            content: '';
+            display: inline-block;
+            width: 30px;
+            height: 2px;
+            background: var(--nintendo-red);
+        }
+
+        .slide-title {
+            font-size: 2.7rem;
+            color: var(--text-dark);
+            line-height: 1.2;
+        }
+
+        .slide-subtitle {
+            font-size: 1.35rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: -10px;
+        }
+
+        /* 條列卡片排版 */
+        .bullet-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            list-style: none;
+        }
+
+        .bullet-item {
+            background: var(--bg-pearl);
+            padding: 16px 20px;
+            border-radius: 16px;
+            border-left: 6px solid var(--text-muted);
+            box-shadow: var(--inset-shadow);
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .bullet-item:hover {
+            transform: translateY(-4px);
+            background: white;
+            box-shadow: var(--card-shadow);
+        }
+
+        .bullet-item.add {
+            border-left-color: var(--yoshi-green);
+        }
+
+        .bullet-item.core {
+            border-left-color: var(--nintendo-red);
+        }
+
+        .bullet-item.coin {
+            border-left-color: var(--coin-yellow);
+        }
+
+        .bullet-icon {
+            font-size: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .bullet-text strong {
+            color: var(--text-dark);
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 700;
+        }
+
+        .bullet-text p {
+            font-size: 1.12rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        /* 圖片容器 */
+        .illustration-card {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: var(--transition-smooth);
+            position: relative;
+        }
+
+        .illustration-card:hover {
+            transform: translateY(-5px) rotate(0.5deg);
+            box-shadow: 0 25px 55px rgba(0, 0, 0, 0.12);
+        }
+
+        .illustration-header {
+            padding: 10px 20px;
+            background: #F1F5F9;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            z-index: 2;
+        }
+
+        .illustration-body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #FFFFFF 0%, #F8FAFC 100%);
+        }
+
+        /* 真實圖片樣式 */
+        .real-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            transition: transform 0.6s ease;
+        }
+
+        .illustration-card:hover .real-image {
+            transform: scale(1.05);
+        }
+
+        /* Demo video style (fits inside container without cropping) */
+        .demo-video {
+            width: auto;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            transform: translateY(-20px);
+            display: block;
+            margin: 0 auto;
+            background: transparent;
+        }
+
+        /* 底部導航與控制面板 */
+        .bottom-controls {
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            z-index: 100;
+        }
+
+        .prev-next-btns {
+            display: flex;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            width: 48px;
+            height: 48px;
+            background: white;
+            border: 2px solid rgba(0, 0, 0, 0.08);
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+            transition: var(--transition-smooth);
+            font-size: 1.4rem;
+        }
+
+        .nav-btn:hover {
+            border-color: var(--nintendo-red);
+            color: var(--nintendo-red);
+            transform: scale(1.08);
+            box-shadow: 0 8px 20px rgba(230, 0, 18, 0.15);
+        }
+
+        /* 指示點 Dot Indicators */
+        .dots-container {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 9999px;
+            background: #E2E8F0;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .dot.active {
+            background: var(--nintendo-red);
+            width: 28px;
+            box-shadow: 0 2px 8px rgba(230, 0, 18, 0.3);
+        }
+
+        /* 客製化樣式 */
+        .cover-title {
+            font-size: 4.2rem;
+            color: var(--nintendo-red);
+            text-shadow: 0 4px 0px rgba(230, 0, 18, 0.1);
+        }
+
+        .keyboard-tip-bar {
+            background: rgba(0, 0, 0, 0.03);
+            padding: 6px 16px;
+            border-radius: 9999px;
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .keyboard-key {
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            border-bottom: 3px solid rgba(0, 0, 0, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 0.92rem;
+            font-family: monospace;
+            color: var(--text-dark);
+        }
+
+        /* 競品連結按鈕 */
+        .link-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .btn-link {
+            padding: 12px 24px;
+            border-radius: 9999px;
+            text-decoration: none;
+            font-weight: 700;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.15rem;
+            transition: var(--transition-smooth);
+            box-shadow: var(--card-shadow);
+            border: 2px solid transparent;
+        }
+
+        .btn-link.red-btn {
+            background: var(--nintendo-red);
+            color: white;
+        }
+
+        .btn-link.red-btn:hover {
+            background: white;
+            color: var(--nintendo-red);
+            border-color: var(--nintendo-red);
+            transform: translateY(-2px);
+        }
+
+        .btn-link.green-btn {
+            background: var(--yoshi-green);
+            color: white;
+        }
+
+        .btn-link.green-btn:hover {
+            background: white;
+            color: var(--yoshi-green);
+            border-color: var(--yoshi-green);
+            transform: translateY(-2px);
+        }
+
+        .btn-link.yellow-btn {
+            background: var(--coin-yellow);
+            color: var(--text-dark);
+        }
+
+        .btn-link.yellow-btn:hover {
+            background: white;
+            color: var(--text-dark);
+            border-color: var(--coin-yellow);
+            transform: translateY(-2px);
+        }
+
+        /* 過渡頁大字 */
+        .divider-title {
+            font-size: 4.7rem;
+            color: var(--nintendo-red);
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 900;
+            text-align: center;
+        }
+
+        .divider-title.green {
+            color: var(--nintendo-red);
+        }
+
+        .divider-title.yellow {
+            color: var(--nintendo-red);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .divider-title.slate {
+            color: var(--nintendo-red);
+        }
+
+        .divider-subtitle {
+            font-size: 2rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-top: 15px;
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* 目錄大綱表格 */
+        .agenda-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .agenda-item {
+            background: var(--bg-pearl);
+            padding: 18px 25px;
+            border-radius: 20px;
+            border-left: 6px solid var(--text-muted);
+            box-shadow: var(--inset-shadow);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            transition: var(--transition-smooth);
+        }
+
+        .agenda-item:hover {
+            background: white;
+            box-shadow: var(--card-shadow);
+            transform: translateY(-2px);
+        }
+
+        .agenda-item.active {
+            border-left-color: var(--nintendo-red);
+        }
+
+        .agenda-num {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: var(--nintendo-red);
+        }
+
+        /* 模式與碰撞表 */
+        .mode-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+            max-width: 100%;
+            width: 100%;
+        }
+
+        .mode-detail-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+            max-width: 100%;
+            width: 100%;
+        }
+
+        .mode-detail-box {
+            background: white;
+            border: 1px solid rgba(229, 62, 62, 0.55);
+            border-radius: 18px;
+            padding: 18px;
+            min-height: 110px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .mode-detail-box strong {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.15rem;
+            color: var(--text-dark);
+        }
+
+        .mode-detail-box p {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .rules-table-container {
+            background: var(--bg-pearl);
+            border-radius: 20px;
+            padding: 10px;
+            box-shadow: var(--inset-shadow);
+            max-width: 100%;
+            width: 100%;
+        }
+
+        .slide-container.top-bottom .slide-left,
+        .slide-container.top-bottom .slide-right {
+            /* 保持預設 stretched 對齊，避免 page 05 / page 06 標題被置中遮蔽 */
+            align-items: stretch;
+        }
+
+        .slide-container.grid-layout {
+            flex-direction: column;
+            padding: 40px 60px;
+            align-items: center;
+            justify-content: flex-start;
+            text-align: center;
+        }
+
+        .slide-container.grid-layout>div:first-child {
+            max-width: 980px;
+            width: 100%;
+            margin-bottom: 25px;
+        }
+
+        .rules-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.1rem;
+        }
+
+        .rules-table th {
+            text-align: left;
+            padding: 10px 12px;
+            color: var(--text-dark);
+            font-family: 'Fredoka', sans-serif;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.08);
+            font-weight: 700;
+        }
+
+        .rules-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* 6+6左右卡片 */
+        .six-six-container {
+            display: flex;
+            gap: 30px;
+            height: auto;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 100%;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .six-six-column {
+            flex: 1 1 420px;
+            min-width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .six-six-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            border-left: 6px solid var(--text-muted);
+        }
+
+        .six-six-card.strategy {
+            border-left-color: var(--nintendo-red);
+        }
+
+        .six-six-card.psychology {
+            border-left-color: var(--yoshi-green);
+        }
+
+        .six-six-card h3 {
+            font-size: 1.45rem;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+        }
+
+        .six-six-card p {
+            font-size: 1.12rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* 競品排版 */
+        .competitor-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .competitor-card {
+            background: var(--bg-pearl);
+            padding: 18px 22px;
+            border-radius: 20px;
+            border-left: 6px solid var(--text-muted);
+            box-shadow: var(--inset-shadow);
+            transition: var(--transition-smooth);
+        }
+
+        .competitor-card:hover {
+            background: white;
+            box-shadow: var(--card-shadow);
+            transform: translateY(-2px);
+        }
+
+        .competitor-card.snake-io {
+            border-left-color: var(--nintendo-red);
+        }
+
+        .competitor-card.snake-clash {
+            border-left-color: var(--yoshi-green);
+        }
+
+        .competitor-card.snake-merge {
+            border-left-color: var(--coin-yellow);
+        }
+
+        .competitor-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 4px;
+            color: var(--text-dark);
+        }
+
+        .competitor-tag {
+            display: inline-block;
+            font-size: 0.98rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        .competitor-tag.red {
+            background: var(--nintendo-red);
+        }
+
+        .competitor-tag.green {
+            background: var(--yoshi-green);
+        }
+
+        .competitor-tag.yellow {
+            background: var(--coin-yellow);
+            color: var(--text-dark);
+        }
+
+        .competitor-meta {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .competitor-text {
+            font-size: 1.08rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .app-icons-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .app-icon-item {
+            background: white;
+            border-radius: 20px;
+            padding: 10px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .app-icon-item img {
+            width: 80px;
+            height: 80px;
+            border-radius: 18px;
+            object-fit: contain;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+            margin-bottom: 8px;
+        }
+
+        .app-icon-item span {
+            font-size: 1.02rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* 技能道具上2下3 */
+        .skills-grid-top {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .items-grid-bottom {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .skill-item-card {
+            background: var(--bg-pearl);
+            padding: 16px 20px;
+            border-radius: 20px;
+            border-left: 6px solid var(--text-muted);
+            box-shadow: var(--inset-shadow);
+            transition: var(--transition-smooth);
+        }
+
+        .skill-item-card:hover {
+            background: white;
+            box-shadow: var(--card-shadow);
+            transform: translateY(-2px);
+        }
+
+        .skill-item-card.red-border {
+            border-left-color: var(--nintendo-red);
+        }
+
+        .skill-item-card.green-border {
+            border-left-color: var(--yoshi-green);
+        }
+
+        .skill-item-card.yellow-border {
+            border-left-color: var(--coin-yellow);
+        }
+
+        .skill-item-card h3 {
+            font-size: 1.35rem;
+            margin-bottom: 6px;
+            color: var(--text-dark);
+        }
+
+        .skill-item-card p {
+            font-size: 1.08rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* 成長之路時間線 */
+        .roadmap-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            padding: 40px 20px;
+            background: var(--bg-pearl);
+            border-radius: 24px;
+            box-shadow: var(--inset-shadow);
+            margin-top: 10px;
+        }
+
+        .roadmap-line {
+            position: absolute;
+            top: 50%;
+            left: 5%;
+            right: 5%;
+            height: 6px;
+            background: #E2E8F0;
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+
+        .roadmap-line-fill {
+            position: absolute;
+            top: 50%;
+            left: 5%;
+            width: 70%;
+            height: 6px;
+            background: var(--yoshi-green);
+            z-index: 2;
+            transform: translateY(-50%);
+        }
+
+        .roadmap-node {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 15%;
+        }
+
+        .roadmap-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 9999px;
+            background: white;
+            border: 6px solid #E2E8F0;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition-smooth);
+        }
+
+        .roadmap-node.unlocked .roadmap-dot {
+            border-color: var(--yoshi-green);
+            background: var(--yoshi-green);
+        }
+
+        .roadmap-node.current .roadmap-dot {
+            border-color: var(--nintendo-red);
+            background: white;
+            transform: scale(1.2);
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0% {
+                box-shadow: 0 0 0 0 rgba(230, 0, 18, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(230, 0, 18, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(230, 0, 18, 0);
+            }
+        }
+
+        .roadmap-label {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-top: 10px;
+            text-align: center;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .roadmap-desc {
+            font-size: 0.92rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 4px;
+            max-width: 120px;
+        }
+
+        /* 雙色畫廊 */
+        .mario-gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .gallery-card {
+            background: white;
+            border-radius: 16px;
+            padding: 6px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .gallery-card img {
+            width: 100%;
+            height: 0;
+            flex-grow: 1;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .gallery-card span {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            text-align: center;
+            padding: 6px 0 2px 0;
+            font-family: 'Fredoka', sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 頂部導航列 -->
+    <header class="top-navbar">
+        <div class="logo-area">
+            <span class="logo-badge">SNAKE</span>
+            <span class="deck-title">貪食蛇 ── 項目提案簡報</span>
+        </div>
+        <div class="keyboard-tip-bar">
+            <span>使用鍵盤</span>
+            <span class="keyboard-key">←</span>
+            <span class="keyboard-key">→</span>
+            <span>或</span>
+            <span class="keyboard-key">Space</span>
+            <span>切換投影片</span>
+        </div>
+        <div class="nav-controls">
+            <button class="fullscreen-btn" onclick="toggleFullscreen()">
+                <span>🖥️</span> <b>全螢幕展示</b>
+            </button>
+        </div>
+    </header>
+
+    <!-- 投影片視窗容器 -->
+    <main class="slides-viewport" id="viewport">
+
+        <!-- Slide 01: 封面 -->
+        <section class="slide-container active" data-slide="1"
+            style="justify-content: center; align-items: center; text-align: center; flex-direction: column;">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+                <h1 class="cover-title">貪食蛇提案說明</h1>
+                <div
+                    style="background: rgba(0,0,0,0.03); padding: 8px 24px; border-radius: 9999px; font-size: 1.15rem; font-weight: 600; margin-top: 10px; color: var(--text-muted);">
+                    線上研三 開發二組 高帆君
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 02: 簡報大綱 (嚴禁裝飾圖) -->
+        <section class="slide-container" data-slide="2"
+            style="flex-direction: column; padding: 60px 80px; justify-content: center;">
+            <div style="text-align: center; margin-bottom: 35px;">
+                <span class="slide-page-num" style="justify-content: center;">Page 02</span>
+                <h2 class="slide-title">大綱：項目總覽</h2>
+            </div>
+            <div class="agenda-grid">
+                <div class="agenda-item active">
+                    <span class="agenda-num">1</span>
+                    <span>核心玩法</span>
+                </div>
+                <div class="agenda-item active">
+                    <span class="agenda-num">5</span>
+                    <span>成長之路結合</span>
+                </div>
+                <div class="agenda-item active">
+                    <span class="agenda-num">2</span>
+                    <span>6+6選品策略</span>
+                </div>
+                <div class="agenda-item active">
+                    <span class="agenda-num">6</span>
+                    <span>金流回收方式</span>
+                </div>
+                <div class="agenda-item active">
+                    <span class="agenda-num">3</span>
+                    <span>參考競品資訊</span>
+                </div>
+                <div class="agenda-item active">
+
+                    <span class="agenda-num">7</span>
+                    <span>美術風格</span>
+                </div>
+                <div class="agenda-item active">
+                    <span class="agenda-num">4</span>
+                    <span>技能/道具設計</span>
+                </div>
+                <div class="agenda-item active">
+                    <span class="agenda-num">8</span>
+                    <span>Q&A</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 03: 主題過渡頁 - 1 -->
+        <section class="slide-container divider-style full-bg" data-slide="3" style="
+                background: white; 
+                flex-direction: column;
+            ">
+            <div class="divider-title">1. 核心玩法</div>
+            <div class="divider-subtitle">產品特色</div>
+            <div class="divider-subtitle">基本操作</div>
+            <div class="divider-subtitle">遊戲模式</div>
+            <div class="divider-subtitle">碰撞規則</div>
+        </section>
+
+        <!-- Slide 04: 核心玩法前導 (嚴禁裝飾圖) -->
+        <section class="slide-container" data-slide="4"
+            style="flex-direction: column; padding: 60px 80px; justify-content: center;">
+            <span class="slide-page-num">Page 04</span>
+            <div style="margin-bottom: 15px;">
+                <h2 class="slide-title">1. 核心玩法 (1/4)：產品特色</h2>
+            </div>
+            <div style="text-align: center; margin-bottom: 30px;">
+                <span style="font-size: 2rem; font-weight: 700; color: var(--nintendo-red); letter-spacing: 1px;">多人亂鬥
+                    X 體力控管 X 截斷反殺</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-bottom: 35px;">
+                <div
+                    style="background: var(--bg-pearl); padding: 25px; border-radius: 20px; border-left: 6px solid var(--nintendo-red); box-shadow: var(--inset-shadow);">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 8px; color: var(--text-dark);">多人亂鬥</h3>
+                    <p style="font-size: 1.2rem; color: var(--text-muted); line-height: 1.5;">
+                        120 秒快節奏混戰，多人同場競技，體驗無延遲的極速衝突。</p>
+                </div>
+                <div
+                    style="background: var(--bg-pearl); padding: 25px; border-radius: 20px; border-left: 6px solid var(--yoshi-green); box-shadow: var(--inset-shadow);">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 8px; color: var(--text-dark);">體力控管</h3>
+                    <p style="font-size: 1.2rem; color: var(--text-muted); line-height: 1.5;">
+                        消耗體力進行衝刺（Dash）與疲勞超載（Overload），進行走位博弈。</p>
+                </div>
+                <div
+                    style="background: var(--bg-pearl); padding: 25px; border-radius: 20px; border-left: 6px solid var(--coin-yellow); box-shadow: var(--inset-shadow);">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 8px; color: var(--text-dark);">截斷反殺</h3>
+                    <p style="font-size: 1.2rem; color: var(--text-muted); line-height: 1.5;">
+                        利用 Dash 截斷對手，奪取其殘骸迅速反超積分，實現以小博大。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 05: 1. 核心玩法 (1/2)：基本操作 -->
+        <section class="slide-container top-bottom" data-slide="5" style="justify-content: center; gap: 80px;">
+            <!-- 左側文字區域 -->
+            <div class="slide-left" style="
+                    height: auto;
+                    width: 100%;
+                    padding: 25px 60px 0 60px;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: stretch;
+                    border-bottom: none;
+                ">
+                <div style="
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: flex-start;
+                        margin-bottom: 15px;
+                    ">
+                    <div>
+                        <span class="slide-page-num">Page 05</span>
+                        <h2 class="slide-title">
+                            1. 核心玩法 (2/4)：基本操作
+                        </h2>
+                    </div>
+                </div>
+
+                <div style="
+                        display: grid;
+                        grid-template-columns: repeat(3, 1fr);
+                        gap: 20px;
+                    ">
+                    <!-- 動態虛擬搖桿 -->
+                    <div style="
+                            background: var(--bg-pearl);
+                            padding: 20px;
+                            border-radius: 16px;
+                            border-left: 5px solid var(--nintendo-red);
+                        ">
+                        <h3 style="font-size: 1.5rem; margin-bottom: 8px; color: var(--text-dark);">
+                            動態虛擬搖桿 (左手)
+                        </h3>
+                        <p style="font-size: 1.2rem; color: var(--text-muted); line-height: 1.4;">
+                            隨滑隨動，零延遲提供精細走位避險與切入空間。
+                        </p>
+                    </div>
+
+                    <!-- 極速 Dash 衝刺 -->
+                    <div style="
+                            background: var(--bg-pearl);
+                            padding: 20px;
+                            border-radius: 16px;
+                            border-left: 5px solid var(--yoshi-green);
+                        ">
+                        <h3 style="font-size: 1.5rem; margin-bottom: 8px; color: var(--text-dark);">
+                            Dash 衝刺 (右手)
+                        </h3>
+                        <p style="font-size: 1.2rem; color: var(--text-muted); line-height: 1.4;">
+                            消耗體力獲得 1.25x 爆發加速，用以切斷對手動線。
+                        </p>
+                    </div>
+
+                    <!-- 磁力漩渦 -->
+                    <div style="
+                            background: var(--bg-pearl);
+                            padding: 20px;
+                            border-radius: 16px;
+                            border-left: 5px solid var(--coin-yellow);
+                        ">
+                        <h3 style="font-size: 1.5rem; margin-bottom: 8px; color: var(--text-dark);">
+                            磁力漩渦 (右手)
+                        </h3>
+                        <p style="font-size: 1.2rem; color: var(--text-muted); line-height: 1.4;">
+                            點擊觸發大範圍吸取周圍資源，冷卻制（CD），快速發育。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側圖片區域 -->
+            <div class="slide-right" style="
+                    height: auto;
+                    width: 100%;
+                    border-left: none;
+                    padding: 15px 60px 25px 60px;
+                    background: white;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                ">
+                <video class="demo-video" autoplay muted loop playsinline onerror="this.style.display='none'">
+                    <source src="Demo_01.mp4" type="video/mp4">
+                    您的瀏覽器不支援影片播放。
+                </video>
+            </div>
+        </section>
+
+        <!-- Slide 06: 1. 核心玩法 (2/2)：三大模式與簡易規則 -->
+        <section class="slide-container" data-slide="6"
+            style="justify-content: center; align-items: center; padding: 60px 80px; flex-direction: column;">
+            <div style="width: 100%; margin-bottom: 30px;">
+                <span class="slide-page-num">Page 06</span>
+                <h2 class="slide-title">1. 核心玩法 (3/4)：遊戲模式</h2>
+            </div>
+            <div class="mode-row" style="width: 100%; justify-content: center; margin-bottom: 20px;">
+                <div
+                    style="background: var(--bg-pearl); padding: 25px; border-radius: 20px; border-left: 6px solid var(--yoshi-green); box-shadow: var(--inset-shadow); flex: 1;">
+                    <strong style="font-size: 1.5rem; color: var(--text-dark);">Solo 模式 (單人練習)</strong>
+                    <p style="font-size: 1.2rem; color: var(--text-muted); margin-top: 10px; line-height: 1.5;">1P vs 7
+                        BOTs<br>BOT 反應較慢，適合新手熟悉操作。<br><b>局內目標：</b>120 秒內依據積分高低來進行最終排名。</p>
+                </div>
+                <div
+                    style="background: var(--bg-pearl); padding: 25px; border-radius: 20px; border-left: 6px solid var(--nintendo-red); box-shadow: var(--inset-shadow); flex: 1;">
+                    <strong style="font-size: 1.5rem; color: var(--text-dark);">大亂鬥 (競技對抗)</strong>
+                    <p style="font-size: 1.2rem; color: var(--text-muted); margin-top: 10px; line-height: 1.5;">1P vs
+                        1擬人AI vs 6 BOTs<br>與一名強力對手競爭，考驗玩家在混亂中的生存與獵殺能力。<br><b>局內目標：</b>120 秒內依據積分高低來進行最終排名。</p>
+                </div>
+                <div
+                    style="background: var(--bg-pearl); padding: 25px; border-radius: 20px; border-left: 6px solid var(--coin-yellow); box-shadow: var(--inset-shadow); flex: 1;">
+                    <strong style="font-size: 1.5rem; color: var(--text-dark);">團體賽 (陣營對抗)</strong>
+                    <p style="font-size: 1.2rem; color: var(--text-muted); margin-top: 10px; line-height: 1.5;">
+                        1名玩家+3名BOT
+                        vs 1名AI+3名BOT<br>紅白對抗，隊友間共享積分和地圖道具。<br><b>局內目標：</b>120 秒內依據隊伍總積分來決定勝敗。</p>
+                </div>
+            </div>
+            <!-- 共通目標：吞食與成長 -->
+            <div
+                style="width: 100%; background: white; padding: 20px 25px; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 6px solid #4D90FE; display: flex; align-items: center; gap: 15px;">
+                <div style="font-size: 2rem;">🍎</div>
+                <div>
+                    <strong style="font-size: 1.3rem; color: var(--text-dark);">共通目標：吞食與成長</strong>
+                    <p style="font-size: 1.2rem; color: var(--text-muted); margin-top: 5px; line-height: 1.5;">
+                        在地圖中不斷吞食能量塊與對手殘骸，快速增加自身長度與積分。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 07: 碰撞與勝負規則 -->
+        <section class="slide-container" data-slide="7"
+            style="justify-content: center; align-items: center; padding: 60px 80px; flex-direction: column;">
+            <div style="margin-bottom: 30px; width: 100%;">
+                <span class="slide-page-num">Page 07</span>
+                <h2 class="slide-title">1. 核心玩法 (4/4)：碰撞規則</h2>
+            </div>
+
+            <div
+                style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; width: 100%; margin-bottom: 30px;">
+                <!-- Card 1 -->
+                <div
+                    style="background: var(--bg-pearl); padding: 25px; border-radius: 20px; border-left: 6px solid var(--nintendo-red); box-shadow: var(--inset-shadow); display: flex; align-items: center; gap: 20px;">
+                    <div style="font-size: 2.7rem;">💥</div>
+                    <div>
+                        <strong style="font-size: 1.5rem; color: var(--text-dark);">頭撞身體</strong>
+                        <p style="font-size: 1.2rem; color: var(--text-muted); margin-top: 5px;"><b>撞擊方死亡</b> (頭撞他人身體必死)
+                        </p>
+                    </div>
+                </div>
+                <!-- Card 2 -->
+                <div
+                    style="background: var(--bg-pearl); padding: 25px; border-radius: 20px; border-left: 6px solid var(--yoshi-green); box-shadow: var(--inset-shadow); display: flex; align-items: center; gap: 20px;">
+                    <div style="font-size: 2.7rem;">🤕</div>
+                    <div>
+                        <strong style="font-size: 1.5rem; color: var(--text-dark);">頭碰頭 (無衝刺)</strong>
+                        <p style="font-size: 1.2rem; color: var(--text-muted); margin-top: 5px;"><b>長者勝</b>，小者死亡</p>
+                    </div>
+                </div>
+                <!-- Card 3 -->
+                <div
+                    style="background: var(--bg-pearl); padding: 25px; border-radius: 20px; border-left: 6px solid var(--coin-yellow); box-shadow: var(--inset-shadow); display: flex; align-items: center; gap: 20px;">
+                    <div style="font-size: 2.7rem;">🚀</div>
+                    <div>
+                        <strong style="font-size: 1.5rem; color: var(--text-dark);">頭碰頭 (單方衝刺)</strong>
+                        <p style="font-size: 1.2rem; color: var(--text-muted); margin-top: 5px;"><b>衝刺勝</b>，未衝刺方死亡</p>
+                    </div>
+                </div>
+                <!-- Card 4 -->
+                <div
+                    style="background: var(--bg-pearl); padding: 25px; border-radius: 20px; border-left: 6px solid #4D90FE; box-shadow: var(--inset-shadow); display: flex; align-items: center; gap: 20px;">
+                    <div style="font-size: 2.7rem;">🛡️</div>
+                    <div>
+                        <strong style="font-size: 1.5rem; color: var(--text-dark);">頭碰頭 (雙方皆衝刺)</strong>
+                        <p style="font-size: 1.2rem; color: var(--text-muted); margin-top: 5px;"><b>安全回彈</b>，雙方皆不死亡</p>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                style="width: 100%; background: white; padding: 20px 25px; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 15px;">
+                <div style="font-size: 2rem;">💀</div>
+                <p style="font-size: 1.2rem; color: var(--text-muted); line-height: 1.5; margin: 0;">
+                    <b>死亡機制：</b>死亡後進入 2 秒復活計時，遺骸將化作 50% 價值的食物散落地圖，供其他玩家爭奪。
+                </p>
+            </div>
+        </section>
+
+        <!-- Slide 07: 主題過渡頁 - 2 -->
+        <section class="slide-container divider-style full-bg" data-slide="7"
+            style="background: white; flex-direction: column;">
+            <div class="divider-title green">2. 6+6 選品策略</div>
+            <div class="divider-subtitle">經典再造與心理驅動</div>
+        </section>
+
+        <!-- Slide 08: 2. 6+6選品策略 (1/1)：經典再造與心理驅動 -->
+        <section class="slide-container grid-layout" data-slide="8" style="justify-content: center;">
+            <span class="slide-page-num">Page 09</span>
+            <div style="margin-bottom: 25px;">
+                <h2 class="slide-title">2. 6+6 選品策略 (1/1)：經典再造與心理驅動</h2>
+            </div>
+            <div class="six-six-container">
+                <!-- 左側：落實三大成功策略 -->
+                <div class="six-six-column">
+                    <h3 style="font-family: 'Fredoka', sans-serif; font-size: 1.5rem; color: var(--nintendo-red);">
+                        落實兩大成功策略</h3>
+
+                    <div class="six-six-card strategy">
+                        <h3>玩法深化．體驗升級</h3>
+                        <p>「截斷反殺」實現以小博大<br>「極速復活」消弭死亡挫敗<br>「多人同樂」翻倍局內樂趣</p>
+                    </div>
+
+                    <div class="six-six-card strategy">
+                        <h3>玩法融合．創造藍海</h3>
+                        <p>「經典走位」結合局外養成<br>「雙軌技能」釋放玩法變化<br>「地圖道具」翻新傳統體驗</p>
+                    </div>
+                </div>
+
+                <!-- 右側：對齊三大核心心理驅動 -->
+                <div class="six-six-column">
+                    <h3 style="font-family: 'Fredoka', sans-serif; font-size: 1.5rem; color: var(--yoshi-green);">
+                        對齊三大核心心理驅動</h3>
+
+                    <div class="six-six-card psychology">
+                        <h3>ASMR效應與感官滿足</h3>
+                        <p>「感官反饋」放大拾取體驗<br>「爆炸衝擊」引爆擊殺爽感<br>「觸覺震動」提供極致紓壓</p>
+                    </div>
+
+                    <div class="six-six-card psychology">
+                        <h3>掌控感與秩序建立</h3>
+                        <p>「磁力漩渦」收割滿地食物<br>「瞬間變大」重塑大蛇壓制<br>「爭奪道具」建立絕對優勢</p>
+                    </div>
+
+                    <div class="six-six-card psychology">
+                        <h3>熟悉與新奇黃金平衡</h3>
+                        <p>「直覺操作」實現零學成本<br>「體力衝刺」創造博弈快感<br>「技能養成」翻倍成就體驗</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 09: 主題過渡頁 - 3 -->
+        <section class="slide-container divider-style full-bg" data-slide="9"
+            style="background: white; flex-direction: column;">
+            <div class="divider-title green">3. 參考競品資訊</div>
+            <div class="divider-subtitle">Snake.io</div>
+            <div class="divider-subtitle">Snake Clash!</div>
+            <div class="divider-subtitle">Snake Merge (Worms Merge-io&idle snake game)</div>
+        </section>
+
+
+        <!-- Slide 10: 3. 參考競品 (1/3)：Snake.io -->
+        <section class="slide-container" data-slide="10">
+            <div class="slide-left" style="width: 45%; padding: 40px 50px; justify-content: center; gap: 15px;">
+                <span class="slide-page-num">Page 11</span>
+                <h2 class="slide-title" style=" margin-bottom: 5px;">3. 參考競品 (1/3)：Snake.io</h2>
+                <div class="competitor-card snake-io"
+                    style="display: flex; flex-direction: column; gap: 15px; padding: 25px; background: var(--bg-pearl); border-radius: 20px; border-left: 6px solid var(--nintendo-red);">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <img src="SnakeIO_AppIcon.jpg" alt="Snake.io Icon"
+                            style="width: 80px; height: 80px; border-radius: 16px; object-fit: contain;">
+                        <div>
+                            <h3 style="font-size: 1.7rem; color: var(--text-dark);"><a
+                                    href="https://play.google.com/store/apps/details?id=com.amelosinteractive.snake&hl=zh_HK"
+                                    target="_blank"
+                                    style="color: inherit; text-decoration: none; border-bottom: 2px solid var(--nintendo-red);">Snake.io
+                                    ↗</a></h3>
+                            <span class="competitor-tag red" style="margin-top: 5px; display: inline-block;">Google Play
+                                1億+ 下載</span>
+                        </div>
+                    </div>
+                    <p style="font-size: 1.2rem; color: var(--text-muted); line-height: 1.6;">
+                        「憑走位突圍」：聚焦最純粹的短局期純手感競技。
+                    </p>
+                </div>
+                <img src="SnakeIO_download.png" alt="Snake.io 下載量數據"
+                    style="width: var(--download-img-scale); border-radius: 12px; object-fit: contain; margin-top: 4px;">
+            </div>
+            <div class="slide-right"
+                style="width: 55%; padding: 30px; display: flex; align-items: center; justify-content: center;">
+                <div class="illustration-card" style="width: 100%; height: 100%;">
+                    <div class="illustration-header"><span>📺</span> Snake.io 實機展示</div>
+                    <div class="illustration-body" style="padding: 0; background: black;">
+                        <video class="real-image" autoplay muted loop playsinline
+                            style="object-fit: contain; width: 100%; height: 100%;">
+                            <source src="SnakeIO_Demo.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 11: 3. 參考競品 (2/3)：Snake Clash! -->
+        <section class="slide-container" data-slide="11">
+            <div class="slide-left" style="width: 45%; padding: 40px 50px; justify-content: center; gap: 15px;">
+                <span class="slide-page-num">Page 12</span>
+                <h2 class="slide-title" style=" margin-bottom: 5px;">3. 參考競品 (2/3)：Snake Clash!</h2>
+                <div class="competitor-card snake-clash"
+                    style="display: flex; flex-direction: column; gap: 15px; padding: 25px; background: var(--bg-pearl); border-radius: 20px; border-left: 6px solid var(--yoshi-green);">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <img src="SnakeClash_App_Icon.jpg" alt="Snake Clash! Icon"
+                            style="width: 80px; height: 80px; border-radius: 16px; object-fit: contain;">
+                        <div>
+                            <h3 style="font-size: 1.7rem; color: var(--text-dark);"><a
+                                    href="https://play.google.com/store/apps/details?id=io.supercent.linkedcubic&hl=zh_TW"
+                                    target="_blank"
+                                    style="color: inherit; text-decoration: none; border-bottom: 2px solid var(--yoshi-green);">Snake
+                                    Clash! ↗</a></h3>
+                            <span class="competitor-tag green" style="margin-top: 5px; display: inline-block;">Google
+                                Play 1億+ 下載</span>
+                        </div>
+                    </div>
+                    <p style="font-size: 1.2rem; color: var(--text-muted); line-height: 1.6;">
+                        「以數值壓制」：聚焦局外養成帶來的開局優勢。
+                    </p>
+                </div>
+                <img src="SnakeClash_download.png" alt="Snake Clash! 下載量數據"
+                    style="width: var(--download-img-scale); border-radius: 12px; object-fit: contain; margin-top: 4px;">
+            </div>
+            <div class="slide-right"
+                style="width: 55%; padding: 30px; display: flex; align-items: center; justify-content: center;">
+                <div class="illustration-card" style="width: 100%; height: 100%;">
+                    <div class="illustration-header"><span>📺</span> Snake Clash! 實機展示</div>
+                    <div class="illustration-body" style="padding: 0; background: black;">
+                        <video class="real-image" autoplay muted loop playsinline
+                            style="object-fit: contain; width: 100%; height: 100%;">
+                            <source src="SnakeClash_Demo.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 12: 3. 參考競品 (3/3)：Snake Merge -->
+        <section class="slide-container" data-slide="12">
+            <div class="slide-left" style="width: 45%; padding: 40px 50px; justify-content: center; gap: 15px;">
+                <span class="slide-page-num">Page 13</span>
+                <h2 class="slide-title" style=" margin-bottom: 5px;">3. 參考競品 (3/3)：Snake Merge <span
+                        style="font-size: 1.5rem; font-weight: normal;">(Worms Merge-io&idle snake game)</span></h2>
+                <div class="competitor-card snake-merge"
+                    style="display: flex; flex-direction: column; gap: 15px; padding: 25px; background: var(--bg-pearl); border-radius: 20px; border-left: 6px solid var(--coin-yellow);">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <img src="SnakeMerge_AppIcon.jpg" alt="Snake Merge Icon"
+                            style="width: 80px; height: 80px; border-radius: 16px; object-fit: contain;">
+                        <div>
+                            <h3 style="font-size: 1.7rem; color: var(--text-dark);"><a
+                                    href="https://play.google.com/store/apps/details?id=com.snake.io.slither.merge.fun.game"
+                                    target="_blank"
+                                    style="color: inherit; text-decoration: none; border-bottom: 2px solid var(--coin-yellow);">Snake
+                                    Merge ↗</a></h3>
+                            <span class="competitor-tag yellow" style="margin-top: 5px; display: inline-block;">Google
+                                Play 5000萬+ 下載</span>
+                        </div>
+                    </div>
+                    <p style="font-size: 1.2rem; color: var(--text-muted); line-height: 1.6;">
+                        「靠技能反轉」：聚焦隨機道具帶來的局內戰術。
+                    </p>
+                </div>
+                <img src="SnakeMerge_download.png" alt="Snake Merge 下載量數據"
+                    style="width: var(--download-img-scale); border-radius: 12px; object-fit: contain; margin-top: 4px;">
+            </div>
+            <div class="slide-right"
+                style="width: 55%; padding: 30px; display: flex; align-items: center; justify-content: center;">
+                <div class="illustration-card" style="width: 100%; height: 100%;">
+                    <div class="illustration-header"><span>📺</span> Snake Merge 實機展示</div>
+                    <div class="illustration-body" style="padding: 0; background: black;">
+                        <video class="real-image" autoplay muted loop playsinline
+                            style="object-fit: contain; width: 100%; height: 100%;">
+                            <source src="SnakeMerge_Demo.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Slide 13: 主題過渡頁 - 4 -->
+        <section class="slide-container divider-style full-bg" data-slide="13"
+            style="background: white; flex-direction: column;">
+            <div class="divider-title yellow">4. 技能/道具設計</div>
+            <div class="divider-subtitle">主動爆發與隨機地圖道具</div>
+        </section>
+
+        <!-- Slide 14: 4. 技能/道具設計 (1/1)：主動爆發與隨機道具 -->
+        <section class="slide-container top-bottom" data-slide="14" style="justify-content: center; gap: 10px;">
+            <div class="slide-left"
+                style="width: 100%; height: auto; padding: 25px 60px 0 60px; flex-direction: column; justify-content: center; align-items: stretch; border-bottom: none;">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                    <div>
+                        <span class="slide-page-num">Page 15</span>
+                        <h2 class="slide-title">4. 技能/道具設計 (1/1)：主動爆發與隨機道具</h2>
+                    </div>
+                </div>
+                <h3
+                    style="font-size: 1.3rem; color: var(--nintendo-red); margin-bottom: 8px; font-family: 'Fredoka', sans-serif;">
+                    核心主動技能 (HUD 按鈕)</h3>
+                <div class="skills-grid-top">
+                    <div class="skill-item-card red-border">
+                        <h3>1. Dash</h3>
+                        <p>消耗體力值獲得 25% 加速。若體力值歸零進入疲勞超載狀態，則在回滿 100 點前(約12秒)禁止再次加速。</p>
+                    </div>
+                    <div class="skill-item-card red-border">
+                        <h3>2. 磁力漩渦</h3>
+                        <p>主動點擊冷卻 30 秒。瞬間暴力吸入半徑 200px 內的所有食物。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-right"
+                style="height: auto; width: 100%; border-left: none; padding: 15px 60px 30px 60px; background: white; flex-direction: column; align-items: stretch; justify-content: flex-start;">
+                <h3
+                    style="font-size: 1.3rem; color: var(--yoshi-green); margin-bottom: 10px; font-family: 'Fredoka', sans-serif; text-align: left;">
+                    隨機地圖道具 (持續 10 秒)</h3>
+                <div class="items-grid-bottom">
+                    <div class="skill-item-card green-border">
+                        <h3>1. 磁鐵</h3>
+                        <p>自動吸附周圍食物，引導玩家深入高風險對抗爭奪區獲取大量點數。</p>
+                    </div>
+                    <div class="skill-item-card green-border">
+                        <h3>2. 巨大蘑菇</h3>
+                        <p>體型變大 1.5 倍並獲得「免疫截斷霸體」，但移速降低 20%。</p>
+                    </div>
+                    <div class="skill-item-card green-border">
+                        <h3>3. 幸運 7</h3>
+                        <p>吃下的食物價值翻倍，製造得分爆發期的短期高潮，誘發激進圍堵。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 15: 主題過渡頁 - 5 -->
+        <section class="slide-container divider-style full-bg" data-slide="15"
+            style="background: white; flex-direction: column;">
+            <div class="divider-title slate">5. 成長之路結合</div>
+            <div class="divider-subtitle">階段獎勵</div>
+        </section>
+
+        <!-- Slide 16: 5. 成長之路結合 (1/1)：階段獎勵 -->
+        <section class="slide-container" data-slide="16">
+            <!-- 左側文字與獎勵清單 -->
+            <div class="slide-left" style="
+                    width: 55%; 
+                    padding: 40px 50px; 
+                    justify-content: center; 
+                    gap: 15px;
+                    border-right: none;
+                ">
+                <span class="slide-page-num">Page 17</span>
+                <div style="margin-bottom: 5px;">
+                    <h2 class="slide-title">
+                        5. 成長之路結合 (1/1)：階段獎勵
+                    </h2>
+                    <p class="slide-subtitle" style="margin-top: 5px;">
+                        提供明確的局外長線養成與效果加成
+                    </p>
+                </div>
+
+                <!-- 機制說明 -->
+                <div style="
+                        background: var(--bg-pearl); 
+                        padding: 15px 20px; 
+                        border-radius: 16px; 
+                        border-left: 6px solid var(--yoshi-green); 
+                        box-shadow: var(--inset-shadow);
+                    ">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 4px; color: var(--text-dark);">
+                        成長之路
+                    </h3>
+                    <p style="font-size: 1.2rem; color: var(--text-muted); line-height: 1.5;">
+                        遊戲中獲取熟練度，累積升級以解鎖各階段獎勵。<br>升級可提升被動技能效果，有效拉長局外長線遊玩目標。
+                    </p>
+                </div>
+
+                <!-- 被動技能獎勵列表 (預留空間) -->
+                <div style="
+                        background: var(--bg-pearl); 
+                        padding: 15px 20px; 
+                        border-radius: 16px; 
+                        border-left: 6px solid var(--nintendo-red); 
+                        box-shadow: var(--inset-shadow);
+                    ">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 8px; color: var(--text-dark);">
+                        被動技能效果：地圖道具提升
+                    </h3>
+                    <div style="
+                            gap: 10px;
+                        ">
+                        <div style="font-size: 1.2rem; color: var(--text-muted);">
+                            <b>鷹眼</b> ── 視野變大
+                        </div>
+                        <div style="font-size: 1.2rem; color: var(--text-muted);">
+                            <b>磁鐵增幅</b> ── 吸附半徑、持續時間
+                        </div>
+                        <div style="font-size: 1.2rem; color: var(--text-muted);">
+                            <b>巨大蘑菇</b> ── 移動速度、持續時間
+                        </div>
+                        <div style="font-size: 1.2rem; color: var(--text-muted);">
+                            <b>幸運7</b> ── 食物倍率、持續時間
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側參考圖片 -->
+            <div class="slide-right" style="
+                    width: 45%; 
+                    padding: 25px;
+                    border-left: none;
+                ">
+                <div class="illustration-card">
+                    <div class="illustration-header">
+                        <span>📈</span> 成長之路
+                    </div>
+                    <div class="illustration-body">
+                        <img src="玩星派對_成長之路_圖.png" alt="成長之路參考圖" class="real-image"
+                            onerror="this.src='../presentation_v5.0.0/images/slide_5.png'">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 17: 主題過渡頁 - 6 -->
+        <section class="slide-container divider-style full-bg" data-slide="17"
+            style="background: white; flex-direction: column;">
+            <div class="divider-title">6. 金流回收方式</div>
+            <div class="divider-subtitle">局前消耗與天賦升級</div>
+            <div class="divider-subtitle">Skin 系統</div>
+        </section>
+
+        <!-- Slide 18: 6. 金流回收方式 (1/1)：戰前消耗與科技進化 -->
+        <section class="slide-container" data-slide="18">
+            <div class="slide-left" style="width: 55%; padding: 40px 50px; justify-content: center; gap: 20px;">
+                <span class="slide-page-num">Page 19</span>
+                <h2 class="slide-title" style=" margin-bottom: 5px;">6. 金流回收方式 (1/2)：局前消耗與天賦升級</h2>
+
+                <div
+                    style="background: var(--bg-pearl); padding: 20px; border-radius: 16px; border-left: 6px solid var(--coin-yellow); box-shadow: var(--inset-shadow);">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 6px; color: var(--text-dark);">回收一：局前金幣啟用被動技（單局消耗）
+                    </h3>
+                    <p style="font-size: 1.2rem; color: var(--text-muted); line-height: 1.5;">
+                        開局前，玩家可消耗金幣自選不同被動技能。<br>如：「鷹眼」視野變大、「磁鐵增幅」吸附半徑增加、「巨大蘑菇」速度降低減少、「幸運 7 增幅」倍率提升
+                    </p>
+                </div>
+
+                <div
+                    style="background: var(--bg-pearl); padding: 20px; border-radius: 16px; border-left: 6px solid var(--nintendo-red); box-shadow: var(--inset-shadow);">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 6px; color: var(--text-dark);">回收二：永久天賦升級 (長線深度回收)
+                    </h3>
+                    <p style="font-size: 1.2rem; color: var(--text-muted); line-height: 1.5;">
+                        參考《弓箭傳說》天賦系統。消耗金幣隨機升級主動技能效果。<br>如：體力上限、體力回復速度、磁吸漩渦半徑、磁吸漩渦冷卻時間。
+                    </p>
+                </div>
+
+            </div>
+            <div class="slide-right" style="width: 45%; padding: 25px;">
+                <div class="illustration-card">
+                    <div class="illustration-header"><span>🧬</span> 局外天賦系統 (弓箭傳說天賦系統.mp4)</div>
+                    <div class="illustration-body">
+                        <video class="real-image" autoplay muted loop playsinline
+                            style="object-fit: contain; width: 100%; height: 100%;">
+                            <source src="弓箭傳說強化系統.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 19: 6. 金流回收方式 (2/2)：Skin 系統 -->
+        <section class="slide-container" data-slide="19">
+            <div class="slide-left" style="width: 50%; padding: 40px 50px; justify-content: center; gap: 18px;">
+                <span class="slide-page-num">Page 20</span>
+                <h2 class="slide-title" style=" margin-bottom: 5px;">6. 金流回收方式 (2/2)：Skin 系統</h2>
+
+                <div
+                    style="background: var(--bg-pearl); padding: 20px; border-radius: 16px; border-left: 6px solid var(--coin-yellow); box-shadow: var(--inset-shadow);">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 8px; color: var(--text-dark);">個性化外觀 (Skin) 系統</h3>
+                    <p style="font-size: 1.2rem; color: var(--text-muted); line-height: 1.6;">
+                        提供多種獨特的 3D 黏土風格蛇身皮膚。
+                    </p>
+                </div>
+
+                <div
+                    style="background: var(--bg-pearl); padding: 20px; border-radius: 16px; border-left: 6px solid var(--yoshi-green); box-shadow: var(--inset-shadow);">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 12px; color: var(--text-dark);">Skin 獲取管道</h3>
+                    <div
+                        style="display: flex; flex-direction: column; gap: 8px; font-size: 1.2rem; color: var(--text-muted); line-height: 1.5;">
+                        <div>• 成長之路獎勵：解鎖限定外觀</div>
+                        <div>• 局內獎勵：完成局內遊玩，獲取皮膚碎片</div>
+                        <div>• 局外金幣商店兌換：大量金幣直購，快速享有特色外觀</div>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-right"
+                style="width: 50%; padding: 30px; display: flex; align-items: center; justify-content: center;">
+                <div class="illustration-card" style="width: 100%; height: 100%;">
+                    <div class="illustration-header"><span>🎨</span> Skin 系統實機展示</div>
+                    <div class="illustration-body" style="padding: 0; background: black;">
+                        <video class="real-image" autoplay muted loop playsinline
+                            style="object-fit: contain; width: 100%; height: 100%;">
+                            <source src="skin系統.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 20: 主題過渡頁 - 7 -->
+        <section class="slide-container divider-style full-bg" data-slide="20"
+            style="background: white; flex-direction: column;">
+            <div class="divider-title slate">7. 美術風格</div>
+            <div class="divider-subtitle">風格參考</div>
+        </section>
+
+        <!-- Slide 21: 7. 美術視覺與爽感回饋 (1/1)：任天堂 3D 微黏土風 -->
+        <section class="slide-container" data-slide="21">
+            <div class="slide-left" style="width: 40%; padding: 40px; justify-content: center; gap: 20px;">
+                <span class="slide-page-num">Page 22</span>
+                <h2 class="slide-title" style=" color: var(--text-dark);">7. 美術風格 (1/1)：風格參考</h2>
+
+                <div
+                    style="background: var(--bg-pearl); padding: 25px; border-radius: 20px; border-left: 6px solid var(--nintendo-red); box-shadow: var(--inset-shadow);">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 8px; color: var(--text-dark);">任天堂風格</h3>
+                    <p style="font-size: 1.2rem; color: var(--text-muted); line-height: 1.6;">
+                        主打高對比、高飽和色彩，圓潤且富彈性的 3D
+                        微黏土與霧面塑料材質。
+                    </p>
+                </div>
+            </div>
+            <div class="slide-right" style="width: 60%; padding: 25px; background: white;">
+                <div class="mario-gallery">
+                    <div class="gallery-card">
+                        <img src="瑪利歐網球圖1.jpg" alt="瑪利歐網球"
+                            onerror="this.src='../presentation_v5.0.0/images/slide_9.png'">
+                        <span>《瑪利歐網球》</span>
+                    </div>
+                    <div class="gallery-card">
+                        <img src="瑪利歐派對圖1.png" alt="瑪利歐派對"
+                            onerror="this.src='../presentation_v5.0.0/images/slide_9.png'">
+                        <span>《瑪利歐派對》</span>
+                    </div>
+                    <div class="gallery-card">
+                        <img src="瑪利歐賽車8圖1.jpg" alt="瑪利歐賽車1"
+                            onerror="this.src='../presentation_v5.0.0/images/slide_9.png'">
+                        <span>《瑪利歐賽車 8》</span>
+                    </div>
+                    <div class="gallery-card">
+                        <img src="瑪利歐賽車8圖2.jpg" alt="瑪利歐賽車2"
+                            onerror="this.src='../presentation_v5.0.0/images/slide_9.png'">
+                        <span>《瑪利歐賽車 8》</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 22: Q&A (最後一頁，嚴禁內容與插圖) -->
+        <section class="slide-container full-bg" data-slide="22" style="background: white;">
+            <div class="divider-title" style="font-size: 6.2rem; letter-spacing: 5px;">Q&A</div>
+        </section>
+
+    </main>
+
+    <!-- 底部控制面板 -->
+    <footer class="bottom-controls">
+        <div class="prev-next-btns">
+            <button class="nav-btn" onclick="prevSlide()">←</button>
+            <button class="nav-btn" onclick="nextSlide()">→</button>
+        </div>
+        <div class="dots-container" id="dotsContainer"></div>
+        <div style="font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.15rem; color: var(--text-muted);">
+            SNAKE <span style="color:var(--nintendo-red);">貪食蛇</span>
+        </div>
+    </footer>
+
+    <!-- 簡報互動腳本 -->
+    <script>
+        let currentSlide = 1;
+        const slides = document.querySelectorAll('.slide-container');
+        const totalSlides = slides.length;
+
+        slides.forEach((slide, index) => {
+            slide.dataset.slide = index + 1;
+        });
+
+        const dotsContainer = document.getElementById('dotsContainer');
+
+        function initDots() {
+            dotsContainer.innerHTML = '';
+            for (let i = 1; i <= totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = `dot ${i === 1 ? 'active' : ''}`;
+                dot.onclick = () => goToSlide(i);
+                dotsContainer.appendChild(dot);
+            }
+        }
+
+        function goToSlide(slideNum) {
+            if (slideNum < 1 || slideNum > totalSlides) return;
+            slides.forEach(slide => {
+                if (slide.dataset.slide == currentSlide) {
+                    slide.classList.remove('active'); slide.classList.add('prev-active');
+                } else {
+                    slide.classList.remove('prev-active');
+                }
+            });
+            currentSlide = slideNum;
+            setTimeout(() => {
+                slides.forEach(slide => {
+                    if (slide.dataset.slide == currentSlide) slide.classList.add('active');
+                    else slide.classList.remove('active');
+                });
+            }, 50);
+            document.querySelectorAll('.dot').forEach((dot, idx) => {
+                if (idx + 1 === currentSlide) dot.classList.add('active');
+                else dot.classList.remove('active');
+            });
+        }
+
+        function nextSlide() { if (currentSlide < totalSlides) goToSlide(currentSlide + 1); else goToSlide(1); }
+        function prevSlide() { if (currentSlide > 1) goToSlide(currentSlide - 1); else goToSlide(totalSlides); }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') { e.preventDefault(); nextSlide(); }
+            else if (e.key === 'ArrowLeft' || e.key === 'Backspace') { e.preventDefault(); prevSlide(); }
+        });
+
+        function toggleFullscreen() {
+            const viewport = document.getElementById('viewport');
+            if (!document.fullscreenElement) viewport.requestFullscreen().catch(err => alert(`無法切換為全螢幕模式: ${err.message}`));
+            else document.exitFullscreen();
+        }
+
+        initDots();
+    </script>
+</body>
+
+</html>
