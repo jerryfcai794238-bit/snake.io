@@ -18,13 +18,12 @@ description: 快速修復已知的小範圍 Bug，不需要完整計畫流程。
 
 3. **修改**：直接修改，保持最小 diff（不重構無關代碼）
 
-// turbo
-4. **語法驗證**：`node --check game.js` 確認無語法錯誤
+4. **語法與編譯驗證**：執行適合專案的語法檢查或測試
 
-5. **記錄**：在 `NeonSnake_Changelog.md` 頂部新增 PATCH 條目：
-   ```
+5. **記錄**：在專案 `Changelog.md` (或變更日誌) 頂部新增 PATCH 條目：
+   ```markdown
    ### v{x.x.+1} ({日期})
-   - fix: [Bug 描述] (game.js:L{行號})
+   - fix: [Bug 描述] (檔案名稱:L{行號})
    ```
 
 ## 注意

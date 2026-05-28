@@ -6,34 +6,20 @@ description: 快速初始化專案上下文，確保 Agent 進入開發狀態。
 
 ## 執行清單
 
-1. **目錄掃描**：`list_dir` 確認根目錄結構，記錄：
-   - 當前活躍 GDD 版號（`NeonSnake_GDD.md` 頂部）
-   - 現有的 `presentation_*` 資料夾版本
-   - 根目錄核心檔案是否完整（`index.html`, `style.css`, `game.js`, `config.js`）
+1. **目錄掃描**：使用 `list_dir` 確認根目錄結構，記錄：
+   - 當前專案的核心說明文件、規格書（GDD/README 等）
+   - 主要的程式碼結構與目錄分布
+   - 專案依賴管理檔案（如 `package.json`, `requirements.txt` 等）
 
-2. **規格讀取**（依優先序）：
-   - 主要 GDD：`NeonSnake_GDD.md`（根目錄，source of truth）
-   - 環境設定：`ENVIRONMENT_SETUP.md`（若不存在則跳過）
-   - Changelog：`NeonSnake_Changelog.md`（確認最新版本條目）
+2. **文件讀取**（依優先序）：
+   - 閱讀專案 README、開發規範或核心規格書。
+   - 閱讀 `Changelog.md` 變更日誌（確認最新版本條目與開發歷史）。
 
-3. **規則加載**：讀取 `.agents/rules/` 下所有 `.md` 規則檔
-   - `agent_safe_rules.md`
-   - `strict_authorize.md`
+3. **規則加載**：讀取 `.agents/rules/` 下所有 `.md` 規則檔（如安全開發規範等）。
 
 4. **狀態回報**：簡述：
-   - 當前 GDD 版本號與最後 Changelog 條目日期
-   - 上次 git commit 訊息摘要
-   - 已知待處理 Issue（若有）
+   - 當前專案版本、最新 Commit 紀錄或異動摘要。
+   - 目前開發所處的階段與待辦任務。
+   - 當前執行的背景服務狀態（如本地伺服器、監控指令等）。
 
 5. **計畫優先**：確認接下來要做代碼變更時，強制先執行 `/plan`。
-
-## 核心檔案路徑對照
-
-| 角色 | 路徑 |
-|------|------|
-| 主要 GDD | `NeonSnake_GDD.md` |
-| 版本歸檔 | `Old GDD/` |
-| Changelog | `NeonSnake_Changelog.md` |
-| 遊戲核心 | `game.js`, `config.js` |
-| 關卡設定 | `levels.md` |
-| Pitch Deck | `pitch_deck/NeonSnake_PitchDeck.html` |
