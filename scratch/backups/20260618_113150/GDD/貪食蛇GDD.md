@@ -178,11 +178,7 @@
 ---
 
 <details open>
-<summary>
-
-## 📦 第一部分：框架與流程 (Frame & Flow)
-
-</summary>
+<summary><b>📦 第一部分：框架與流程 (Frame & Flow)</b></summary>
 
 ### 1. 遊戲核心玩法與簡介
 
@@ -498,11 +494,7 @@ graph TD
 </details>
 
 <details open>
-<summary>
-
-## ⚔️ 第二部分：局內核心玩法 (Core Gameplay)
-
-</summary>
+<summary><b>⚔️ 第二部分：局內核心玩法 (Core Gameplay)</b></summary>
 
 ### 4. 基礎核心與速度控制
 
@@ -1058,11 +1050,7 @@ graph TD
 </details>
 
 <details open>
-<summary>
-
-## 💰 第三部分：局外養成與經濟系統 (Progression & Economy)
-
-</summary>
+<summary><b>💰 第三部分：局外養成與經濟系統 (Progression & Economy)</b></summary>
 
 ### 10. 被動養成 (強化系統)
 
@@ -1425,11 +1413,7 @@ graph TD
 </details>
 
 <details open>
-<summary>
-
-## ⚙️ 第四部分：異常與參數附錄 (Exceptions & Appendix)
-
-</summary>
+<summary><b>⚙️ 第四部分：異常與參數附錄 (Exceptions & Appendix)</b></summary>
 
 ### 15. 異常處理與中離邊界條件
 
