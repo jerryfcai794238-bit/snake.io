@@ -1,4 +1,4 @@
-﻿# 🎮 《貪食蛇》遊戲設計規格書
+# 🎮 《貪食蛇》遊戲設計規格書
 
 **文件版本**：16.0
 **更新日期**：2026-06-17
@@ -1466,76 +1466,76 @@ graph TD
 
 原文件中使用的大量 `<Module表_...>` 內部占位符，在此統一收斂並對應到本章節的各核心數據表中。開發人員應以本章數據作為對局初始化與數值計算的唯一真源：
 
-| 原占位符                | 對應真源數據表                                      | 對應範疇與主要變數                                                                                                                 |
-| :---------------------- | :-------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------- |
-| `<Module表_基礎屬性>` | [16.2 基礎核心參數](#162-基礎核心參數)                 | `BASE_SPEED`、`STAMINA_MAX`、`STAMINA_REGEN_SPEED`、`BASE_SUCTION_RADIUS`、`INITIAL_LENGTH`、`POINTS_PER_SECTION` 等。 |
-| `<Module表_地圖場景>` | [16.4 地圖與場景參數](#164-地圖與場景參數)             | `MAP_WIDTH`、`MAP_HEIGHT`、`RIVER_SLOW_MULTIPLIER`、河流與岩石分配權重等。                                                   |
-| `<Module表_AI策略>`   | [16.5 電腦 AI 策略參數](#165-電腦-ai-策略參數)         | `AI_REACTION_DELAY`、`AI_STEERING_PRECISION`、`AI_DASH_PROB` 等行為變數。                                                    |
-| `<Module表_遊戲模式>` | [16.3 遊戲模式參數](#163-遊戲模式參數)                 | `GAME_DURATION`、`RESPAWN_TIME`、`GHOST_TIME`、門票能量等規則變數。                                                          |
-| `<Module表_個性外觀>` | [16.8 個性化外觀與貼圖參數](#168-個性化外觀與貼圖參數) | `EMOTE_DURATION` 表情貼圖在蛇頭上方持續時間。                                                                                    |
+| 原占位符                | 資料型態 | 對應真源數據表                                      | 對應範疇與主要變數                                                                                                                 |
+| :---------------------- | :------- | :-------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------- |
+| `<Module表_基礎屬性>` | `string` | [16.2 基礎核心參數](#162-基礎核心參數)                 | `BASE_SPEED`、`STAMINA_MAX`、`STAMINA_REGEN_SPEED`、`BASE_SUCTION_RADIUS`、`INITIAL_LENGTH`、`POINTS_PER_SECTION` 等。 |
+| `<Module表_地圖場景>` | `string` | [16.4 地圖與場景參數](#164-地圖與場景參數)             | `MAP_WIDTH`、`MAP_HEIGHT`、`RIVER_SLOW_MULTIPLIER`、河流與岩石分配權重等。                                                   |
+| `<Module表_AI策略>`   | `string` | [16.5 電腦 AI 策略參數](#165-電腦-ai-策略參數)         | `AI_REACTION_DELAY`、`AI_STEERING_PRECISION`、`AI_DASH_PROB` 等行為變數。                                                    |
+| `<Module表_遊戲模式>` | `string` | [16.3 遊戲模式參數](#163-遊戲模式參數)                 | `GAME_DURATION`、`RESPAWN_TIME`、`GHOST_TIME`、門票能量等規則變數。                                                          |
+| `<Module表_個性外觀>` | `string` | [16.8 個性化外觀與貼圖參數](#168-個性化外觀與貼圖參數) | `EMOTE_DURATION` 表情貼圖在蛇頭上方持續時間。                                                                                    |
 
 #### 16.2 基礎核心參數
 
-| 參數名稱                   | 預設數值 |  單位  | 參數描述                                                |
-| :------------------------- | :------: | :----: | :------------------------------------------------------ |
-| `BASE_SPEED`             |   400   |   -   | 基礎跑速單位 (等同 4.00 px/s，即以 100 代表 1 px/s)     |
-| `STAMINA_MAX`            |   1000   |   點   | 體力上限 (初始 Lv 0 狀態，隨等級最高升至 1500)          |
-| `STAMINA_DRAIN_SPEED`    |   333   |  點/s  | 衝刺每秒體力消耗 (固定不變)                             |
-| `STAMINA_REGEN_SPEED`    |    80    |  點/s  | 常態每秒體力回復 (初始 Lv 0 狀態，隨等級最高升至 200/s) |
-| `BASE_SUCTION_RADIUS`    |    50    |   px   | 基礎吸附食物半徑                                        |
-| `BASE_VISION_SCALE`      |  10000  | 萬分比 | 相機基礎視野倍率                                        |
-| `INITIAL_LENGTH`         |    50    |   節   | 開局初始長度                                            |
-| `DASH_SPEED_BONUS`       |    25    | 百分比 | 衝刺加速比例 (等同 25%)                                 |
-| `GLUTTONY_CD`            |    30    |   s   | 暴食冷卻時間 (初始 Lv 0 狀態，隨等級降低至 25s)         |
-| `GLUTTONY_RADIUS`        |   200   |   px   | 暴食吸附半徑 (初始 Lv 0 狀態，隨等級拉大至 400px)       |
-| `GLUTTONY_SUCTION_SPEED` |    12    |  px/s  | 暴食吸引食物飛行速度                                    |
-| `MAGNET_SUCTION_SPEED`   |    8    |  px/s  | 拾取磁鐵道具後的食物飛行速度                            |
-| `BASE_SUCTION_SPEED`     |    4    |  px/s  | 基礎吃食吸引飛行速度                                    |
-| `POINTS_PER_SECTION`     |    10    |   分   | 每增長 1 節所需積分                                     |
-| `GROWTH_ROAD_MAX_LEVEL`  |    60    |   -   | 成長之路最高上限等級                                    |
+| 參數名稱                   | 資料型態 | 預設數值 |  單位  | 參數描述                                                |
+| :------------------------- | :------- | :------: | :----: | :------------------------------------------------------ |
+| `BASE_SPEED`             | `int` |   400   |   -   | 基礎跑速單位 (等同 4.00 px/s，即以 100 代表 1 px/s)     |
+| `STAMINA_MAX`            | `int` |   1000   |   點   | 體力上限 (初始 Lv 0 狀態，隨等級最高升至 1500)          |
+| `STAMINA_DRAIN_SPEED`    | `int` |   333   |  點/s  | 衝刺每秒體力消耗 (固定不變)                             |
+| `STAMINA_REGEN_SPEED`    | `int` |    80    |  點/s  | 常態每秒體力回復 (初始 Lv 0 狀態，隨等級最高升至 200/s) |
+| `BASE_SUCTION_RADIUS`    | `int` |    50    |   px   | 基礎吸附食物半徑                                        |
+| `BASE_VISION_SCALE`      | `int` |  10000  | 萬分比 | 相機基礎視野倍率                                        |
+| `INITIAL_LENGTH`         | `int` |    50    |   節   | 開局初始長度                                            |
+| `DASH_SPEED_BONUS`       | `int` |    25    | 百分比 | 衝刺加速比例 (等同 25%)                                 |
+| `GLUTTONY_CD`            | `int` |    30    |   s   | 暴食冷卻時間 (初始 Lv 0 狀態，隨等級降低至 25s)         |
+| `GLUTTONY_RADIUS`        | `int` |   200   |   px   | 暴食吸附半徑 (初始 Lv 0 狀態，隨等級拉大至 400px)       |
+| `GLUTTONY_SUCTION_SPEED` | `int` |    12    |  px/s  | 暴食吸引食物飛行速度                                    |
+| `MAGNET_SUCTION_SPEED`   | `int` |    8    |  px/s  | 拾取磁鐵道具後的食物飛行速度                            |
+| `BASE_SUCTION_SPEED`     | `int` |    4    |  px/s  | 基礎吃食吸引飛行速度                                    |
+| `POINTS_PER_SECTION`     | `int` |    10    |   分   | 每增長 1 節所需積分                                     |
+| `GROWTH_ROAD_MAX_LEVEL`  | `int` |    60    |   -   | 成長之路最高上限等級                                    |
 
 #### 16.3 遊戲模式參數
 
-| 參數名稱               | 預設數值 | 單位 | 參數描述                         |
-| :--------------------- | :------: | :--: | :------------------------------- |
-| `GAME_DURATION`      |   120   |  s  | 單局限時時長                     |
-| `RESPAWN_TIME`       |   5000   |  ms  | 死亡復活倒數時間                 |
-| `GHOST_TIME`         |   2000   |  ms  | 復活幽靈無敵時間                 |
-| `ENTRY_ENERGY_SOLO`  |    30    |  點  | Solo 模式入場參賽能量門票        |
-| `ENTRY_ENERGY_BRAWL` |    30    |  點  | 多人大亂鬥入場參賽能量門票       |
-| `ENTRY_ENERGY_TEAM`  |    30    |  點  | 陣營對抗入場參賽能量門票         |
-| `KILL_SCORE`         |   100   |  分  | 每次擊殺敵蛇獲得的積分           |
-| `KILL_MASTERY_BONUS` |    2    |  點  | 每次擊殺敵蛇獲得的額外結算熟練度 |
-| `RATING_BONUS_SSS`   |    50    |  點  | 評級 SSS 額外加成熟練度          |
-| `RATING_BONUS_SS`    |    30    |  點  | 評級 SS 額外加成熟練度           |
-| `RATING_BONUS_S`     |    10    |  點  | 評級 S 額外加成熟練度            |
+| 參數名稱               | 資料型態 | 預設數值 | 單位 | 參數描述                         |
+| :--------------------- | :------- | :------: | :--: | :------------------------------- |
+| `GAME_DURATION`      | `int` |   120   |  s  | 單局限時時長                     |
+| `RESPAWN_TIME`       | `int` |   5000   |  ms  | 死亡復活倒數時間                 |
+| `GHOST_TIME`         | `int` |   2000   |  ms  | 復活幽靈無敵時間                 |
+| `ENTRY_ENERGY_SOLO`  | `int` |    30    |  點  | Solo 模式入場參賽能量門票        |
+| `ENTRY_ENERGY_BRAWL` | `int` |    30    |  點  | 多人大亂鬥入場參賽能量門票       |
+| `ENTRY_ENERGY_TEAM`  | `int` |    30    |  點  | 陣營對抗入場參賽能量門票         |
+| `KILL_SCORE`         | `int` |   100   |  分  | 每次擊殺敵蛇獲得的積分           |
+| `KILL_MASTERY_BONUS` | `int` |    2    |  點  | 每次擊殺敵蛇獲得的額外結算熟練度 |
+| `RATING_BONUS_SSS`   | `int` |    50    |  點  | 評級 SSS 額外加成熟練度          |
+| `RATING_BONUS_SS`    | `int` |    30    |  點  | 評級 SS 額外加成熟練度           |
+| `RATING_BONUS_S`     | `int` |    10    |  點  | 評級 S 額外加成熟練度            |
 
 #### 16.4 地圖與場景參數
 
-| 參數名稱                      | 預設數值 |  單位  | 參數描述                      |
-| :---------------------------- | :------: | :----: | :---------------------------- |
-| `MAP_WIDTH`                 |   2200   |   px   | 地圖邊界寬度                  |
-| `MAP_HEIGHT`                |   2200   |   px   | 地圖邊界高度                  |
-| `ROCK_BOUNCE_PENALTY_RATIO` |   5000   | 萬分比 | 撞邊界與岩石的長度扣除百分比  |
-| `RIVER_SLOW_MULTIPLIER`     |   -50   | 百分比 | 河流減速比例                  |
-| `FOOD_DIST_ROCK`            |   5000   | 萬分比 | 食物岩石區分配權重            |
-| `FOOD_DIST_RIVER`           |   3000   | 萬分比 | 食物河流區分配權重            |
-| `FOOD_DIST_PLAINS`          |   2000   | 萬分比 | 食物平地區分配權重            |
-| `FOOD_VAL_SMALL`            |    1    |   分   | 小食物積分價值                |
-| `FOOD_VAL_MEDIUM`           |    3    |   分   | 中食物積分價值                |
-| `FOOD_VAL_LARGE`            |    5    |   分   | 大食物積分價值                |
-| `FOOD_VAL_DEBRIS`           |    10    |   分   | 死亡殘骸結晶積分價值          |
-| `INITIAL_FOOD_POINTS`       |   2000   |   分   | 開局地圖隨機食物總分          |
-| `MIN_FOOD_POINTS`           |   1000   |   分   | 食物補足下限                  |
-| `FOOD_REPLENISH_INTERVAL`   |  10000  |   ms   | 食物補充檢測週期              |
-| `DEBRIS_PERCENTAGE`         |   5000   | 萬分比 | 死亡/殘骸轉化比例             |
-| `DEBRIS_LIFETIME`           |    10    |   s   | 死亡殘骸轉化食物生存/消失時間 |
+| 參數名稱                      | 資料型態 | 預設數值 |  單位  | 參數描述                      |
+| :---------------------------- | :------- | :------: | :----: | :---------------------------- |
+| `MAP_WIDTH`                 | `int` |   2200   |   px   | 地圖邊界寬度                  |
+| `MAP_HEIGHT`                | `int` |   2200   |   px   | 地圖邊界高度                  |
+| `ROCK_BOUNCE_PENALTY_RATIO` | `int` |   5000   | 萬分比 | 撞邊界與岩石的長度扣除百分比  |
+| `RIVER_SLOW_MULTIPLIER`     | `int` |   -50   | 百分比 | 河流減速比例                  |
+| `FOOD_DIST_ROCK`            | `int` |   5000   | 萬分比 | 食物岩石區分配權重            |
+| `FOOD_DIST_RIVER`           | `int` |   3000   | 萬分比 | 食物河流區分配權重            |
+| `FOOD_DIST_PLAINS`          | `int` |   2000   | 萬分比 | 食物平地區分配權重            |
+| `FOOD_VAL_SMALL`            | `int` |    1    |   分   | 小食物積分價值                |
+| `FOOD_VAL_MEDIUM`           | `int` |    3    |   分   | 中食物積分價值                |
+| `FOOD_VAL_LARGE`            | `int` |    5    |   分   | 大食物積分價值                |
+| `FOOD_VAL_DEBRIS`           | `int` |    10    |   分   | 死亡殘骸結晶積分價值          |
+| `INITIAL_FOOD_POINTS`       | `int` |   2000   |   分   | 開局地圖隨機食物總分          |
+| `MIN_FOOD_POINTS`           | `int` |   1000   |   分   | 食物補足下限                  |
+| `FOOD_REPLENISH_INTERVAL`   | `int` |  10000  |   ms   | 食物補充檢測週期              |
+| `DEBRIS_PERCENTAGE`         | `int` |   5000   | 萬分比 | 死亡/殘骸轉化比例             |
+| `DEBRIS_LIFETIME`           | `int` |    10    |   s   | 死亡殘骸轉化食物生存/消失時間 |
 
 #### 16.5 電腦 AI 策略參數
 
 * **五大策略 AI 強度控制配置矩陣**：
 
-| 電腦策略類型            | 反應延遲`<br>AI_REACTION_DELAY` | 轉彎精準度`<br>AI_STEERING_PRECISION` | 衝刺決策機率`<br>AI_DASH_PROB` | 避險檢測半徑`<br>AI_EVADE_DISTANCE` | 追逐/尋路半徑`<br>AI_CHASE_DISTANCE` |
+| 電腦策略類型 `<br>string` | 反應延遲`<br>AI_REACTION_DELAY` `<br>int` | 轉彎精準度`<br>AI_STEERING_PRECISION` `<br>int` | 衝刺決策機率`<br>AI_DASH_PROB` `<br>int` | 避險檢測半徑`<br>AI_EVADE_DISTANCE` `<br>int` | 追逐/尋路半徑`<br>AI_CHASE_DISTANCE` `<br>int` |
 | :---------------------- | :-------------------------------: | :-------------------------------------: | :------------------------------: | :-----------------------------------: | :------------------------------------: |
 | **【初階 BOT】**  |            `300 ms`            |             `5000 (50%)`             |          `1000 (10%)`          |               `50 px`               |               `100 px`               |
 | **【避險型 AI】** |            `150 ms`            |             `7000 (70%)`             |          `2000 (20%)`          |              `250 px`              |               `150 px`               |
@@ -1545,64 +1545,64 @@ graph TD
 
 * **全域電腦 AI 行為決策常數**：
 
-| 參數名稱                       | 預設數值 | 單位 | 參數描述                                 |
-| :----------------------------- | :------: | :--: | :--------------------------------------- |
-| `AI_EVADE_PANIC_DISTANCE`    |    80    |  px  | 電腦玩家危急逃生避險檢測半徑             |
-| `AI_INTERCEPT_PREDICT_TIME`  |   0.5   |  s  | 電腦玩家戰術卡位攔截預判時間             |
-| `AI_DASH_RESOURCE_DISTANCE`  |   300   |  px  | 電腦玩家常態搶道具與高價食物半徑         |
-| `AI_CHASE_ABORT_DISTANCE`    |   250   |  px  | 電腦玩家追擊/攔截中止之最大距離門檻      |
-| `AI_CHASE_ABORT_TIME`        |   1.0   |  s  | 電腦玩家追擊/攔截中止之最大時長門檻      |
-| `AI_PROTECT_MIN_LENGTH`      |    80    |  節  | 電腦玩家低長度保護禁用衝刺之長度下限     |
-| `AI_PROTECT_RECOVERY_LENGTH` |   120   |  節  | 電腦玩家解鎖限制、回復常態衝刺之長度上限 |
+| 參數名稱                       | 資料型態 | 預設數值 | 單位 | 參數描述                                 |
+| :----------------------------- | :------- | :------: | :--: | :--------------------------------------- |
+| `AI_EVADE_PANIC_DISTANCE`    | `int` |    80    |  px  | 電腦玩家危急逃生避險檢測半徑             |
+| `AI_INTERCEPT_PREDICT_TIME`  | `int` |   500   |  ms  | 電腦玩家戰術卡位攔截預判時間             |
+| `AI_DASH_RESOURCE_DISTANCE`  | `int` |   300   |  px  | 電腦玩家常態搶道具與高價食物半徑         |
+| `AI_CHASE_ABORT_DISTANCE`    | `int` |   250   |  px  | 電腦玩家追擊/攔截中止之最大距離門檻      |
+| `AI_CHASE_ABORT_TIME`        | `int` |   1000   |  ms  | 電腦玩家追擊/攔截中止之最大時長門檻      |
+| `AI_PROTECT_MIN_LENGTH`      | `int` |    80    |  節  | 電腦玩家低長度保護禁用衝刺之長度下限     |
+| `AI_PROTECT_RECOVERY_LENGTH` | `int` |   120   |  節  | 電腦玩家解鎖限制、回復常態衝刺之長度上限 |
 
 #### 16.6 局內道具直購參數
 
-| 參數名稱                        | 預設數值 |  單位  | 參數描述                                                      |
-| :------------------------------ | :------: | :----: | :------------------------------------------------------------ |
-| `ITEM_MAGNET_RADIUS`          |   100   |   px   | 地圖磁鐵吸附半徑                                              |
-| `ITEM_MAGNET_DURATION`        |    10    |   s   | 地圖磁鐵持續時間                                              |
-| `ITEM_MUSHROOM_DURATION`      |    10    |   s   | 地圖巨大蘑菇持續時間                                          |
-| `ITEM_MUSHROOM_SIZE`          |  15000  | 萬分比 | 巨大蘑菇體型放大倍率                                          |
-| `ITEM_MUSHROOM_SPEED_PENALTY` |   -25   | 百分比 | 巨大蘑菇速度扣減                                              |
-| `ITEM_LUCKY7_DURATION`        |    10    |   s   | 地圖幸運糖持續時間                                            |
-| `ITEM_CANDY_MULTIPLIER`       |  30000  | 萬分比 | 幸運糖加成倍率                                                |
-| `ITEM_EYE_DURATION`           |    10    |   s   | 地圖鷹眼持續時間                                              |
-| `ITEM_EYE_SCALE`              |  13500  | 萬分比 | 鷹眼相機視野拉遠倍率                                          |
-| `ITEM_SPAWN_INTERVAL`         |    20    |   s   | 道具刷新時間間隔                                              |
-| `ITEM_MAX_COUNT`              |    12    |   個   | 同時存在最大道具上限                                          |
-| `ITEM_TEASER_TIME`            |    2    |   s   | 道具刷新閃爍預告時長                                          |
-| `ITEM_EYE_BUY_COST`           |   2000   |  金幣  | 局內直購鷹眼消耗金幣                                          |
-| `ITEM_MAGNET_BUY_COST`        |   4000   |  金幣  | 局內直購磁鐵消耗金幣                                          |
-| `ITEM_MUSHROOM_BUY_COST`      |   6000   |  金幣  | 局內直購巨大蘑菇消耗金幣                                      |
-| `ITEM_CANDY_BUY_COST`         |   8000   |  金幣  | 局內直購幸運糖消耗金幣                                        |
-| `BOOSTER_PRICE_MULTIPLIER`    |  15000  | 萬分比 | 局內直購同款道具每買一次的價格遞增比例 (1.5倍)                |
-| `BOOSTER_LIMIT_INITIAL`       |    2    |   次   | 局內直購同款道具單局初始次數上限 (成長之路 Lv 0 狀態)         |
-| `BOOSTER_LIMIT_MAX`           |    5    |   次   | 局內直購同款道具單局最大次數上限 (成長之路 Lv 53-56 分別解鎖) |
+| 參數名稱                        | 資料型態 | 預設數值 |  單位  | 參數描述                                                      |
+| :------------------------------ | :------- | :------: | :----: | :------------------------------------------------------------ |
+| `ITEM_MAGNET_RADIUS`          | `int` |   100   |   px   | 地圖磁鐵吸附半徑                                              |
+| `ITEM_MAGNET_DURATION`        | `int` |    10    |   s   | 地圖磁鐵持續時間                                              |
+| `ITEM_MUSHROOM_DURATION`      | `int` |    10    |   s   | 地圖巨大蘑菇持續時間                                          |
+| `ITEM_MUSHROOM_SIZE`          | `int` |  15000  | 萬分比 | 巨大蘑菇體型放大倍率                                          |
+| `ITEM_MUSHROOM_SPEED_PENALTY` | `int` |   -25   | 百分比 | 巨大蘑菇速度扣減                                              |
+| `ITEM_LUCKY7_DURATION`        | `int` |    10    |   s   | 地圖幸運糖持續時間                                            |
+| `ITEM_CANDY_MULTIPLIER`       | `int` |  30000  | 萬分比 | 幸運糖加成倍率                                                |
+| `ITEM_EYE_DURATION`           | `int` |    10    |   s   | 地圖鷹眼持續時間                                              |
+| `ITEM_EYE_SCALE`              | `int` |  13500  | 萬分比 | 鷹眼相機視野拉遠倍率                                          |
+| `ITEM_SPAWN_INTERVAL`         | `int` |    20    |   s   | 道具刷新時間間隔                                              |
+| `ITEM_MAX_COUNT`              | `int` |    12    |   個   | 同時存在最大道具上限                                          |
+| `ITEM_TEASER_TIME`            | `int` |    2    |   s   | 道具刷新閃爍預告時長                                          |
+| `ITEM_EYE_BUY_COST`           | `int` |   2000   |  金幣  | 局內直購鷹眼消耗金幣                                          |
+| `ITEM_MAGNET_BUY_COST`        | `int` |   4000   |  金幣  | 局內直購磁鐵消耗金幣                                          |
+| `ITEM_MUSHROOM_BUY_COST`      | `int` |   6000   |  金幣  | 局內直購巨大蘑菇消耗金幣                                      |
+| `ITEM_CANDY_BUY_COST`         | `int` |   8000   |  金幣  | 局內直購幸運糖消耗金幣                                        |
+| `BOOSTER_PRICE_MULTIPLIER`    | `int` |  15000  | 萬分比 | 局內直購同款道具每買一次的價格遞增比例 (1.5倍)                |
+| `BOOSTER_LIMIT_INITIAL`       | `int` |    2    |   次   | 局內直購同款道具單局初始次數上限 (成長之路 Lv 0 狀態)         |
+| `BOOSTER_LIMIT_MAX`           | `int` |    5    |   次   | 局內直購同款道具單局最大次數上限 (成長之路 Lv 53-56 分別解鎖) |
 
 #### 16.7 被動屬性強化參數
 
-| 參數名稱                          | 初始(Lv 0)數值 | 滿級(Lv 40)數值 | 每級強化增量 |  單位  | 參數描述                 |
-| :-------------------------------- | :------------: | :-------------: | :----------: | :----: | :----------------------- |
-| `PASSIVE_MAGNET_UPGRADE`        |      1000      |      2000      |     +25     | 0.1 px | 磁吸半徑永久強化增量     |
-| `PASSIVE_SPEED_UPGRADE`         |      -25      |       15       |      +1      | 百分比 | 巨大蘑菇跑速強化增幅     |
-| `PASSIVE_LUCKY7_UPGRADE`        |     30000     |      70000      |    +1000    | 萬分比 | 幸運糖倍率永久強化增量   |
-| `PASSIVE_EYE_UPGRADE`           |     13500     |      17500      |     +100     | 萬分比 | 鷹眼視野永久強化增量     |
-| `PASSIVE_MAGNET_DUR`            |     10000     |      20000      |     +250     |   ms   | 磁鐵時長永久強化增量     |
-| `PASSIVE_MUSHROOM_DUR`          |     10000     |      20000      |     +250     |   ms   | 巨大蘑菇時長永久強化增量 |
-| `PASSIVE_CANDY_DUR`             |     10000     |      20000      |     +250     |   ms   | 幸運糖時長永久強化增量   |
-| `PASSIVE_EYE_DUR`               |     10000     |      20000      |     +250     |   ms   | 鷹眼時長永久強化增量     |
-| `PASSIVE_ROCK_RESIST`           |     -5000     |      -1000      |     +100     | 萬分比 | 岩石長度扣除強化減免     |
-| `PASSIVE_RIVER_RESIST`          |      -50      |       -10       |      +1      | 百分比 | 河流減速效果強化減免     |
-| `PASSIVE_UPGRADE_START_COST`    |      1000      |        -        |      -      |  金幣  | 強化初始金幣費用 (x=0)   |
-| `PASSIVE_UPGRADE_END_COST`      |     300000     |        -        |      -      |  金幣  | 強化滿級金幣費用 (x=399) |
-| `PASSIVE_UPGRADE_SHAPE_K`       |     0.024     |        -        |      -      |  比例  | S 曲線漲幅係數 k         |
-| `PASSIVE_UPGRADE_INFLECTION_X0` |      190      |        -        |      -      |   次   | S 曲線拐點級數 x0        |
+| 參數名稱                          | 資料型態 | 初始(Lv 0)數值 | 滿級(Lv 40)數值 | 每級強化增量 |  單位  | 參數描述                 |
+| :-------------------------------- | :------- | :------------: | :-------------: | :----------: | :----: | :----------------------- |
+| `PASSIVE_MAGNET_UPGRADE`        | `int` |      1000      |      2000      |     +25     | 0.1 px | 磁吸半徑永久強化增量     |
+| `PASSIVE_SPEED_UPGRADE`         | `int` |      -25      |       15       |      +1      | 百分比 | 巨大蘑菇跑速強化增幅     |
+| `PASSIVE_LUCKY7_UPGRADE`        | `int` |     30000     |      70000      |    +1000    | 萬分比 | 幸運糖倍率永久強化增量   |
+| `PASSIVE_EYE_UPGRADE`           | `int` |     13500     |      17500      |     +100     | 萬分比 | 鷹眼視野永久強化增量     |
+| `PASSIVE_MAGNET_DUR`            | `int` |     10000     |      20000      |     +250     |   ms   | 磁鐵時長永久強化增量     |
+| `PASSIVE_MUSHROOM_DUR`          | `int` |     10000     |      20000      |     +250     |   ms   | 巨大蘑菇時長永久強化增量 |
+| `PASSIVE_CANDY_DUR`             | `int` |     10000     |      20000      |     +250     |   ms   | 幸運糖時長永久強化增量   |
+| `PASSIVE_EYE_DUR`               | `int` |     10000     |      20000      |     +250     |   ms   | 鷹眼時長永久強化增量     |
+| `PASSIVE_ROCK_RESIST`           | `int` |     -5000     |      -1000      |     +100     | 萬分比 | 岩石長度扣除強化減免     |
+| `PASSIVE_RIVER_RESIST`          | `int` |      -50      |       -10       |      +1      | 百分比 | 河流減速效果強化減免     |
+| `PASSIVE_UPGRADE_START_COST`    | `int` |      1000      |        -        |      -      |  金幣  | 強化初始金幣費用 (x=0)   |
+| `PASSIVE_UPGRADE_END_COST`      | `int` |     300000     |        -        |      -      |  金幣  | 強化滿級金幣費用 (x=399) |
+| `PASSIVE_UPGRADE_SHAPE_K`       | `int` |      24      |        -        |      -      | 千分比 | S 曲線漲幅係數 k（24 代表 0.024） |
+| `PASSIVE_UPGRADE_INFLECTION_X0` | `int` |      190      |        -        |      -      |   次   | S 曲線拐點級數 x0        |
 
 #### 16.8 個性化外觀與貼圖參數
 
-| 參數名稱           | 預設數值 | 單位 | 參數描述                   |
-| :----------------- | :------: | :--: | :------------------------- |
-| `EMOTE_DURATION` |   2500   |  ms  | 表情貼圖在蛇頭上方持續時間 |
+| 參數名稱           | 資料型態 | 預設數值 | 單位 | 參數描述                   |
+| :----------------- | :------- | :------: | :--: | :------------------------- |
+| `EMOTE_DURATION` | `int` |   2500   |  ms  | 表情貼圖在蛇頭上方持續時間 |
 
 ---
 
