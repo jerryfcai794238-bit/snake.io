@@ -1,40 +1,14 @@
 # 🎮 《貪食蛇》遊戲設計規格書
 
-**文件版本**：17.0
-**更新日期**：2026-06-22
+**文件版本**：16.0
+**更新日期**：2026-06-17
 **文件主旨**：定義《貪食蛇》玩法操作、局內規則、勝負判定、美術 UI 需求與 AI 機制，作為外包開發與程式實作之最高依據。
 
 ---
 
 ## 0. 系統與版本變更紀錄
 
-<details>
-<summary><b>v17.0 (2026-06-22) - 三關教學圖卡與 DataTable 真源整合版</b></summary>
-
-* **三關教學模式重整**：
-  * Ch3.5 教學模式調整為三關：關卡 1「基本移動」、關卡 2「衝刺」、關卡 3「暴食」。
-  * 關卡 1 完成條件為完成方向轉換、吃到 10 顆食物並觸發蛇身增長。
-  * 關卡 2 完成條件為完成 1 次衝刺，並成功截斷或擊殺 BOT 1 次。
-  * 關卡 3 的暴食於教學內直接可用，完成條件調整為使用暴食 2 次並吸附至少 10 顆食物。
-* **教學圖卡與美術需求同步**：
-  * Ch3.5 新增 `Ref_教學關1圖卡.png`、`Ref_教學關2圖卡.png`、`Ref_教學關3圖卡.png` 三張正式圖卡。
-  * 教學圖卡版型參考圖更新為 `Ref_教學關圖卡Sample.jpg`。
-  * [貪食蛇美術需求.md](貪食蛇美術需求.md) Ch2.11 同步新增三關圖卡、用途、內容與驗收條件。
-* **DataTable 與參數真源整合**：
-  * `GDD/DataTables/貪食蛇GDK.md` 的 DataTable 整合至 Ch16，取代原有重複的簡化參數表。
-  * Ch16 收錄 Module、AIStrategy、ActiveSkill、PassiveSkill、RatingReward、Food、ModeBotComposition、Tutorial、StringTable、Skin、Emote。
-  * `TutorialLevel` 與 `TutorialStep` 合併為單一 `Tutorial` 表，移除 `StepCount`，以 `LevelID + StepOrder` 管理每關步驟。
-  * 調整 DataTable Client／Server 輸出端：Tutorial 顯示欄位與 StringTable 改由 Client 讀取，Food 的顯示與碰撞欄位依用途拆分。
-* **文件導覽與表格修正**：
-  * 規格章節與 Ch16 DataTable 建立雙向跳轉連結，來源讀取標示可直接前往對應表格。
-  * 修正 Ch9.2 AI 強度配置矩陣表頭、Ch16 多層表頭與 Markdown 表格渲染問題。
-  * Ch9.1 AI 出現機率改由 Ch16 AIStrategy 的 `SpawnWeight` 欄位讀取。
-  * 統一 `<br>` 換行格式，並修正舊 Ch16 章節名稱與錨點。
-* **版號升級**：文件版本升級為 `17.0`。
-
-</details>
-
-<details>
+<details open>
 <summary><b>v16.0 (2026-06-17) - 好友房準備狀態、退出彈窗與美術需求圖像同步版</b></summary>
 
 * **好友房互動規則補充**：
@@ -1972,7 +1946,7 @@ graph TD
 
 ---
 
-*Powered by Antigravity v17.0 - 玩星派對專用*
+*Powered by Antigravity v16.0 - 玩星派對專用*
 
 </details>
 
