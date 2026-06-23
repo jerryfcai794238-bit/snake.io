@@ -268,46 +268,46 @@
 
 ## Skin
 
-> 取得方式尚未逐筆定義，`AcquireType`、`AcquireParam0`、`AcquireParam1` 暫留空白；造型名稱、描述與資源 ID 沿用既有資料。
+> 價格、貨幣類型、限時狀態與字串表編號尚未在 GDD／美術需求定義，暫留空白。
 
-| Skin |  |  |  |  |  |  |  |  |  |  |  |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 輸出 | B |  | C |  | C | C | B | B | B | B | B |
-| 名稱 | ID |  | NameStrID |  | DescStrID | AssetID | AcquireType | AcquireParam0 | AcquireParam1 | DefaultUnlock | IsLimited |
-| 資料型態 | int |  | int |  | int | string | int | string | string | bool | bool |
-| 企劃名 | 編號 | 造型名稱 | 名稱字串表編號 | 造型描述 | 描述字串表編號 | 資源 ID | 獲得條件類型 | 參數{0} | 參數{1} | 預設解鎖 | 限時商品 |
-|  | 1 | 經典綠蛇 |  | 綠色、乾淨、最基礎的蛇身 |  | Skin-001 | | |  | true |  |
-|  | 2 | 藍莓蛇 |  | 藍紫色、果凍質感 |  | Skin-002 | | |  | false |  |
-|  | 3 | 草莓蛇 |  | 紅粉色、草莓籽點綴 |  | Skin-003 | | |  | false |  |
-|  | 4 | 橘子蛇 |  | 橘色、果皮紋路 |  | Skin-004 | | |  | false |  |
-|  | 5 | 西瓜蛇 |  | 綠皮紅肉或西瓜條紋 |  | Skin-005 | | |  | false |  |
-|  | 6 | 蜂蜜蛇 |  | 黃金色、蜂蜜滴落感 |  | Skin-006 | | |  | false |  |
-|  | 7 | 奶油蛇 |  | 淡色、奶油捲感 |  | Skin-007 | | |  | false |  |
-|  | 8 | 火焰蛇 |  | 紅橘火焰紋 |  | Skin-008 | | |  | false |  |
-|  | 9 | 冰晶蛇 |  | 淺藍冰晶、透明感 |  | Skin-009 | | |  | false |  |
-|  | 10 | 雷電蛇 |  | 黃紫電光紋 |  | Skin-010 | | |  | false |  |
-|  | 11 | 星光蛇 |  | 深色底、星星點綴 |  | Skin-011 | | |  | false |  |
-|  | 12 | 彩虹蛇 |  | 多色漸層節點 |  | Skin-012 | | |  | false |  |
-|  | 13 | 機械蛇 |  | 金屬節點、螺絲或裝甲 |  | Skin-013 | | |  | false |  |
-|  | 14 | 忍者蛇 |  | 深色布條、忍者頭巾 |  | Skin-014 | | |  | false |  |
-|  | 15 | 海盜蛇 |  | 眼罩、條紋、海盜元素 |  | Skin-015 | | |  | false |  |
-|  | 16 | 牛仔蛇 |  | 牛仔帽、皮革色系 |  | Skin-016 | | |  | false |  |
-|  | 17 | 太空蛇 |  | 太空衣、星艦感 |  | Skin-017 | | |  | false |  |
-|  | 18 | 甜甜圈蛇 |  | 糖霜、甜甜圈配色 |  | Skin-018 | | |  | false |  |
-|  | 19 | 龍紋蛇 |  | 東方龍鱗、鬚角簡化 |  | Skin-019 | | |  | false |  |
-|  | 20 | 霓虹蛇 |  | 亮色線條、夜光感 |  | Skin-020 | | |  | false |  |
-|  | 21 | 破壞王蛇 |  | 龐克、貼紙、裂紋 |  | Skin-021 | | |  | false |  |
+| Skin |  |  |  |  |  |  |  |  |  |  |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 輸出 | B |  | C |  | C | C | B | B | B | B |
+| 名稱 | ID |  | NameStrID |  | DescStrID | AssetID | Price | CurrencyType | DefaultUnlock | IsLimited |
+| 資料型態 | int |  | int |  | int | string | int | int | bool | bool |
+| 企劃名 | 編號 | 造型名稱 | 名稱字串表編號 | 造型描述 | 描述字串表編號 | 資源 ID | 價格 | 貨幣類型 | 預設解鎖 | 限時商品 |
+|  | 1 | 經典綠蛇 |  | 綠色、乾淨、最基礎的蛇身 |  | Skin-001 |  |  | true |  |
+|  | 2 | 藍莓蛇 |  | 藍紫色、果凍質感 |  | Skin-002 |  |  | false |  |
+|  | 3 | 草莓蛇 |  | 紅粉色、草莓籽點綴 |  | Skin-003 |  |  | false |  |
+|  | 4 | 橘子蛇 |  | 橘色、果皮紋路 |  | Skin-004 |  |  | false |  |
+|  | 5 | 西瓜蛇 |  | 綠皮紅肉或西瓜條紋 |  | Skin-005 |  |  | false |  |
+|  | 6 | 蜂蜜蛇 |  | 黃金色、蜂蜜滴落感 |  | Skin-006 |  |  | false |  |
+|  | 7 | 奶油蛇 |  | 淡色、奶油捲感 |  | Skin-007 |  |  | false |  |
+|  | 8 | 火焰蛇 |  | 紅橘火焰紋 |  | Skin-008 |  |  | false |  |
+|  | 9 | 冰晶蛇 |  | 淺藍冰晶、透明感 |  | Skin-009 |  |  | false |  |
+|  | 10 | 雷電蛇 |  | 黃紫電光紋 |  | Skin-010 |  |  | false |  |
+|  | 11 | 星光蛇 |  | 深色底、星星點綴 |  | Skin-011 |  |  | false |  |
+|  | 12 | 彩虹蛇 |  | 多色漸層節點 |  | Skin-012 |  |  | false |  |
+|  | 13 | 機械蛇 |  | 金屬節點、螺絲或裝甲 |  | Skin-013 |  |  | false |  |
+|  | 14 | 忍者蛇 |  | 深色布條、忍者頭巾 |  | Skin-014 |  |  | false |  |
+|  | 15 | 海盜蛇 |  | 眼罩、條紋、海盜元素 |  | Skin-015 |  |  | false |  |
+|  | 16 | 牛仔蛇 |  | 牛仔帽、皮革色系 |  | Skin-016 |  |  | false |  |
+|  | 17 | 太空蛇 |  | 太空衣、星艦感 |  | Skin-017 |  |  | false |  |
+|  | 18 | 甜甜圈蛇 |  | 糖霜、甜甜圈配色 |  | Skin-018 |  |  | false |  |
+|  | 19 | 龍紋蛇 |  | 東方龍鱗、鬚角簡化 |  | Skin-019 |  |  | false |  |
+|  | 20 | 霓虹蛇 |  | 亮色線條、夜光感 |  | Skin-020 |  |  | false |  |
+|  | 21 | 破壞王蛇 |  | 龐克、貼紙、裂紋 |  | Skin-021 |  |  | false |  |
 
 ## Emote
 
-> 表情貼圖僅支援資源購買；`ResourceID`、`ResourceAmount` 尚未逐筆定義，暫留空白。顯示時間由 Module 的 `EMOTE_DURATION` 控制。
+> 價格、貨幣類型與字串表編號尚未定義，暫留空白；顯示時間統一由 Module 的 `EMOTE_DURATION` 控制。
 
 | Emote |  |  |  |  |  |  |  |  |  |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | 輸出 | B |  | C |  | C | C | B | B | B |
-| 名稱 | ID |  | NameStrID |  | DescStrID | AssetID | ResourceID | ResourceAmount | DefaultUnlock |
-| 資料型態 | int |  | int |  | int | string | string | int | bool |
-| 企劃名 | 編號 | 貼圖名稱 | 名稱字串表編號 | 貼圖描述 | 描述字串表編號 | 資源 ID | 購買資源 ID | 購買資源數量 | 預設解鎖 |
+| 名稱 | ID |  | NameStrID |  | DescStrID | AssetID | Price | CurrencyType | DefaultUnlock |
+| 資料型態 | int |  | int |  | int | string | int | int | bool |
+| 企劃名 | 編號 | 貼圖名稱 | 名稱字串表編號 | 貼圖描述 | 描述字串表編號 | 資源 ID | 價格 | 貨幣類型 | 預設解鎖 |
 |  | 1 | 開心 |  | 大笑、閃光、正向 |  | Emote-B01 |  |  | true |
 |  | 2 | 生氣 |  | 鼓臉、怒符號 |  | Emote-B02 |  |  | true |
 |  | 3 | 哭哭 |  | 淚眼、委屈 |  | Emote-B03 |  |  | true |

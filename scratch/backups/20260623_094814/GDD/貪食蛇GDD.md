@@ -1398,12 +1398,12 @@ graph TD
 #### 13.2 商品內容與貨幣
 
 * 玩家可從遊戲大廳點擊「外觀商店」進入造型與表情貼圖取得介面。
-* **造型取得方式**：每個 Skin 僅能設定一種取得方式，由 [Ch16.10 Skin](#1610-skin) 的 `AcquireType` 決定：
+* **造型取得方式**：每個 Skin 僅能設定一種取得方式，由 `AcquireType` 決定：
   * `0` 預設解鎖：`AcquireParam0`、`AcquireParam1` 留空。
   * `1` 資源購買：`AcquireParam0` 為資源 ID，`AcquireParam1` 為資源數量。
   * `2` 條件取得：`AcquireParam0` 為條件 ID，`AcquireParam1` 為條件參數。
   * 條件取得與資源購買不可同時生效；匯表時依 `AcquireType` 驗證參數內容。
-* **表情貼圖取得方式**：Emote 僅支援資源購買，由 [Ch16.11 Emote](#1611-emote) 的 `ResourceID` 與 `ResourceAmount` 定義，不提供條件取得。
+* **表情貼圖取得方式**：Emote 僅支援資源購買，由 `ResourceID` 與 `ResourceAmount` 定義，不提供條件取得。
 * **資源購買範例**：
   * **金幣直購 Skin**：部分常規醜萌 Skin 可消耗金幣直接解鎖。
   * **鑽石直購 Skin**：稀有/搞怪 Skin 需消耗鑽石購買。
