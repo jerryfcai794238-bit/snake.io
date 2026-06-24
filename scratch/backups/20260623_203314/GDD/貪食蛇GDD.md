@@ -668,12 +668,16 @@ graph TD
 * **投放預告**：生成前有 `ITEM_TEASER_TIME = 2s` 的閃爍預告（由 [16.6 局內道具直購參數](#164-passiveskill) 控制）。
 * **拾取生效**：玩家拾取地圖道具後會立即自動發動效果，並與高級道具共用局內上方 Buff 顯示列；Buff 顯示、啟用演出與覆蓋演出統一由 [8.2 局內 Buff 顯示列與效果回饋](#82-局內-buff-顯示列與效果回饋) 規範。
 
-| Icon | 道具名稱 | 生效效果說明 | 數值與半徑參數 (DataTable 綁定變數) | 基礎持續時間 |
-| :--- | :--- | :--- | :--- | :--- |
-| ![磁鐵](<./Reference Image/Ref_Icon_道具-磁鐵.png>) | **磁鐵 <br> (Magnet)** | 啟動強制大範圍引力，自動吸附周圍食物向蛇頭飛行。 | 吸附半徑：`ITEM_MAGNET_RADIUS = 100px` <br> 飛行吸附速度：`MAGNET_SUCTION_SPEED = 8 px/s` | 10s <br> (由 `ITEM_MAGNET_DURATION` 控制) |
-| ![巨大蘑菇](<./Reference Image/Ref_Icon_道具-巨大蘑菇.png>) | **巨大蘑菇 <br> (Giant Mushroom)** | 啟動巨大化效果，提升蛇身尺寸與衝刺速度，強調身體放大與高速移動感。 | 巨大化尺寸：`ITEM_MUSHROOM_SIZE = 15000` (1.5x) <br> 跑速變化：`ITEM_MUSHROOM_SPEED = -2500` (-25%) | 10s <br> (由 `ITEM_MUSHROOM_DURATION` 控制) |
-| ![幸運糖](<./Reference Image/Ref_Icon_道具-幸運糖.png>) | **幸運糖 <br> (Lucky Candy)** | 啟動得分倍率加成，提高吞食食物與殘骸時的收益。 | 得分倍率：`ITEM_CANDY_MULTIPLIER = 3` (3倍) | 10s <br> (由 `ITEM_CANDY_DURATION` 控制) |
-| ![鷹眼](<./Reference Image/Ref_Icon_道具-鷹眼.png>) | **鷹眼 <br> (Eagle Eye)** | 拉遠視野範圍，提升玩家觀察遠方地圖與目標的能力。 | 視野倍率：`ITEM_EYE_SCALE = 13500` (1.35x) | 10s <br> (由 `ITEM_EYE_DURATION` 控制) |
+|                          Icon                          | 道具名稱                                    | 生效效果說明                                                               | 數值與半徑參數 (DataTable 綁定變數)                                                                                            |                  基礎持續時間                  |
+| :-----------------------------------------------------: | :------------------------------------------ | :------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------: |
+|     ![磁鐵](<./Reference Image/Ref_Icon_道具-磁鐵.png>)     | **磁鐵  <br> (Magnet)**             | 啟動強制大範圍引力，自動吸附周圍食物向蛇頭飛行。                           | *吸附半徑：`ITEM_MAGNET_RADIUS = 100px <br> * 飛行吸附速度：`MAGNET_SUCTION_SPEED = 8 px/s`                                  |  `10s <br> (由 `ITEM_MAGNET_DURATION` 控制)  |
+| ![巨大蘑菇](<./Reference Image/Ref_Icon_道具-巨大蘑菇.png>) | **巨大蘑菇  <br> (Giant Mushroom)** | 體型與碰撞判定增大。獲得免疫截斷的霸體。**撞擊他人蛇身仍判定死亡。** | *體型放大倍率：`ITEM_MUSHROOM_SIZE = 15000` (1.5倍) <br> * 移動速度懲罰：`ITEM_MUSHROOM_SPEED = -2500` (-25% 加算減速) | `10s <br> (由 `ITEM_MUSHROOM_DURATION` 控制) |
+|   ![幸運糖](<./Reference Image/Ref_Icon_道具-幸運糖.png>)   | **幸運糖  <br> (Lucky Candy)**      | 蛇頭產生發光特效，期間內吞食獲得的個人長度積分與成長節數增幅。             | * 得分增幅倍率：`ITEM_CANDY_MULTIPLIER = 3` (3倍加成)                                                                        |  `10s <br> (由 `ITEM_CANDY_DURATION` 控制)  |
+|     ![鷹眼](<./Reference Image/Ref_Icon_道具-鷹眼.png>)     | **鷹眼  <br> (Eagle Eye)**          | 視角平滑拉遠，全域正交視野擴大，獲取開闊戰術視野。                         | * 相機視野拉遠倍率：`ITEM_EYE_SCALE = 13500` (1.35倍正交縮放)                                                                |   `10s <br> (由 `ITEM_EYE_DURATION` 控制)   |
+
+---
+
+### 8. 高級道具與覆蓋規則
 
 #### 8.1 高級道具
 
