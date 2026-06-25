@@ -1402,7 +1402,7 @@ graph TD
 |  | 5 | core | 基礎吸附食物半徑 | BASE_SUCTION_RADIUS | 50 | px |
 |  | 6 | core | 相機基礎視野倍率 | BASE_VISION_SCALE | 10000 | 萬分比 |
 |  | 7 | core | 開局與重生初始長度 | INITIAL_LENGTH | 50 | 節 |
-|  | 8 | core | 衝刺加速比例 | DASH_SPEED_BONUS | 25 | 百分比 |
+|  | 8 | core | 衝刺加速比例 | DASH_SPEED_BONUS | 250 | 萬分比 |
 |  | 9 | core | 初始暴食冷卻時間 | GLUTTONY_CD | 30 | s |
 |  | 10 | core | 初始暴食吸附半徑 | GLUTTONY_RADIUS | 200 | px |
 |  | 11 | core | 暴食吸引食物速度 | GLUTTONY_SUCTION_SPEED | 12 | px/s |
@@ -1424,7 +1424,7 @@ graph TD
 |  | 27 | map | 地圖寬度 | MAP_WIDTH | 2200 | px |
 |  | 28 | map | 地圖高度 | MAP_HEIGHT | 2200 | px |
 |  | 29 | map | 撞岩石或邊界長度扣除比例 | ROCK_BOUNCE_PENALTY_RATIO | 5000 | 萬分比 |
-|  | 30 | map | 河流速度修正 | RIVER_SLOW_MULTIPLIER | -50 | 百分比 |
+|  | 30 | map | 河流速度修正 | RIVER_SLOW_MULTIPLIER | -500 | 萬分比 |
 |  | 31 | map | 岩石區食物分配權重 | FOOD_DIST_ROCK | 5000 | 萬分比 |
 |  | 32 | map | 河流區食物分配權重 | FOOD_DIST_RIVER | 3000 | 萬分比 |
 |  | 33 | map | 平地區食物分配權重 | FOOD_DIST_PLAINS | 2000 | 萬分比 |
