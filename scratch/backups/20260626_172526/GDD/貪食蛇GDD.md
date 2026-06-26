@@ -1548,64 +1548,64 @@ graph TD
 |  | 15 | core | 成長之路最高等級 | GROWTH_ROAD_MAX_LEVEL | 60 | level |
 |  | 16 | mode | 單局限時 | GAME_DURATION | 120 | s |
 |  | 17 | mode | 死亡復活倒數 | RESPAWN_TIME | 5000 | ms |
-|  | 18 | mode | Solo 入場能量 | ENTRY_ENERGY_SOLO | 30 | 點 |
-|  | 19 | mode | 大亂鬥入場能量 | ENTRY_ENERGY_BRAWL | 30 | 點 |
-|  | 20 | mode | 陣營對抗入場能量 | ENTRY_ENERGY_TEAM | 30 | 點 |
-|  | 21 | mode | 擊殺敵蛇積分 | KILL_SCORE | 100 | 分 |
-|  | 22 | mode | 每次擊殺額外熟練度 | KILL_MASTERY_BONUS | 2 | 點 |
-|  | 23 | mode | SSS 評級額外熟練度 | RATING_BONUS_SSS | 50 | 點 |
-|  | 24 | mode | SS 評級額外熟練度 | RATING_BONUS_SS | 30 | 點 |
-|  | 25 | mode | S 評級額外熟練度 | RATING_BONUS_S | 10 | 點 |
-|  | 26 | map | 地圖寬度 | MAP_WIDTH | 2200 | px |
-|  | 27 | map | 地圖高度 | MAP_HEIGHT | 2200 | px |
-|  | 28 | map | 撞岩石或邊界長度扣除比例 | ROCK_BOUNCE_PENALTY_RATIO | 5000 | 萬分比 |
-|  | 29 | map | 緩速區速度修正 | SLOW_ZONE_SPEED_MULTIPLIER | -5000 | 萬分比 |
-|  | 30 | map | 岩石區食物分配權重 | FOOD_DIST_ROCK | 5000 | 萬分比 |
-|  | 31 | map | 緩速區食物分配權重 | FOOD_DIST_SLOW_ZONE | 3000 | 萬分比 |
-|  | 32 | map | 平地區食物分配權重 | FOOD_DIST_PLAINS | 2000 | 萬分比 |
-|  | 33 | map | 小食物積分 | FOOD_VAL_SMALL | 1 | 分 |
-|  | 34 | map | 中食物積分 | FOOD_VAL_MEDIUM | 3 | 分 |
-|  | 35 | map | 大食物積分 | FOOD_VAL_LARGE | 5 | 分 |
-|  | 36 | map | 殘骸結晶積分 | FOOD_VAL_DEBRIS | 10 | 分 |
-|  | 37 | map | 開局食物總分 | INITIAL_FOOD_POINTS | 2000 | 分 |
-|  | 38 | map | 食物補足下限 | MIN_FOOD_POINTS | 1000 | 分 |
-|  | 39 | map | 食物補充檢測週期 | FOOD_REPLENISH_INTERVAL | 10000 | ms |
-|  | 40 | map | 死亡殘骸轉化比例 | DEBRIS_PERCENTAGE | 5000 | 萬分比 |
-|  | 41 | map | 殘骸食物存在時間 | DEBRIS_LIFETIME | 10 | s |
-|  | 42 | item | 地圖道具刷新間隔 | ITEM_SPAWN_INTERVAL | 20 | s |
-|  | 43 | item | 地圖道具同時存在上限 | ITEM_MAX_COUNT | 12 | 個 |
-|  | 44 | item | 道具刷新預告時間 | ITEM_TEASER_TIME | 2 | s |
-|  | 45 | item | 同款道具價格倍率 | BOOSTER_PRICE_MULTIPLIER | 15000 | 萬分比 |
-|  | 46 | item | 高級道具初始單局上限 | BOOSTER_LIMIT_INITIAL | 2 | 次 |
-|  | 47 | item | 高級道具最大單局上限 | BOOSTER_LIMIT_MAX | 5 | 次 |
-|  | 48 | passive | 被動強化初始費用 | PASSIVE_UPGRADE_START_COST | 1000 | 金幣 |
-|  | 49 | passive | 被動強化最高費用 | PASSIVE_UPGRADE_END_COST | 300000 | 金幣 |
-|  | 50 | passive | S 曲線係數，24 代表 0.024 | PASSIVE_UPGRADE_SHAPE_K | 24 | 千分比 |
-|  | 51 | passive | S 曲線拐點 | PASSIVE_UPGRADE_INFLECTION_X0 | 190 | 次 |
-|  | 52 | cosmetic | 表情貼圖顯示時間 | EMOTE_DURATION | 2500 | ms |
-|  | 53 | core | 蛇頭碰撞半徑 | SNAKE_HEAD_COLLISION_RADIUS | 12 | px |
-|  | 54 | core | 蛇身碰撞半徑 | SNAKE_BODY_COLLISION_RADIUS | 8 | px |
-|  | 55 | core | 蛇節視覺間距 | SNAKE_SECTION_SPACING | 10 | px |
-|  | 56 | combat | 截斷判定避開蛇頭前段節數 | CUT_HEAD_SAFE_SECTIONS | 10 | 節 |
-|  | 57 | map | 地圖物件生成最小安全偏移 | OBJECT_SPAWN_MIN_DIST | 2 | px |
-|  | 58 | item | 巨大蘑菇體型放大倍率 | ITEM_MUSHROOM_SIZE | 15000 | 萬分比 |
-|  | 59 | ui | 局內排行榜顯示行數 | RANKING_DISPLAY_COUNT | 4 | 行 |
-|  | 60 | ui | 對局倒數警示門檻 | TIME_WARNING_THRESHOLD | 30 | s |
-|  | 61 | mode | 中離最低評價獎勵比例 | EARLY_LEAVE_REWARD_RATIO | 5000 | 萬分比 |
-|  | 62 | map | 殘骸分數捨去倍數 | DEBRIS_SCORE_ROUND_UNIT | 10 | 分 |
-|  | 63 | social | 房間碼位數 | ROOM_CODE_DIGITS | 5 | 位 |
-|  | 64 | social | 好友房最少開始人數 | ROOM_MIN_PLAYERS | 2 | 人 |
-|  | 65 | social | 好友房隊伍人數上限 | ROOM_MAX_PLAYERS | 4 | 人 |
-|  | 66 | map | 岩石區判定半徑 | ROCK_REGION_RADIUS | 100 | px |
-|  | 67 | item | 地圖磁鐵出現權重 | ITEM_WEIGHT_MAGNET | 2500 | 萬分比 |
-|  | 68 | item | 地圖巨大蘑菇出現權重 | ITEM_WEIGHT_MUSHROOM | 2500 | 萬分比 |
-|  | 69 | item | 地圖幸運糖出現權重 | ITEM_WEIGHT_CANDY | 2500 | 萬分比 |
-|  | 70 | item | 地圖鷹眼出現權重 | ITEM_WEIGHT_EYE | 2500 | 萬分比 |
-|  | 71 | item | 道具中心圈分布權重 | ITEM_DIST_CENTER | 5000 | 萬分比 |
-|  | 72 | item | 道具中圈分布權重 | ITEM_DIST_MID | 3000 | 萬分比 |
-|  | 73 | item | 道具外圈分布權重 | ITEM_DIST_OUTER | 2000 | 萬分比 |
-|  | 74 | item | 道具中心圈半徑比例 | ITEM_CENTER_RADIUS_RATIO | 3333 | 萬分比 |
-|  | 75 | item | 道具中圈半徑比例 | ITEM_MID_RADIUS_RATIO | 6667 | 萬分比 |
+|  | 19 | mode | Solo 入場能量 | ENTRY_ENERGY_SOLO | 30 | 點 |
+|  | 20 | mode | 大亂鬥入場能量 | ENTRY_ENERGY_BRAWL | 30 | 點 |
+|  | 21 | mode | 陣營對抗入場能量 | ENTRY_ENERGY_TEAM | 30 | 點 |
+|  | 22 | mode | 擊殺敵蛇積分 | KILL_SCORE | 100 | 分 |
+|  | 23 | mode | 每次擊殺額外熟練度 | KILL_MASTERY_BONUS | 2 | 點 |
+|  | 24 | mode | SSS 評級額外熟練度 | RATING_BONUS_SSS | 50 | 點 |
+|  | 25 | mode | SS 評級額外熟練度 | RATING_BONUS_SS | 30 | 點 |
+|  | 26 | mode | S 評級額外熟練度 | RATING_BONUS_S | 10 | 點 |
+|  | 27 | map | 地圖寬度 | MAP_WIDTH | 2200 | px |
+|  | 28 | map | 地圖高度 | MAP_HEIGHT | 2200 | px |
+|  | 29 | map | 撞岩石或邊界長度扣除比例 | ROCK_BOUNCE_PENALTY_RATIO | 5000 | 萬分比 |
+|  | 30 | map | 緩速區速度修正 | SLOW_ZONE_SPEED_MULTIPLIER | -5000 | 萬分比 |
+|  | 31 | map | 岩石區食物分配權重 | FOOD_DIST_ROCK | 5000 | 萬分比 |
+|  | 32 | map | 緩速區食物分配權重 | FOOD_DIST_SLOW_ZONE | 3000 | 萬分比 |
+|  | 33 | map | 平地區食物分配權重 | FOOD_DIST_PLAINS | 2000 | 萬分比 |
+|  | 34 | map | 小食物積分 | FOOD_VAL_SMALL | 1 | 分 |
+|  | 35 | map | 中食物積分 | FOOD_VAL_MEDIUM | 3 | 分 |
+|  | 36 | map | 大食物積分 | FOOD_VAL_LARGE | 5 | 分 |
+|  | 37 | map | 殘骸結晶積分 | FOOD_VAL_DEBRIS | 10 | 分 |
+|  | 38 | map | 開局食物總分 | INITIAL_FOOD_POINTS | 2000 | 分 |
+|  | 39 | map | 食物補足下限 | MIN_FOOD_POINTS | 1000 | 分 |
+|  | 40 | map | 食物補充檢測週期 | FOOD_REPLENISH_INTERVAL | 10000 | ms |
+|  | 41 | map | 死亡殘骸轉化比例 | DEBRIS_PERCENTAGE | 5000 | 萬分比 |
+|  | 42 | map | 殘骸食物存在時間 | DEBRIS_LIFETIME | 10 | s |
+|  | 43 | item | 地圖道具刷新間隔 | ITEM_SPAWN_INTERVAL | 20 | s |
+|  | 44 | item | 地圖道具同時存在上限 | ITEM_MAX_COUNT | 12 | 個 |
+|  | 45 | item | 道具刷新預告時間 | ITEM_TEASER_TIME | 2 | s |
+|  | 46 | item | 同款道具價格倍率 | BOOSTER_PRICE_MULTIPLIER | 15000 | 萬分比 |
+|  | 47 | item | 高級道具初始單局上限 | BOOSTER_LIMIT_INITIAL | 2 | 次 |
+|  | 48 | item | 高級道具最大單局上限 | BOOSTER_LIMIT_MAX | 5 | 次 |
+|  | 49 | passive | 被動強化初始費用 | PASSIVE_UPGRADE_START_COST | 1000 | 金幣 |
+|  | 50 | passive | 被動強化最高費用 | PASSIVE_UPGRADE_END_COST | 300000 | 金幣 |
+|  | 51 | passive | S 曲線係數，24 代表 0.024 | PASSIVE_UPGRADE_SHAPE_K | 24 | 千分比 |
+|  | 52 | passive | S 曲線拐點 | PASSIVE_UPGRADE_INFLECTION_X0 | 190 | 次 |
+|  | 53 | cosmetic | 表情貼圖顯示時間 | EMOTE_DURATION | 2500 | ms |
+|  | 54 | core | 蛇頭碰撞半徑 | SNAKE_HEAD_COLLISION_RADIUS | 12 | px |
+|  | 55 | core | 蛇身碰撞半徑 | SNAKE_BODY_COLLISION_RADIUS | 8 | px |
+|  | 56 | core | 蛇節視覺間距 | SNAKE_SECTION_SPACING | 10 | px |
+|  | 57 | combat | 截斷判定避開蛇頭前段節數 | CUT_HEAD_SAFE_SECTIONS | 10 | 節 |
+|  | 58 | map | 地圖物件生成最小安全偏移 | OBJECT_SPAWN_MIN_DIST | 2 | px |
+|  | 59 | item | 巨大蘑菇體型放大倍率 | ITEM_MUSHROOM_SIZE | 15000 | 萬分比 |
+|  | 60 | ui | 局內排行榜顯示行數 | RANKING_DISPLAY_COUNT | 4 | 行 |
+|  | 61 | ui | 對局倒數警示門檻 | TIME_WARNING_THRESHOLD | 30 | s |
+|  | 62 | mode | 中離最低評價獎勵比例 | EARLY_LEAVE_REWARD_RATIO | 5000 | 萬分比 |
+|  | 63 | map | 殘骸分數捨去倍數 | DEBRIS_SCORE_ROUND_UNIT | 10 | 分 |
+|  | 64 | social | 房間碼位數 | ROOM_CODE_DIGITS | 5 | 位 |
+|  | 65 | social | 好友房最少開始人數 | ROOM_MIN_PLAYERS | 2 | 人 |
+|  | 66 | social | 好友房隊伍人數上限 | ROOM_MAX_PLAYERS | 4 | 人 |
+|  | 67 | map | 岩石區判定半徑 | ROCK_REGION_RADIUS | 100 | px |
+|  | 68 | item | 地圖磁鐵出現權重 | ITEM_WEIGHT_MAGNET | 2500 | 萬分比 |
+|  | 69 | item | 地圖巨大蘑菇出現權重 | ITEM_WEIGHT_MUSHROOM | 2500 | 萬分比 |
+|  | 70 | item | 地圖幸運糖出現權重 | ITEM_WEIGHT_CANDY | 2500 | 萬分比 |
+|  | 71 | item | 地圖鷹眼出現權重 | ITEM_WEIGHT_EYE | 2500 | 萬分比 |
+|  | 72 | item | 道具中心圈分布權重 | ITEM_DIST_CENTER | 5000 | 萬分比 |
+|  | 73 | item | 道具中圈分布權重 | ITEM_DIST_MID | 3000 | 萬分比 |
+|  | 74 | item | 道具外圈分布權重 | ITEM_DIST_OUTER | 2000 | 萬分比 |
+|  | 75 | item | 道具中心圈半徑比例 | ITEM_CENTER_RADIUS_RATIO | 3333 | 萬分比 |
+|  | 76 | item | 道具中圈半徑比例 | ITEM_MID_RADIUS_RATIO | 6667 | 萬分比 |
 
 #### 16.2 AIStrategy
 
