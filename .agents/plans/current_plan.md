@@ -1,38 +1,27 @@
 # Current Plan
 
 ## 目標
-修正 `GDD/貪食蛇GDD.md` 中 Ch9.2 的參數名稱，讓「反應延遲、轉彎精準度、衝刺機率、避險半徑、追逐半徑、追擊距離緩衝倍率、追擊中止時間」等名稱與 Ch16.2 `AIStrategy` 表欄位名稱一致。
+將 `fe2cde6a` commit 的改動內容進行整理，並更新到 `GDD/貪食蛇GDD.md` 的 Ch0 版本變更紀錄（v19.0 部分），補齊原本未列出的詳細變更項目，包含：
+1. **地圖道具圈層分布與類型權重**：Ch7.5 新增開局投放與每 20s 刷新機制，增加道具類型權重（均分 25%）及圈層投放分布權重（中心/中/外圈比例 50%/30%/20%）等規則。
+2. **被動屬性單位與數值修正**：Ch10.2 被動屬性強化明細中將磁吸半徑單位修正為 px、巨大蘑菇與河流抗性修正為萬分比。
+3. **DataTable 數據單位修正**：Ch16.4 PassiveSkill 將磁鐵、巨大蘑菇等道具持續時間單位從秒 (s) 修正為毫秒 (ms)，數值改為 10000~20000 毫秒；Ch16.2 AIStrategy 將 AI 追擊距離緩衝倍率修正為 20% (2000 萬分比)。
+4. **AI 參數名稱 CamelCase 標準化**：Ch9.2 將原先帶有底線的 AI 參數全面更新為 CamelCase 標準命名。
+5. **AI 追擊距離緩衝公式與預設值修正**：Ch9.2 與 Ch16.2 中將 `ChaseLeashRatio` 由 `12000` (120%) 修正為 `2000` (20%)，並更新追擊距離判定公式。
 
 ## 等待確認狀態
-已收到「開始」，已完成修改與驗證。
+等待使用者回覆「開始」後才進行修改。
 
-## 已修改檔案
+## 預計修改檔案
 - `GDD/貪食蛇GDD.md`
 
-## 實際步驟
-1. 已讀取 Ch9.2 與 Ch16.2 `AIStrategy` 表頭，確認欄位名稱與中文企劃名。
-2. 已備份 `GDD/貪食蛇GDD.md` 到 `scratch/backups/20260626_163312/GDD/貪食蛇GDD.md`。
-3. 已將 Ch9.2 的參數條目名稱對齊 Ch16.2 表頭與企劃名：`ReactionDelay`、`SteeringPrecision`、`DashProbability`、`EvadeRadius`、`ChaseRadius`、`ChaseLeashRatio`、`ChaseAbortTime`。
-4. 已同步調整 Ch9.2 公式、範例與五大策略 AI 強度控制配置矩陣表頭中的參數名。
-5. 已驗證 Ch9.2 與 Ch16.2 關鍵參數名稱一致、Markdown 表格、圖片路徑與 `<details>` 平衡。
+## 預計步驟
+1. 備份 `GDD/貪食蛇GDD.md` 至 `scratch/backups/{timestamp}/GDD/貪食蛇GDD.md`。
+2. 編輯 `GDD/貪食蛇GDD.md` 中的 Ch0 版本變更紀錄中的 `v19.0 (2026-06-26)` 部分，補齊上述 5 個主要變更要點。
+3. 驗證修改後的 Markdown 語法、表格與 `<details>` 平衡。
+4. 回報修改檔案、完成重點、備份位置與未驗證事項。
 
 ## 預期輸出
-- Ch9.2 的參數名稱與 Ch16.2 `AIStrategy` 表一致。
-- 不修改非 Ch9.2 / Ch16.2 相關內容。
+- `GDD/貪食蛇GDD.md` 的 Ch0 `v19.0 (2026-06-26)` 區段中補齊詳細的變更要點，內容清晰完整且排版正確。
 
 ## 可能影響範圍
-- Ch9.2 參數條目標題與說明文字。
-- 少量 Ch9.2 範例文字中的參數名稱。
-
-## 驗證結果
-- Ch9.2 指定範圍未再命中舊名稱：`AI_REACTION_DELAY`、`AI_STEERING_PRECISION`、`AI_DASH_PROB`、`AI_EVADE_RADIUS`、`AI_CHASE_RADIUS`、`Reaction Delay`、`Steering Precision`、`衝刺決策機率`、`避險檢測半徑`、`追逐／尋路半徑`。
-- Ch9.2 配置矩陣：每列 6 欄，一致。
-- Ch16.2 `AIStrategy` 表：每列 19 欄，一致。
-- `<details>`：6/6 平衡。
-- 圖片路徑：檢查 31 個引用，未發現缺檔。
-
-## 備份位置
-- `scratch/backups/20260626_163312/GDD/貪食蛇GDD.md`
-
-## 未驗證事項
-- 未進行 Markdown 預覽器實際點擊測試；本次未新增或修改跳轉目標。
+- Ch0 版本變更紀錄中 v19.0 的部分。
