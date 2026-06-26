@@ -898,17 +898,6 @@ graph TD
 
 * **反應延遲 (Reaction Delay)**：感知環境並決策新向量的延遲間隔，用以模擬人類生理反應時間。
 * **轉彎精準度 (Steering Precision)**：轉向時與理論完美尋路向量的貼合度（萬分比），用以消除機械感。
-  * **公式**：
-    ```text
-    steering_accuracy = AI_STEERING_PRECISION / 10000
-    steering_deviation_ratio = 1 - steering_accuracy
-    steering_deviation_angle = target_angle * steering_deviation_ratio
-    actual_angle = target_angle + random(-steering_deviation_angle, steering_deviation_angle)
-    ```
-  * **說明**：
-    * `AI_STEERING_PRECISION` 以萬分比表示，`10000` 代表完全貼合理論完美尋路向量，`8000` 代表 80% 貼合。
-    * `target_angle` 為 AI 理論上應轉向的完美角度；`actual_angle` 為實際送出的轉向角度。
-    * 精準度越低，`steering_deviation_angle` 越大，AI 轉向越容易出現偏航，藉此降低機械式完美追蹤感。
 * **衝刺決策機率 (Dash Probability)**：常態搶奪資源或尋路時，電腦玩家觸發衝刺加速的隨機判定機率（戰術必衝與低長度保護不受此機率限制）。
 * **避險檢測半徑 (AI_EVADE_RADIUS)**：AI 用於偵測蛇頭周遭威脅的保命半徑。威脅包含岩石、邊界、敵蛇頭、衝刺蛇與高碰撞風險蛇身；半徑內若存在威脅，AI 會依決策優先級優先執行保命迴避。
 * **追逐／尋路半徑 (AI_CHASE_RADIUS)**：AI 在常態尋路、收集、追擊或截斷決策時，用來搜尋可鎖定目標的最大距離。可鎖定目標包含安全食物、殘骸、地圖道具與敵方蛇隻；實際目標類型依 AI 策略與當前優先級決定。半徑越大，AI 越容易主動轉向遠處資源或敵人；半徑越小，AI 行為越偏近距離反應。

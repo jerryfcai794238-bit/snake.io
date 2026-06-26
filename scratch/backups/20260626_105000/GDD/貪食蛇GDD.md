@@ -898,17 +898,6 @@ graph TD
 
 * **反應延遲 (Reaction Delay)**：感知環境並決策新向量的延遲間隔，用以模擬人類生理反應時間。
 * **轉彎精準度 (Steering Precision)**：轉向時與理論完美尋路向量的貼合度（萬分比），用以消除機械感。
-  * **公式**：
-    ```text
-    steering_accuracy = AI_STEERING_PRECISION / 10000
-    steering_deviation_ratio = 1 - steering_accuracy
-    steering_deviation_angle = target_angle * steering_deviation_ratio
-    actual_angle = target_angle + random(-steering_deviation_angle, steering_deviation_angle)
-    ```
-  * **說明**：
-    * `AI_STEERING_PRECISION` 以萬分比表示，`10000` 代表完全貼合理論完美尋路向量，`8000` 代表 80% 貼合。
-    * `target_angle` 為 AI 理論上應轉向的完美角度；`actual_angle` 為實際送出的轉向角度。
-    * 精準度越低，`steering_deviation_angle` 越大，AI 轉向越容易出現偏航，藉此降低機械式完美追蹤感。
 * **衝刺決策機率 (Dash Probability)**：常態搶奪資源或尋路時，電腦玩家觸發衝刺加速的隨機判定機率（戰術必衝與低長度保護不受此機率限制）。
 * **避險檢測半徑 (AI_EVADE_RADIUS)**：AI 用於偵測蛇頭周遭威脅的保命半徑。威脅包含岩石、邊界、敵蛇頭、衝刺蛇與高碰撞風險蛇身；半徑內若存在威脅，AI 會依決策優先級優先執行保命迴避。
 * **追逐／尋路半徑 (AI_CHASE_RADIUS)**：AI 在常態尋路、收集、追擊或截斷決策時，用來搜尋可鎖定目標的最大距離。可鎖定目標包含安全食物、殘骸、地圖道具與敵方蛇隻；實際目標類型依 AI 策略與當前優先級決定。半徑越大，AI 越容易主動轉向遠處資源或敵人；半徑越小，AI 行為越偏近距離反應。
@@ -1493,14 +1482,14 @@ graph TD
 | AIStrategy |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | 輸出 | B |  | C |  | C | S | C | C | C | C | C | C | C | C | C | C | C | C |
-| 名稱 | ID |  | NameStrID |  | DescStrID | SpawnWeight | ReactionDelay | SteeringPrecision | DashProbability | EvadeRadius | ChaseRadius | ChaseLeashRatio | ChaseAbortTime | EvadePanicDistance | InterceptPredictTime | DashResourceDistance | ProtectMinLength | ProtectRecoveryLength |
+| 名稱 | ID |  | NameStrID |  | DescStrID | SpawnWeight | ReactionDelay | SteeringPrecision | DashProbability | EvadeRadius | ChaseRadius | EvadePanicDistance | InterceptPredictTime | DashResourceDistance | ChaseLeashRatio | ChaseAbortTime | ProtectMinLength | ProtectRecoveryLength |
 | 資料型態 | int |  | int |  | int | int | int | int | int | int | int | int | int | int | int | int | int | int |
-| 企劃名 | 編號 | 策略名稱 | 名稱字串表編號 | 策略描述 | 描述字串表編號 | 出現權重(萬分比) | 反應延遲(ms) | 轉彎精準度(萬分比) | 衝刺機率(萬分比) | 避險半徑(px) | 追逐半徑(px) | 追擊距離緩衝倍率(萬分比) | 追擊中止時間(ms) | 危急逃生距離(px) | 卡位預判時間(ms) | 搶奪資源距離(px) | 低長度禁用衝刺門檻(節) | 恢復衝刺門檻(節) |
-|  | 1 | 初階 BOT |  | 基礎隨機移動 AI |  | 0 | 300 | 5000 | 1000 | 50 | 100 | 12000 | 3000 | 80 | 500 | 300 | 80 | 120 |
-|  | 2 | 避險型 AI |  | 優先閃避威脅 |  | 2500 | 150 | 7000 | 2000 | 250 | 150 | 12000 | 3000 | 80 | 500 | 300 | 80 | 120 |
-|  | 3 | 收集型 AI |  | 優先收集食物與道具 |  | 2500 | 120 | 8000 | 3000 | 150 | 400 | 12000 | 3000 | 80 | 500 | 300 | 80 | 120 |
-|  | 4 | 截斷型 AI |  | 主動卡位截斷敵蛇 |  | 2500 | 100 | 9000 | 5000 | 180 | 350 | 12000 | 3000 | 80 | 500 | 300 | 80 | 120 |
-|  | 5 | 追獵型 AI |  | 追擊高分與長蛇 |  | 2500 | 50 | 9500 | 6000 | 200 | 500 | 12000 | 3000 | 80 | 500 | 300 | 80 | 120 |
+| 企劃名 | 編號 | 策略名稱 | 名稱字串表編號 | 策略描述 | 描述字串表編號 | 出現權重(萬分比) | 反應延遲(ms) | 轉彎精準度(萬分比) | 衝刺機率(萬分比) | 避險半徑(px) | 追逐半徑(px) | 危急逃生距離(px) | 卡位預判時間(ms) | 搶奪資源距離(px) | 追擊距離緩衝倍率(萬分比) | 追擊中止時間(ms) | 低長度禁用衝刺門檻(節) | 恢復衝刺門檻(節) |
+|  | 1 | 初階 BOT |  | 基礎隨機移動 AI |  | 0 | 300 | 5000 | 1000 | 50 | 100 | 80 | 500 | 300 | 12000 | 3000 | 80 | 120 |
+|  | 2 | 避險型 AI |  | 優先閃避威脅 |  | 2500 | 150 | 7000 | 2000 | 250 | 150 | 80 | 500 | 300 | 12000 | 3000 | 80 | 120 |
+|  | 3 | 收集型 AI |  | 優先收集食物與道具 |  | 2500 | 120 | 8000 | 3000 | 150 | 400 | 80 | 500 | 300 | 12000 | 3000 | 80 | 120 |
+|  | 4 | 截斷型 AI |  | 主動卡位截斷敵蛇 |  | 2500 | 100 | 9000 | 5000 | 180 | 350 | 80 | 500 | 300 | 12000 | 3000 | 80 | 120 |
+|  | 5 | 追獵型 AI |  | 追擊高分與長蛇 |  | 2500 | 50 | 9500 | 6000 | 200 | 500 | 80 | 500 | 300 | 12000 | 3000 | 80 | 120 |
 
 #### 16.3 ActiveSkill
 

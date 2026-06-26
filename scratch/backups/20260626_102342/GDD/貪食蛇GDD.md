@@ -870,7 +870,7 @@ graph TD
 
 載入對局時，電腦對手會依據簡化的 5 種策略行為特徵進入戰場（由弱至強排序）：
 
-> 出現機率來源讀取：[Ch16.2 AIStrategy](#162-aistrategy) 的 `SpawnWeight` 欄位。
+> 出現機率來源讀取：[Ch16.3 AIStrategy](#162-aistrategy) 的 `SpawnWeight` 欄位。
 
 | AI 策略類型             | 出現機率 | 核心尋路與移動特徵                                                                                   | 技能與道具使用邏輯                                                      |
 | :---------------------- | :------: | :--------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------- |
@@ -898,22 +898,9 @@ graph TD
 
 * **反應延遲 (Reaction Delay)**：感知環境並決策新向量的延遲間隔，用以模擬人類生理反應時間。
 * **轉彎精準度 (Steering Precision)**：轉向時與理論完美尋路向量的貼合度（萬分比），用以消除機械感。
-  * **公式**：
-    ```text
-    steering_accuracy = AI_STEERING_PRECISION / 10000
-    steering_deviation_ratio = 1 - steering_accuracy
-    steering_deviation_angle = target_angle * steering_deviation_ratio
-    actual_angle = target_angle + random(-steering_deviation_angle, steering_deviation_angle)
-    ```
-  * **說明**：
-    * `AI_STEERING_PRECISION` 以萬分比表示，`10000` 代表完全貼合理論完美尋路向量，`8000` 代表 80% 貼合。
-    * `target_angle` 為 AI 理論上應轉向的完美角度；`actual_angle` 為實際送出的轉向角度。
-    * 精準度越低，`steering_deviation_angle` 越大，AI 轉向越容易出現偏航，藉此降低機械式完美追蹤感。
 * **衝刺決策機率 (Dash Probability)**：常態搶奪資源或尋路時，電腦玩家觸發衝刺加速的隨機判定機率（戰術必衝與低長度保護不受此機率限制）。
 * **避險檢測半徑 (AI_EVADE_RADIUS)**：AI 用於偵測蛇頭周遭威脅的保命半徑。威脅包含岩石、邊界、敵蛇頭、衝刺蛇與高碰撞風險蛇身；半徑內若存在威脅，AI 會依決策優先級優先執行保命迴避。
 * **追逐／尋路半徑 (AI_CHASE_RADIUS)**：AI 在常態尋路、收集、追擊或截斷決策時，用來搜尋可鎖定目標的最大距離。可鎖定目標包含安全食物、殘骸、地圖道具與敵方蛇隻；實際目標類型依 AI 策略與當前優先級決定。半徑越大，AI 越容易主動轉向遠處資源或敵人；半徑越小，AI 行為越偏近距離反應。
-* **追擊距離緩衝倍率 (Chase Leash Ratio)**：追擊或截斷中允許目標短暫超出追逐半徑的倍率（萬分比）。預設 `12000 (120%)`，即距離超過 `AI_CHASE_RADIUS * 1.2` 時放棄。
-* **追擊中止時間 (Chase Abort Time)**：追擊或截斷的最長持續時間。預設 `3000 ms`，超時仍未成功接近、截斷或形成有效攻擊角度時放棄。
 
 > [!NOTE]
 > 範例：截斷型 AI 的 `AI_REACTION_DELAY = 100 ms` 時，面對敵蛇突襲加速截斷，會先維持原軌跡 100ms，隨後才轉向避險，為玩家保留反應窗口。
@@ -926,7 +913,7 @@ graph TD
 >
 > 範例：追獵型 AI 的 `AI_CHASE_RADIUS = 500 px` 時，會在蛇頭 500px 內搜尋高名次或長度較長的目標蛇；若目標同時符合追擊與截斷條件，才進一步預判路徑並嘗試切入頭前。若半徑內沒有有效目標，則回到常態尋路或收集。
 
-* **五大策略 AI 強度控制配置矩陣**：（完整欄位詳參 [Ch16.2 AIStrategy](#162-aistrategy)）
+* **五大策略 AI 強度控制配置矩陣**：（詳參 [Ch16.3 AIStrategy](#162-aistrategy)）
 
   | 電腦策略類型 | 反應延遲 <br> `AI_REACTION_DELAY` | 轉彎精準度 <br> `AI_STEERING_PRECISION` | 衝刺決策機率 <br> `AI_DASH_PROB` | 避險檢測半徑 <br> `AI_EVADE_RADIUS` | 追逐／尋路半徑 <br> `AI_CHASE_RADIUS` |
   | :---------------------- | :-------------------------------: | :-------------------------------------: | :------------------------------: | :-----------------------------------: | :------------------------------------: |
@@ -938,12 +925,12 @@ graph TD
 
 #### 9.3 衝刺決策與攔截防盲追控制
 
-定義所有電腦玩家在執行常態尋路或戰術行為時的衝刺與防盲追邏輯，其決策預設值隨 AI 類型從強度配置矩陣中載入，細分為以下四層與中止機制（各參數常數詳參 [Ch16.2 AIStrategy](#162-aistrategy)）：
+定義所有電腦玩家在執行常態尋路或戰術行為時的衝刺與防盲追邏輯，其決策預設值隨 AI 類型從強度配置矩陣中載入，細分為以下四層與中止機制（各參數常數詳參 [Ch16.3 AIStrategy](#162-aistrategy)）：
 
-* **追逐／尋路半徑與追擊中止規則**：
+* **追逐／尋路半徑與追擊中止距離關係**：
   * `AI_CHASE_RADIUS` 是**進入/搜尋條件**：AI 在常態尋路、收集、追擊或截斷決策前，用此半徑搜尋可鎖定目標；目標不在此範圍內時，不主動發起追擊或截斷。
-  * 追擊中不再使用固定距離常數。若目標距離超過該 AI 類型的 `AI_CHASE_RADIUS * AI_CHASE_LEASH_RATIO / 10000`（預設 `120%`，即 `AI_CHASE_RADIUS * 1.2`），視為脫離有效追逐範圍，AI 必須放棄當前戰術並回到常態尋路。
-  * `AI_CHASE_ABORT_TIME` 是**追擊最長持續時間**：AI 已進入追擊、衝刺截斷或攔截演算後，若超過該 AI 類型的 `AI_CHASE_ABORT_TIME`（預設 `3000 ms` / `3.0 s`）仍未成功接近、截斷或形成有效攻擊角度，視為追擊失敗。
+  * `AI_CHASE_ABORT_DISTANCE` 是**追擊中退出條件**：AI 已進入追擊、衝刺截斷或攔截演算後，若雙方蛇頭距離被拉開超過此距離，視為追擊失敗並放棄當前戰術。
+  * 兩者不可混用：`AI_CHASE_RADIUS` 決定「是否看見並選定目標」，`AI_CHASE_ABORT_DISTANCE` 決定「已追擊時是否該停手」。因此追獵型 AI 可用較大的 `AI_CHASE_RADIUS` 搜尋遠處目標，但一旦進入衝刺截斷，仍需遵守較短的 `AI_CHASE_ABORT_DISTANCE`，避免長距離盲追。
 
 1. **戰術型必衝 (100% 執行，無視隨機機率)**：
    * **危急逃生**：當敵蛇身軀逼近蛇頭距離 `AI_EVADE_PANIC_DISTANCE`（預設 `80 px`）內且判定面臨正面碰撞威脅時，100% 強制開啟衝刺逃跑。
@@ -952,8 +939,8 @@ graph TD
    * **搶食與搶道具**：當距離蛇頭 `AI_DASH_RESOURCE_DISTANCE`（預設 `300 px`）內刷新地圖道具或高價值食物堆，且周圍有其他競爭者時，以強度控制配置矩陣中的 `AI_DASH_PROB` (隨機機率判定) 是否開啟衝刺。
 3. **攔截中止與防盲追機制 (關鍵優化)**：
    * 在進行衝刺截斷或追擊時，每影格進行即時演算。若滿足以下任一條件，判定攔截失敗，**AI 電腦玩家必須立刻終止衝刺加速、降回常速，並切換回常態尋路（停止無效盲目追擊）**：
-     * **距離拉開**：敵蛇透過衝刺或大轉向，使雙方蛇頭距離拉開至 `> AI_CHASE_RADIUS * AI_CHASE_LEASH_RATIO / 10000`。
-     * **時效超限**：追擊或截斷持續時間超過該 AI 類型的 `AI_CHASE_ABORT_TIME`（預設 `3000 ms` / `3.0 s`），仍未成功接近、截斷或形成有效攻擊角度。
+     * **距離拉開**：敵蛇透過衝刺或大轉向，使雙方蛇頭距離拉開至 `> AI_CHASE_ABORT_DISTANCE`（預設 `250 px`）。
+     * **時效超限**：預測能成功搶佔卡位點的時間拉長至 `> AI_CHASE_ABORT_TIME`（預設 `1.0 s`）。
      * **角度偏離**：敵方已轉向逃離或行進路線與 AI 平行，AI 無法在對方前進方向前截斷。
 4. **長度保護與常速迂迴機制**：
    * 當電腦玩家長度 `< AI_PROTECT_MIN_LENGTH`（預設 `80` 節）時，**強制禁用所有常態搶資源型衝刺**（僅保留「危急逃生」衝刺）。
@@ -976,7 +963,7 @@ graph TD
   | 1 | 保命迴避 | 蛇頭前方或距離 `AI_EVADE_RADIUS` 內存在岩石、邊界、敵蛇頭、衝刺蛇或高碰撞風險蛇身。 | 立即放棄目前目標，轉向遠離威脅方向；不可為了吃食物或搶道具主動撞入危險區。 |
   | 2 | 低長度保護 | 當前蛇隻長度 `< AI_PROTECT_MIN_LENGTH`。 | 優先吃近距離安全食物，避免追擊與高風險截斷；衝刺僅可用於脫離危險。 |
   | 3 | 道具爭奪 | 距離 `AI_DASH_RESOURCE_DISTANCE` 內存在可拾取地圖道具，且路徑未被高風險障礙阻擋。 | 朝道具方向移動；若途中觸發保命迴避，必須中止搶道具。 |
-  | 4 | 戰術追擊 / 截斷 | 目標位於該 AI 類型的 `AI_CHASE_RADIUS` 內，且符合追獵或截斷型 AI 的長度、角度與目標條件。 | 嘗試預判目標前進方向並切入；追擊中若距離超過 `AI_CHASE_RADIUS * AI_CHASE_LEASH_RATIO / 10000` 或時間超過 `AI_CHASE_ABORT_TIME`，必須放棄。 |
+  | 4 | 戰術追擊 / 截斷 | 目標位於該 AI 類型的 `AI_CHASE_RADIUS` 內，且符合追獵或截斷型 AI 的長度、角度與目標條件。 | 嘗試預判目標前進方向並切入；追擊中若距離超過 `AI_CHASE_ABORT_DISTANCE` 或時間超過 `AI_CHASE_ABORT_TIME`，必須放棄。 |
   | 5 | 常態收集 | 無更高優先級事件。 | 依初始 AI 性格選擇食物、殘骸或安全路徑，保持連續移動與基本避障。 |
 * **AI 驗收原則**：外包可自行選擇 steering、取樣或尋路實作方式，但最終行為必須符合上表優先級；同一時間多個條件成立時，永遠以較高優先級覆蓋較低優先級。
 * **適用對象範圍**：
@@ -1461,46 +1448,53 @@ graph TD
 |  | 40 | map | 食物補充檢測週期 | FOOD_REPLENISH_INTERVAL | 10000 | ms |
 |  | 41 | map | 死亡殘骸轉化比例 | DEBRIS_PERCENTAGE | 5000 | 萬分比 |
 |  | 42 | map | 殘骸食物存在時間 | DEBRIS_LIFETIME | 10 | s |
-|  | 43 | item | 地圖道具刷新間隔 | ITEM_SPAWN_INTERVAL | 20 | s |
-|  | 44 | item | 地圖道具同時存在上限 | ITEM_MAX_COUNT | 12 | 個 |
-|  | 45 | item | 道具刷新預告時間 | ITEM_TEASER_TIME | 2 | s |
-|  | 46 | item | 同款道具價格倍率 | BOOSTER_PRICE_MULTIPLIER | 15000 | 萬分比 |
-|  | 47 | item | 高級道具初始單局上限 | BOOSTER_LIMIT_INITIAL | 2 | 次 |
-|  | 48 | item | 高級道具最大單局上限 | BOOSTER_LIMIT_MAX | 5 | 次 |
-|  | 49 | passive | 被動強化初始費用 | PASSIVE_UPGRADE_START_COST | 1000 | 金幣 |
-|  | 50 | passive | 被動強化最高費用 | PASSIVE_UPGRADE_END_COST | 300000 | 金幣 |
-|  | 51 | passive | S 曲線係數，24 代表 0.024 | PASSIVE_UPGRADE_SHAPE_K | 24 | 千分比 |
-|  | 52 | passive | S 曲線拐點 | PASSIVE_UPGRADE_INFLECTION_X0 | 190 | 次 |
-|  | 53 | cosmetic | 表情貼圖顯示時間 | EMOTE_DURATION | 2500 | ms |
-|  | 54 | core | 蛇頭碰撞半徑 | SNAKE_HEAD_COLLISION_RADIUS | 12 | px |
-|  | 55 | core | 蛇身碰撞半徑 | SNAKE_BODY_COLLISION_RADIUS | 8 | px |
-|  | 56 | core | 蛇節視覺間距 | SNAKE_SECTION_SPACING | 10 | px |
-|  | 57 | combat | 截斷判定避開蛇頭前段節數 | CUT_HEAD_SAFE_SECTIONS | 10 | 節 |
-|  | 58 | map | 地圖物件生成最小安全偏移 | Object_SPAWN_MIN_DIST | 2 | px |
-|  | 59 | item | 巨大蘑菇體型放大倍率 | ITEM_MUSHROOM_SIZE | 15000 | 萬分比 |
-|  | 60 | ui | 局內排行榜顯示行數 | RANKING_DISPLAY_COUNT | 4 | 行 |
-|  | 61 | ui | 對局倒數警示門檻 | TIME_WARNING_THRESHOLD | 30 | s |
-|  | 62 | mode | 中離最低評價獎勵比例 | EARLY_LEAVE_REWARD_RATIO | 5000 | 萬分比 |
-|  | 63 | map | 殘骸分數捨去倍數 | DEBRIS_SCORE_ROUND_UNIT | 10 | 分 |
-|  | 64 | social | 房間碼位數 | ROOM_CODE_DIGITS | 5 | 位 |
-|  | 65 | social | 好友房最少開始人數 | ROOM_MIN_PLAYERS | 2 | 人 |
-|  | 66 | social | 好友房隊伍人數上限 | ROOM_MAX_PLAYERS | 4 | 人 |
+|  | 43 | ai | AI 危急逃生距離 | AI_EVADE_PANIC_DISTANCE | 80 | px |
+|  | 44 | ai | AI 卡位預判時間 | AI_INTERCEPT_PREDICT_TIME | 500 | ms |
+|  | 45 | ai | AI 搶奪資源距離 | AI_DASH_RESOURCE_DISTANCE | 300 | px |
+|  | 46 | ai | AI 追擊中止距離 | AI_CHASE_ABORT_DISTANCE | 250 | px |
+|  | 47 | ai | AI 追擊中止時間 | AI_CHASE_ABORT_TIME | 1000 | ms |
+|  | 48 | ai | AI 低長度禁用衝刺門檻 | AI_PROTECT_MIN_LENGTH | 80 | 節 |
+|  | 49 | ai | AI 恢復衝刺門檻 | AI_PROTECT_RECOVERY_LENGTH | 120 | 節 |
+|  | 50 | item | 地圖道具刷新間隔 | ITEM_SPAWN_INTERVAL | 20 | s |
+|  | 51 | item | 地圖道具同時存在上限 | ITEM_MAX_COUNT | 12 | 個 |
+|  | 52 | item | 道具刷新預告時間 | ITEM_TEASER_TIME | 2 | s |
+|  | 53 | item | 同款道具價格倍率 | BOOSTER_PRICE_MULTIPLIER | 15000 | 萬分比 |
+|  | 54 | item | 高級道具初始單局上限 | BOOSTER_LIMIT_INITIAL | 2 | 次 |
+|  | 55 | item | 高級道具最大單局上限 | BOOSTER_LIMIT_MAX | 5 | 次 |
+|  | 56 | passive | 被動強化初始費用 | PASSIVE_UPGRADE_START_COST | 1000 | 金幣 |
+|  | 57 | passive | 被動強化最高費用 | PASSIVE_UPGRADE_END_COST | 300000 | 金幣 |
+|  | 58 | passive | S 曲線係數，24 代表 0.024 | PASSIVE_UPGRADE_SHAPE_K | 24 | 千分比 |
+|  | 59 | passive | S 曲線拐點 | PASSIVE_UPGRADE_INFLECTION_X0 | 190 | 次 |
+|  | 60 | cosmetic | 表情貼圖顯示時間 | EMOTE_DURATION | 2500 | ms |
+|  | 61 | core | 蛇頭碰撞半徑 | SNAKE_HEAD_COLLISION_RADIUS | 12 | px |
+|  | 62 | core | 蛇身碰撞半徑 | SNAKE_BODY_COLLISION_RADIUS | 8 | px |
+|  | 63 | core | 蛇節視覺間距 | SNAKE_SECTION_SPACING | 10 | px |
+|  | 64 | combat | 截斷判定避開蛇頭前段節數 | CUT_HEAD_SAFE_SECTIONS | 10 | 節 |
+|  | 65 | map | 地圖物件生成最小安全偏移 | Object_SPAWN_MIN_DIST | 2 | px |
+|  | 66 | item | 巨大蘑菇體型放大倍率 | ITEM_MUSHROOM_SIZE | 15000 | 萬分比 |
+|  | 67 | ui | 局內排行榜顯示行數 | RANKING_DISPLAY_COUNT | 4 | 行 |
+|  | 68 | ui | 對局倒數警示門檻 | TIME_WARNING_THRESHOLD | 30 | s |
+|  | 69 | mode | 中離最低評價獎勵比例 | EARLY_LEAVE_REWARD_RATIO | 5000 | 萬分比 |
+|  | 70 | map | 殘骸分數捨去倍數 | DEBRIS_SCORE_ROUND_UNIT | 10 | 分 |
+|  | 71 | social | 房間碼位數 | ROOM_CODE_DIGITS | 5 | 位 |
+|  | 72 | social | 好友房最少開始人數 | ROOM_MIN_PLAYERS | 2 | 人 |
+|  | 73 | social | 好友房隊伍人數上限 | ROOM_MAX_PLAYERS | 4 | 人 |
 
 #### 16.2 AIStrategy
 
 > 對應規格：[Ch9.1.1 電腦 BOT 對局固定補位配比表](#911-電腦-bot-對局固定補位配比表)
 
-| AIStrategy |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 輸出 | B |  | C |  | C | S | C | C | C | C | C | C | C | C | C | C | C | C |
-| 名稱 | ID |  | NameStrID |  | DescStrID | SpawnWeight | ReactionDelay | SteeringPrecision | DashProbability | EvadeRadius | ChaseRadius | ChaseLeashRatio | ChaseAbortTime | EvadePanicDistance | InterceptPredictTime | DashResourceDistance | ProtectMinLength | ProtectRecoveryLength |
-| 資料型態 | int |  | int |  | int | int | int | int | int | int | int | int | int | int | int | int | int | int |
-| 企劃名 | 編號 | 策略名稱 | 名稱字串表編號 | 策略描述 | 描述字串表編號 | 出現權重(萬分比) | 反應延遲(ms) | 轉彎精準度(萬分比) | 衝刺機率(萬分比) | 避險半徑(px) | 追逐半徑(px) | 追擊距離緩衝倍率(萬分比) | 追擊中止時間(ms) | 危急逃生距離(px) | 卡位預判時間(ms) | 搶奪資源距離(px) | 低長度禁用衝刺門檻(節) | 恢復衝刺門檻(節) |
-|  | 1 | 初階 BOT |  | 基礎隨機移動 AI |  | 0 | 300 | 5000 | 1000 | 50 | 100 | 12000 | 3000 | 80 | 500 | 300 | 80 | 120 |
-|  | 2 | 避險型 AI |  | 優先閃避威脅 |  | 2500 | 150 | 7000 | 2000 | 250 | 150 | 12000 | 3000 | 80 | 500 | 300 | 80 | 120 |
-|  | 3 | 收集型 AI |  | 優先收集食物與道具 |  | 2500 | 120 | 8000 | 3000 | 150 | 400 | 12000 | 3000 | 80 | 500 | 300 | 80 | 120 |
-|  | 4 | 截斷型 AI |  | 主動卡位截斷敵蛇 |  | 2500 | 100 | 9000 | 5000 | 180 | 350 | 12000 | 3000 | 80 | 500 | 300 | 80 | 120 |
-|  | 5 | 追獵型 AI |  | 追擊高分與長蛇 |  | 2500 | 50 | 9500 | 6000 | 200 | 500 | 12000 | 3000 | 80 | 500 | 300 | 80 | 120 |
+| AIStrategy |  |  |  |  |  |  |  |  |  |  |  |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 輸出 | B |  | C |  | C | S | C | C | C | C | C |
+| 名稱 | ID |  | NameStrID |  | DescStrID | SpawnWeight | ReactionDelay | SteeringPrecision | DashProbability | EvadeRadius | ChaseRadius |
+| 資料型態 | int |  | int |  | int | int | int | int | int | int | int |
+| 企劃名 | 編號 | 策略名稱 | 名稱字串表編號 | 策略描述 | 描述字串表編號 | 出現權重(萬分比) | 反應延遲(ms) | 轉彎精準度(萬分比) | 衝刺機率(萬分比) | 避險半徑(px) | 追逐半徑(px) |
+|  | 1 | 初階 BOT |  | 基礎隨機移動 AI |  | 0 | 300 | 5000 | 1000 | 50 | 100 |
+|  | 2 | 避險型 AI |  | 優先閃避威脅 |  | 2500 | 150 | 7000 | 2000 | 250 | 150 |
+|  | 3 | 收集型 AI |  | 優先收集食物與道具 |  | 2500 | 120 | 8000 | 3000 | 150 | 400 |
+|  | 4 | 截斷型 AI |  | 主動卡位截斷敵蛇 |  | 2500 | 100 | 9000 | 5000 | 180 | 350 |
+|  | 5 | 追獵型 AI |  | 追擊高分與長蛇 |  | 2500 | 50 | 9500 | 6000 | 200 | 500 |
 
 #### 16.3 ActiveSkill
 
