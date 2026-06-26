@@ -1,27 +1,25 @@
-# current_plan.md
+# 實作計畫 (Current Plan)
 
 ## 目標
-微調並優化《貪食蛇GDD.md》：
-1. 將開局生成位置與朝向規則搬移至 Ch 4.1，並將 Ch 4.2 至 Ch 4.6 依序遞延。
-2. 將 Ch 7.1 食物種類加權隨機比例改為條列式語法，提升閱讀性。
-3. 修正所有相關的交叉引用。
+修正 `GDD/貪食蛇GDD.md` 中的 AI 追擊距離緩衝公式，將 `ChaseRadius * ChaseLeashRatio / 10000` 修正為 `ChaseRadius * (1 + ChaseLeashRatio / 10000)`。
 
 ## 等待確認狀態
-已完成，等待使用者驗收。
+等待使用者回覆「開始」以進行修改。
 
 ## 預計修改檔案
-- `GDD/貪食蛇GDD.md`
+- [MODIFY] `GDD/貪食蛇GDD.md` (c:\Users\fanchunkao\Documents\MyProject\snake.io\GDD\貪食蛇GDD.md)
 
-## 修改備份
-- `scratch/backups/20260626_173442/GDD/貪食蛇GDD.md`
+## 預計步驟
+1. 備份當前 `GDD/貪食蛇GDD.md` 至 `scratch/backups/YYYYMMDD_HHMMSS/GDD/貪食蛇GDD.md`。
+2. 修改 `GDD/貪食蛇GDD.md` 中的三處公式：
+   - 第 1079 行：將 `ChaseRadius * ChaseLeashRatio / 10000` 修正為 `ChaseRadius * (1 + ChaseLeashRatio / 10000)`。
+   - 第 1089 行：將 `> ChaseRadius * ChaseLeashRatio / 10000` 修正為 `> ChaseRadius * (1 + ChaseLeashRatio / 10000)`。
+   - 第 1116 行：將 `ChaseRadius * ChaseLeashRatio / 10000` 修正為 `ChaseRadius * (1 + ChaseLeashRatio / 10000)`。
+3. 驗證修改後的 Markdown 格式。
 
-## 實際完成內容
-- Ch 4.1：開局生成位置與朝向（原 Ch 4.6）。
-- Ch 4.2：初始蛇隻基礎屬性規格表（原 Ch 4.1）。
-- Ch 4.3：基礎跑速與速度計算規則（原 Ch 4.2）。
-- Ch 4.4：蛇隻主動技能規則（原 Ch 4.3）。
-- Ch 4.5：蛇隻視覺節奏與尺寸對照表（原 Ch 4.4）。
-- Ch 4.6：衝刺與減速視覺特效規範（原 Ch 4.5）。
-- Ch 7.1：以 `1.`, `2.`, `3.` 條列式詳細列出食物生成權重與預設佔比。
-- Ch 16.3 ActiveSkill：將對應規格引用由 `Ch4.3` 修正為 `Ch4.4`。
-- 變更紀錄：修正變更紀錄中的章節號引用與補充說明。
+## 預期輸出
+- 修正後公式正確顯示為 `ChaseRadius * (1 + ChaseLeashRatio / 10000)`。
+- 文件版本紀錄與其他章節不受影響。
+
+## 可能影響範圍
+- 僅限 AI 策略與行為決策（Ch9.3, Ch9.4）的公式說明，不影響代碼邏輯或其它章節。
