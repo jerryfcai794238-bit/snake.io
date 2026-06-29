@@ -1,33 +1,39 @@
 ---
-description: 在執行複雜變更前，確保邏輯嚴密且符合預期。
+description: 使用 Codex 內建 Plan Mode 規劃複雜或高影響變更。
 ---
 
-# Workflow: Plan
+# Workflow: Native Plan
 
 ## 觸發條件
-- 變更影響 ≥ 2 個函數或跨越多個模組
-- 涉及核心邏輯或系統級別變更
-- 需要新增或刪除環境物件、模式、功能
+- Level 2 可逆修改。
+- Level 3 跨模組、核心邏輯、規格、批次或不可逆修改。
+- 使用者主動要求先規劃。
 
-*小範圍 Bug fix（≤ 2 個函數）請改用 `/hotfix`。*
+純回答與唯讀調查不需觸發 Plan；小範圍修正仍可使用 /hotfix，但實際修改前同樣遵守核准規則。
 
 ## 執行流程
 
-1. **Research**：
-   - 用 `grep_search` 定位目標函數/變數在程式碼中的行號
-   - 閱讀目標函數 ±30 行的上下文
-   - 確認是否有過去的脈絡或說明文件可參考
+1. **Research**
+   - 先以唯讀方式搜尋目標符號、檔案與相關規格。
+   - 閱讀足夠上下文並確認目前工作區狀態。
+   - 不為了規劃而建立或修改任何檔案。
 
-2. **Risk Assessment**：
-   - 識別潛在 Breaking Change
-   - 確認 `strict_authorize.md` 中的授權條件是否觸發
+2. **Risk Assessment**
+   - 判定 Level 2 或 Level 3。
+   - 識別 breaking change、連動文件、備份需求與回滾方式。
 
-3. **Implementation Plan**：建立 `implementation_plan.md`，包含：
-   - 變更檔案清單與具體行號範圍
-   - 技術選型理由
-   - 潛在風險點
-   - 回滾方式（哪個 commit 可以還原）
+3. **Native Plan**
+   - 直接在 Codex 內建 Plan UI 顯示計畫。
+   - 必須包含目標、影響範圍、執行步驟、備份策略、驗證方式與不做事項。
+   - 不建立 current_plan.md、implementation_plan.md、task.md 或任何替代文件。
 
-4. **Review**：等待使用者明確 `confirm` 或 `approved`
+4. **Approval**
+   - 等待使用者明確回覆「開始」。
+   - 其他肯定詞或要求實作的說法不視為核准。
 
-5. **Task Breakdown**：建立 `task.md`，每個子任務要可獨立驗證（語法不報錯、功能可測試）
+5. **Execution**
+   - 收到「開始」後依 Plan 備份、修改及驗證。
+   - 若範圍實質改變，停止修改、更新內建 Plan，重新等待「開始」。
+
+6. **Completion**
+   - 回報修改檔案、完成重點、備份位置與未驗證事項。

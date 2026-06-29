@@ -22,7 +22,7 @@ description: 移除遊戲和 Pitch Deck 都沒用到的冗餘圖檔。
 
 4. **清理動作**：
    - ⚠️ **列出待刪清單給使用者確認**（不自動刪除）
-   - 待使用者明確 `confirm` 後，依據 `strict_authorize.md` 授權流程執行刪除
+   - 待使用者明確回覆「開始」後，依據 `strict_authorize.md` 授權流程執行刪除
 
 5. **最終驗證**：
    - 用瀏覽器工具確認遊戲畫面與 Pitch Deck 仍正常顯示
