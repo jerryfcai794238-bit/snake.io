@@ -1,76 +1,48 @@
 # AGENTS.md
 
-這份檔案可直接複製到其他專案使用，再依專案需要微調。
+本檔是專案 Agent 工作規則的唯一入口。
 
-## 回覆風格
-- 一律以繁體中文回覆，除非使用者另有要求。
-- 風格簡潔、直接、以結果為先。
-- 有風險、限制或不確定性時，直接說清楚。
+## 規則優先序
 
-## 任務分級
-- **Level 0／回答**：回答問題、解釋或提供建議；不需 Plan。
-- **Level 1／唯讀調查**：讀檔、搜尋、檢查、分析或整理；可直接執行，不需 Plan 或核准。
-- **Level 2／可逆修改**：修改單一文件、少量檔案或局部程式碼；先使用 Codex 內建 Plan UI 展示計畫，等待使用者明確回覆「開始」。
-- **Level 3／高影響修改**：跨模組、批次改名、刪除、搬移、架構、核心規格、推版或不可逆操作；先使用 Codex 內建 Plan UI 展示詳細計畫，等待使用者明確回覆「開始」。
+1. `AGENTS.md`：任務分級、核准、安全、備份、版本與回報。
+2. [Agent 工具轉接規則](.agents/rules/agent_safe_rules.md)：Antigravity、VSCode Codex、Codex App 的 Plan 顯示與交接。
+3. 任務領域規則：目前為 [GDD 標準](.agents/rules/gdd_standards.md) 與 [GDK 標準](.agents/rules/gdk_standards.md)。
+4. [Workflows](.agents/workflows/)：特定任務的執行步驟。
 
-## 工作流程
-1. Level 1 可先唯讀探索，以實際檔案內容建立準確上下文。
-2. Level 2／3 的 Plan 只顯示於 Codex 內建 Plan UI，不建立或更新任何 Plan Markdown。
-3. Plan 至少包含目標、影響範圍、預計步驟、備份策略、驗證方式與不做事項。
-4. 唯一有效核准詞是使用者明確回覆「開始」；OK、可以、confirm、approved 或其他實作要求均不等同核准。
-5. 收到「開始」後才可修改檔案；若需求或影響範圍實質改變，先更新內建 Plan 並重新等待「開始」。
-6. 完成後回報修改檔案、修改章節、完成重點、備份位置與未驗證事項。
+發生衝突時以前項為準；封存於 `.agents/archive/` 的文件不是有效規則。
 
-## 修改前備份
-- 修改規格、GDD、美術需求、字串表、參數表、版本紀錄前，先備份。
-- 備份位置固定為 scratch/backups/YYYYMMDD_HHMMSS/<original-path>。
-- 只修改指定檔案與指定章節，不順手擴大修改。
-- 若發現連動文件，先列入內建 Plan 或回報，取得核准後再處理。
+## 回覆與任務分級
 
-## 備份清理
-- scratch/backups/ 為本機還原資料，必須由 .gitignore 排除，不得提交。
-- 預設只保留目前時間往前 3 天內的備份。
-- 未明確要求清理時，不主動刪除備份。
-- 清理時遵循 .agents/workflows/backup-cleanup.md：先列候選、確認路徑、等待「開始」後才刪除。
+- 一律使用繁體中文，簡潔、直接、以結果為先。
+- **Level 0／回答**：不讀檔、不修改；不需 Plan。
+- **Level 1／唯讀調查**：可搜尋、讀取、分析與驗證；不需 Plan 或核准。
+- **Level 2／可逆修改**：單一文件、少量檔案或局部程式碼修改。
+- **Level 3／高影響修改**：跨模組、批次、刪除、搬移、架構、核心規格、推版或不可逆操作。
 
-## 文件同步檢查
-修改規格、GDD、美術需求、字串表、參數表、版本紀錄時，需同步檢查：
-- 規則與 UI 文案是否一致。
-- 圖片引用是否一致。
-- Icon、Map、FX、SFX 是否衝突。
-- 參數與版本號是否衝突。
+## Plan 與核准
 
-## 版本紀錄
-- 只有在使用者明確要求推版或版更時，才更新版本紀錄。
-- 推版時同步更新文件版本、更新日期、版本紀錄與頁尾版本標記。
+- Level 2／3 必須先唯讀研究，再以目前工具的原生 Plan 載體展示：目標、影響範圍、步驟、備份、驗證與不做事項。
+- 不為一般任務建立 `current_plan.md`、`implementation_plan.md` 或替代 Plan 檔。
+- 唯一有效核准詞是使用者明確回覆 **「開始」**；Accept、OK、可以、confirm、approved 或直接要求實作都不算。
+- 收到「開始」後才能寫檔。若範圍實質改變，停止、更新 Plan 並重新等待「開始」。
+- 小型 hotfix 可使用精簡 Plan，但不能略過核准。
 
-## 驗證規則
-修改後依檔案類型檢查：
-- 關鍵字與指定內容。
-- Markdown 表格。
-- 圖片路徑。
-- details 標籤是否平衡。
-- 版本號是否一致。
+## 編輯、備份與版本
 
-## 偏離處理
-如果工作跑偏，停止擴大修改並提供：
-- 保留。
-- 還原。
-- 暫放。
+- 磁碟現況是真源；保留既有未提交變更，不使用 reset、checkout 或清理命令覆蓋它。
+- 只修改核准檔案與範圍；發現連動文件時先列明，不順手擴大。
+- 修改規格、GDD、美術需求、字串表、參數表、版本紀錄或 Agent 規則前，備份至 `scratch/backups/YYYYMMDD_HHMMSS/<original-path>`。
+- 備份與跨工具交接資料只留本機，不提交 Git；備份清理由 [backup-cleanup](.agents/workflows/backup-cleanup.md) 管理。
+- 只有使用者明確要求推版或版更時，才更新文件版本、日期、版本紀錄、頁尾標記或 Git Tag。
 
-還原前先備份目前狀態。
+## 文件同步與驗證
 
-## Windows Patch 失敗處理
-- apply_patch 若遇到 CreateProcessWithLogonW 1385，只允許原方式重試一次。
-- 第二次仍失敗時，使用 Get-Command apply_patch 找到批次檔，讀取其實際 codex.exe 路徑，直接以 --codex-run-as-apply-patch 傳入 patch。
-- 不透過 PowerShell pipeline 傳遞含中文的 patch，避免 UTF-8 與 CRLF 被改寫。
-- 成功後立即唯讀驗證目標檔案；不得在同一失敗路徑反覆嘗試。
+- 文件或核心邏輯異動需檢查：規則、UI 文案、圖片、Icon、Map、FX、SFX、參數與版本是否衝突。
+- 優先執行既有測試、語法、建置或 Lint；沒有自動化時檢查關鍵字、Markdown 表格、圖片路徑、`details`、Mermaid 與版本一致性。
+- 完成後回報：修改檔案與章節、完成重點、驗證結果、備份位置、未驗證事項。
 
-## 新專案初始化
-新專案建議準備：
-- AGENTS.md
-- .agents/rules/
-- .agents/workflows/
-- .agents/reports/
+## 偏離與失敗處理
 
-第一次 Level 2／3 修改前，使用 Codex 內建 Plan UI 讓使用者確認，收到「開始」後才動檔。
+- 發現工作跑偏時停止擴大修改，提供保留、還原、暫放三種選項；還原前先備份目前狀態。
+- `apply_patch` 若遇到 `CreateProcessWithLogonW 1385`，原方式只重試一次；仍失敗時依環境定位可執行的 Codex CLI，以 `--codex-run-as-apply-patch` 套用 patch。
+- 不透過 PowerShell pipeline 傳遞中文 patch；成功後立即唯讀驗證。

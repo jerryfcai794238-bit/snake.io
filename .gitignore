@@ -1,2 +1,5 @@
 # Local agent backups
 scratch/backups/
+
+# Local cross-tool handoffs
+scratch/handoffs/

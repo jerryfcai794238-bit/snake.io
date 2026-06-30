@@ -1,29 +1,27 @@
 ---
-description: 移除遊戲和 Pitch Deck 都沒用到的冗餘圖檔。
+description: 找出並清理目前遊戲、GDD 與簡報未使用的資源；刪除前必須列清單並取得「開始」。
 ---
 
 # Workflow: Asset Cleanup
 
-## 清理流程
+## 引用範圍
 
-1. **掃描引用來源**：
-   - **遊戲核心**：`index.html`, `style.css`, `game.js`, `config.js`
-   - **Pitch Deck**：`pitch_deck/NeonSnake_PitchDeck.html`
-   - **Presentation**：所有 `presentation_*/` 資料夾內的 `.html` 與 `.md` 檔案
+- 遊戲：`index.html`、`style.css`、`src/**/*.js`。
+- 文件：`GDD/**/*.md` 與其圖片／媒體引用。
+- 簡報：`presentation_v5.2.0/` 內的 HTML、Markdown、CSS、JS 與生成工具。
+- 任務另行指定的輸出或封存資料。
 
-2. **列出存量圖檔**：
-   // turbo
-   - `list_dir` 找出根目錄及所有子目錄下的 `.png`, `.jpg`, `.jpeg`, `.svg`, `.gif`
+## 流程
 
-3. **執行比對**：
-   // turbo
-   - `grep_search` 確認每個圖檔的檔名是否出現在任何引用來源的代碼字串中
-   - 注意動態拼接路徑（例如 `icon_${skill}.png` 需手動確認）
+1. 唯讀列出圖片、音效、影片與其他候選資源。
+2. 搜尋完整路徑、檔名、程式常數與動態拼接規則。
+3. 將候選分為：確定使用、可能動態使用、未找到引用；附證據與完整路徑。
+4. 在 Plan UI 顯示待刪清單、影響、備份與還原方式，等待「開始」。
+5. 收到「開始」後再次確認目標位於專案內，只刪除核准清單。
+6. 驗證遊戲、GDD 圖片與簡報媒體沒有失效引用。
 
-4. **清理動作**：
-   - ⚠️ **列出待刪清單給使用者確認**（不自動刪除）
-   - 待使用者明確回覆「開始」後，依據 `strict_authorize.md` 授權流程執行刪除
+## 限制
 
-5. **最終驗證**：
-   - 用瀏覽器工具確認遊戲畫面與 Pitch Deck 仍正常顯示
-   - 在 `NeonSnake_Changelog.md` 記錄清理動作（PATCH 版本條目）
+- 不因單純文字搜尋無結果就直接判定可刪除。
+- 不清理 `scratch/backups/`；備份由 `backup-cleanup.md` 管理。
+- 不自動更新 Changelog 或版本；只有明確推版時才記錄。
