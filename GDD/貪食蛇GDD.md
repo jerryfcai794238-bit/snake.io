@@ -1643,7 +1643,7 @@ graph TD
 |  | 47 | item | 高級道具最大單局上限 | BOOSTER_LIMIT_MAX | BoosterMaximumCount | 5 | 次 |
 |  | 48 | passive | 被動強化初始費用 | PASSIVE_UPGRADE_START_COST | PassiveUpgradeStartCost | 1000 | 金幣 |
 |  | 49 | passive | 被動強化最高費用 | PASSIVE_UPGRADE_END_COST | PassiveUpgradeEndCost | 300000 | 金幣 |
-|  | 50 | passive | S 曲線係數，24 代表 0.024 | PASSIVE_UPGRADE_SHAPE_K | PassiveUpgradeShape_K | 24 | 千分比 |
+|  | 50 | passive | S 曲線係數 | PASSIVE_UPGRADE_SHAPE_K | PassiveUpgradeShape_K | 240 | 萬分比 |
 |  | 51 | passive | S 曲線拐點 | PASSIVE_UPGRADE_INFLECTION_X0 | PassiveUpgradeInflection_X0 | 190 | 次 |
 |  | 52 | cosmetic | 表情貼圖顯示時間 | EMOTE_DURATION | EmoteDuration | 2500 | ms |
 |  | 53 | core | 蛇頭碰撞半徑 | SNAKE_HEAD_COLLISION_RADIUS | SnakeHeadCollisionRadius | 12 | px |
