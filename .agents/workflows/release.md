@@ -7,7 +7,7 @@ description: 使用者明確要求推版時，統一執行稽核、版本同步�
 ## 觸發條件
 - 只有使用者明確要求「推版」「版更」或指定發布版本時才執行。
 - 完成功能或修復 Bug 本身不會自動觸發版本、Changelog、Commit 或 Tag。
-- Release 是 Level 3，先展示 Plan 並等待「開始」。
+- Release 是 Level 3，先展示 Plan 並等待有效核准。
 
 ## 執行流程
 

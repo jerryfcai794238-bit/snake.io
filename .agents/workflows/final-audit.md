@@ -36,4 +36,4 @@ description: 收尾時統一檢查程式、GDD、資源與發布缺口，只產�
 |---|---|---|---|---|
 | 功能或規格 | DONE／MISSING／DEVIATION | HIGH／MED／LOW | 檔案與章節 | 下一步 |
 
-稽核本身是 Level 1，只回報結果；任何修正、Changelog 或版本異動都另走 `plan.md` 並等待「開始」。
+稽核本身是 Level 1，只回報結果；任何修正、Changelog 或版本異動都另走 `plan.md` 並等待有效核准。
