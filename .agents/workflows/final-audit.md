@@ -1,5 +1,5 @@
 ---
-description: 收尾時統一檢查程式、GDD、資源與發布缺口，只產出報告，不自動修改。
+description: 收尾時統一檢查程式、GDD、GDK、資源與發布缺口，只產出報告，不自動修改。
 ---
 
 # Workflow: Final Audit
@@ -7,13 +7,13 @@ description: 收尾時統一檢查程式、GDD、資源與發布缺口，只產�
 ## 適用時機
 
 - 功能完成、準備交付或推版前。
-- 使用者要求核對實作、GDD、資源或核心邏輯。
+- 使用者要求核對實作、GDD、GDK、資源或核心邏輯。
 
 ## 稽核來源
 
 - 規格真源：`GDD/貪食蛇GDD.md` 與任務指定的美術、音效、GDK、字串或參數文件。
 - 程式：`index.html`、`style.css`、`src/constants.js`、`src/game.js`、`src/snake.js`、`src/renderer.js` 及相關模組。
-- 簡報：`presentation_v5.2.0/提案簡報大綱.md`、反饋文件、HTML 與生成工具。
+- 任務指定的 prototype、輸出檔或資源。
 
 ## 檢查流程
 
@@ -22,7 +22,7 @@ description: 收尾時統一檢查程式、GDD、資源與發布缺口，只產�
    - 執行可用的語法、測試、建置或人工檢查。
    - 搜尋暫時性 `console.log`、`debugger`、失效路徑與缺圖。
 2. **規格與實作**
-   - 比對規則、參數、狀態切換、UI 文案、Icon、Map、FX、SFX。
+   - 依 [GDD／GDK Agent 規則](../rules/gdd_agent_rules.md) 比對規則、參數、狀態切換、UI 文案、Icon、Map、FX、SFX、GDK。
    - 衝突時列出雙方來源，不自行判定程式或文件必然優先。
 3. **核心邏輯**
    - 依改動範圍檢查 AI 轉向、碰撞、幽靈／護盾、環境物件生命週期、技能邊界與效能熱點。
