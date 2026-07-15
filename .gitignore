@@ -3,3 +3,9 @@ scratch/backups/
 
 # Local cross-tool handoffs
 scratch/handoffs/
+
+# Generated outputs
+outputs/
+
+# Local tool dependencies
+tools/node_modules/
