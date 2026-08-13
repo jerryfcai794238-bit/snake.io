@@ -16,7 +16,7 @@
 體型成長與地圖尺寸同步
 
 * **地圖尺寸**：`Ch6.1` 與 `Ch16.1 Module` 將地圖寬高由 `2200px` 調整為 `2000px`。
-* **蛇隻體型成長**：新增 `Ch4.7`，依蛇身節數計算自然體型倍率，並同步調整渲染尺寸、碰撞半徑與成長視野；新增 Module ID `79–84`，體型／碰撞以 `250ms`、視野以 `500ms` 線性過渡。
+* **蛇隻體型成長**：新增 `Ch4.7`，依蛇身節數計算自然體型倍率，並同步調整渲染尺寸、碰撞半徑與成長視野；新增 Module ID `80–85`，體型／碰撞以 `250ms`、視野以 `500ms` 線性過渡。
 
 </details>
 
@@ -29,6 +29,7 @@
 * **排行榜與結算積分**：`Ch7.3` 明確拆分「累計吞食積分」與「目前蛇身節數」；排行榜與結算採「累計吞食積分 + 擊殺積分」，只增不減，撞牆與截斷不倒扣積分。
 * **長度成長與扣除**：`Ch7.4` 明確食物分數累積至本次生命週期的長度成長進度，每 10 分增加 1 節；撞牆與截斷直接扣除目前節數，不可依歷史累計積分瞬間恢復。
 * **截斷與死亡殘骸**：`Ch5.1.1`、`Ch5.4.1` 改以被切掉／死亡當下的目前蛇身節數計算 50% 殘骸顆數，統一使用 `int()` 無條件捨去；補充截斷不重複計算及 290 節轉化為 145 顆、1450 分的範例。
+* **碰撞角度回彈**：`Ch5.1.2` 將岩石與地圖邊界的 180 度正面回彈改為依碰撞面法線計算的角度反射；回彈後鎖定反射方向，鎖定時間由 `ImpactBoundaryInputLockDuration` 控制（預設 `350ms`）；結束後立即恢復目前搖桿輸入；同一障礙須待蛇頭脫離其碰撞緩衝區後，才可再次觸發回彈與扣長。
 
 </details>
 
@@ -709,18 +710,18 @@ graph TD
 
 >計算結果更新自然體型倍率、頭部／身體的渲染尺寸與當前碰撞半徑，以及最終視野倍率；本節新增的可調參數見下表。
 
-**新增參數（Module 79–84）**
+**新增參數（Module 80–85）**
 
 | Module ID | 參數名稱 | 用途 | 預設值 | 單位 |
 | :---: | :--- | :--- | ---: | :--- |
-| 79 | `SnakeBodyGrowthScalePerSegment` | 每增加一節的自然體型倍率增量。 | `25` | 萬分比／節 |
-| 80 | `SnakeBodyGrowthScaleMax` | 自然體型倍率上限。 | `16000` | 萬分比 |
-| 81 | `SnakeBodyScaleTransitionTime` | 體型渲染尺寸與碰撞半徑的過渡時間。 | `250` | ms |
-| 82 | `SnakeGrowthVisionFollowRatio` | 自然體型倍率反映至成長視野的比例。 | `4000` | 萬分比 |
-| 83 | `SnakeGrowthVisionScaleMax` | 成長視野倍率上限。 | `12500` | 萬分比 |
-| 84 | `SnakeGrowthVisionTransitionTime` | 成長視野的過渡時間。 | `500` | ms |
+| 80 | `SnakeBodyGrowthScalePerSegment` | 每增加一節的自然體型倍率增量。 | `25` | 萬分比／節 |
+| 81 | `SnakeBodyGrowthScaleMax` | 自然體型倍率上限。 | `16000` | 萬分比 |
+| 82 | `SnakeBodyScaleTransitionTime` | 體型渲染尺寸與碰撞半徑的過渡時間。 | `250` | ms |
+| 83 | `SnakeGrowthVisionFollowRatio` | 自然體型倍率反映至成長視野的比例。 | `4000` | 萬分比 |
+| 84 | `SnakeGrowthVisionScaleMax` | 成長視野倍率上限。 | `12500` | 萬分比 |
+| 85 | `SnakeGrowthVisionTransitionTime` | 成長視野的過渡時間。 | `500` | ms |
 
-以上新增參數的完整型別與數值見 [Ch16.1 Module](#161-module) 的 ID 79–84。
+以上新增參數的完整型別與數值見 [Ch16.1 Module](#161-module) 的 ID 80–85。
 
 ##### 4.7.2 體型倍率與碰撞尺寸
 
@@ -889,7 +890,9 @@ graph TD
 
 ##### 5.1.2 撞擊岩石與邊界回彈邏輯
 
-* **正面回彈**：當蛇頭碰撞岩石或地圖邊界時，觸發「物理回彈」效果。回彈方向固定為入射行進方向的反方向（180度反向回彈，即正面回彈）。
+* **角度回彈**：當蛇頭碰撞岩石或地圖邊界時，觸發「物理回彈」效果。回彈方向依碰撞面法線鏡射入射行進向量：法線分量反轉、切線分量保留；因此正面撞擊為 180 度回彈，斜向撞擊則依入射角反射。
+* **短暫鎖向與輸入恢復**：回彈後強制沿反射方向移動 `ImpactBoundaryInputLockDuration`（預設 `350ms`），期間不採用搖桿轉向輸入；鎖定結束後立即讀取目前搖桿方向。玩家若持續維持原方向輸入，蛇會恢復朝該方向移動，不要求放開再推或改變角度才能解除鎖定。
+* **同一障礙再觸發條件**：同一岩石或邊界在本次回彈後，須待蛇頭脫離其碰撞緩衝區（頭部碰撞體不再與該障礙或邊界碰撞區重疊）後，才可再次觸發回彈與懲罰；避免在碰撞區內連續重複扣長。
 * **懲罰機制**：碰撞時蛇身發光閃爍，且扣除目前蛇身 50% 的長度（扣除比例由 `ImpactBoundaryLengthDeductionRatio` 控制）；最少保留頭部區，扣除後可以小於初始長度。此處只影響目前蛇身節數，不倒扣排行榜或結算累計積分。
 
 #### 5.2 死亡復活與行為限制
@@ -1978,12 +1981,13 @@ Server Log 以「玩家客訴查詢、營運統計、玩家資產與權益追蹤
 |  | 76 | map | 小食物生成權重 | FOOD_SPAWN_WEIGHT_SMALL | FoodSpawnWeight_S | 6000 | 萬分比 |
 |  | 77 | map | 中食物生成權重 | FOOD_SPAWN_WEIGHT_MEDIUM | FoodSpawnWeight_M | 3000 | 萬分比 |
 |  | 78 | map | 大食物生成權重 | FOOD_SPAWN_WEIGHT_LARGE | FoodSpawnWeight_L | 1000 | 萬分比 |
-|  | 79 | core | 每超過初始蛇身節數 1 節所增加的自然體型倍率 | BODY_GROWTH_SCALE_PER_SEGMENT | SnakeBodyGrowthScalePerSegment | 25 | 萬分比／節 |
-|  | 80 | core | 蛇身依長度自然成長時可達的最大體型倍率 | BODY_GROWTH_SCALE_MAX | SnakeBodyGrowthScaleMax | 16000 | 萬分比 |
-|  | 81 | core | 蛇隻渲染尺寸與碰撞半徑由舊值過渡至新值的線性時間 | BODY_SCALE_TRANSITION_TIME | SnakeBodyScaleTransitionTime | 250 | ms |
-|  | 82 | ui | 自然體型倍率反映至成長視野的比例 | GROWTH_VISION_FOLLOW_RATIO | SnakeGrowthVisionFollowRatio | 4000 | 萬分比 |
-|  | 83 | ui | 成長視野倍率的最大上限 | GROWTH_VISION_SCALE_MAX | SnakeGrowthVisionScaleMax | 12500 | 萬分比 |
-|  | 84 | ui | 成長視野由舊值過渡至新值的線性時間 | GROWTH_VISION_TRANSITION_TIME | SnakeGrowthVisionTransitionTime | 500 | ms |
+|  | 79 | map | 撞擊岩石或邊界後的輸入鎖定時間 | IMPACT_BOUNDARY_INPUT_LOCK_DURATION | ImpactBoundaryInputLockDuration | 350 | ms |
+|  | 80 | core | 每超過初始蛇身節數 1 節所增加的自然體型倍率 | BODY_GROWTH_SCALE_PER_SEGMENT | SnakeBodyGrowthScalePerSegment | 25 | 萬分比／節 |
+|  | 81 | core | 蛇身依長度自然成長時可達的最大體型倍率 | BODY_GROWTH_SCALE_MAX | SnakeBodyGrowthScaleMax | 16000 | 萬分比 |
+|  | 82 | core | 蛇隻渲染尺寸與碰撞半徑由舊值過渡至新值的線性時間 | BODY_SCALE_TRANSITION_TIME | SnakeBodyScaleTransitionTime | 250 | ms |
+|  | 83 | ui | 自然體型倍率反映至成長視野的比例 | GROWTH_VISION_FOLLOW_RATIO | SnakeGrowthVisionFollowRatio | 4000 | 萬分比 |
+|  | 84 | ui | 成長視野倍率的最大上限 | GROWTH_VISION_SCALE_MAX | SnakeGrowthVisionScaleMax | 12500 | 萬分比 |
+|  | 85 | ui | 成長視野由舊值過渡至新值的線性時間 | GROWTH_VISION_TRANSITION_TIME | SnakeGrowthVisionTransitionTime | 500 | ms |
 
 #### 16.2 AIStrategy
 
