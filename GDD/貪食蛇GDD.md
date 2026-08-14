@@ -1,9 +1,9 @@
 # 🎮 《貪食蛇》遊戲設計規格書
 
 **文件版本**：24
-**更新日期**：2026-08-13
-**本次更新**：新增蛇隻自然體型成長、動態碰撞半徑與成長視野規格，並將地圖調整為 `2000 × 2000px`。
-**文件主旨**：定義《貪食蛇》玩法操作、局內規則、勝負判定、美術 UI 需求與 AI 機制，作為外包開發與程式實作之最高依據。
+**更新日期**：2026-08-14
+**本次更新**：補充蛇隻成長與高級道具交互、岩石與緩速區生成規格、Module 結構與章節引用一致性。
+**文件主旨**：定義《貪食蛇》玩法操作、局內規則、勝負判定、美術 UI 需求與 AI 機制，作為遊戲開發與程式實作之最高依據。
 **其他需求**：`以本地端模擬網路連線`
 
 ---
@@ -13,10 +13,18 @@
 <details open>
 <summary><b>v24.0 (2026-08-13)</b></summary>
 
-體型成長與地圖尺寸同步
+體型成長、地圖生成與規格一致性整理
 
 * **地圖尺寸**：`Ch6.1` 與 `Ch16.1 Module` 將地圖寬高由 `2200px` 調整為 `2000px`。
-* **蛇隻體型成長**：新增 `Ch4.7`，依蛇身節數計算自然體型倍率，並同步調整渲染尺寸、碰撞半徑與成長視野；新增 Module ID `80–85`，體型／碰撞以 `250ms`、視野以 `500ms` 線性過渡。
+* **蛇隻體型成長**：新增 `Ch4.7`，定義依蛇身節數成長的體型、渲染、碰撞與鏡頭規則。
+* **地圖生成**：岩石尺寸統一以半徑 `R` 定義；緩速區採方形模組拼接的帶狀生成。
+* **規格引用與表格整理**：通用參數引用統一指向 `Ch16.1 Module`；Module 僅保留正式調整後的參數名稱欄；Ch8.1 明確標示局內套用滿級數值。
+
+**v24 補充更新（2026-08-14）**
+
+* **Ch4.7 體型與鏡頭收斂**：巨大蘑菇納入最終體型、渲染尺寸、碰撞半徑與體型跟隨鏡頭；鷹眼再乘在當前體型鏡頭上。體型相關過渡統一為 `250ms`，鷹眼鏡頭過渡為 `500ms`。
+* **Module 調整**：取消體型跟隨鏡頭 `1.250x` 上限；Module 改為 ID `80–84`，原 ID 85 遞補為 `EagleEyeVisionTransitionTime`。
+* **Ch6.2 緩速區生成**：緩速區維持方形模組拼接；實作生成邏輯時一併建立所需 Module 與預設值，本版 Ch16.1 暫不列出。
 
 </details>
 
@@ -68,123 +76,7 @@
 </details>
 
 
-<details>
-<summary><b>v20.0 (2026-07-02)</b></summary>
-
-Ch16.1 與 Ch16.4 參數命名與結構調整
-
-* **Ch16.1 Module 參數重命名與結構調整**：
-  * 表格擴充「參數名稱調整後」欄位，保留原始全大寫參數名，對照 PascalCase／語意化命名。
-  * 78 筆參數統一調整為 PascalCase 語意化命名（例如：`BASE_SPEED` → `BaseMoveSpeed`、`SLOW_ZONE_SPEED_MULTIPLIER` → `SlowZoneSpeedFactor`、`OBJECT_SPAWN_MIN_DIST` → `ObjectSpawnMinDist`）。
-  * `GROWTH_ROAD_MAX_LEVEL` 標示為不使用參數，改讀既有資料表。
-  * 道具圈層相關描述與參數名稱補充「地圖」語意（如 `MapCenterItemSpawnWeight` 等）。
-  * 參數數值與單位維持不變。
-
-* **Ch16.4 PassiveSkill 被動參數命名全面更新**：
-  * 10 筆被動參數全面更新命名：
-    * `ITEM_MAGNET_RADIUS` → `ItemMagnetRadius`
-    * `ITEM_MUSHROOM_SPEED` → `ItemMushroomSpeed`
-    * `ITEM_CANDY_MULTIPLIER` → `ItemCandyMultiplier`
-    * `ITEM_EYE_SCALE` → `ItemEyeScale`
-    * 四項持續時間改為 `Item*Duration`
-    * `PASSIVE_ROCK_RESIST` → `ImpactBoundaryResist`
-    * `PASSIVE_RIVER_RESIST` → `SlowZoneResist`
-  * 同步調整企劃名稱與描述：
-    * 「岩石抗性」→「反彈抗性」，描述改為「碰撞扣長度減免」
-    * 「河流抗性」→「緩速區抗性」，描述改為「緩速區減速減免」
-
-* **相關章節同步調整**：
-  * `Ch8.1` 與 `Ch10.2` 中對應的被動屬性參數名稱、企劃名稱與描述已完全同步一致。
-
-</details>
-
-
-<details>
-<summary><b>v19.0 (2026-06-26)</b></summary>
-
-外包反饋問題壹與地圖物件規格整理版
-
-* **AI 參數定義與命名規範化**：
-  * `Ch9.2` 將原先帶有底線的 AI 參數（例如 `AI_REACTION_DELAY` 等）全面更新為 CamelCase 標準命名（例如 `ReactionDelay` 等），與 DataTable 欄位名稱對齊。
-  * `Ch9.2` 補充 `SteeringPrecision` 計算公式，明確 `10000` 為完全貼合理論方向，低精準度會產生偏航角。
-  * `Ch9.2` 補充 `EvadeRadius` 與 `ChaseRadius` 定義，說明避險半徑、追逐／尋路半徑的用途與可鎖定目標。
-  * `Ch9.3` 補充追逐／尋路半徑與追擊中止規則，將追擊距離中止公式修正為 `ChaseRadius * (1 + ChaseLeashRatio / 10000)` 判定，並以 `ChaseAbortTime` 控制追擊最長持續時間。
-  * `Ch9.4` 與 AI 決策優先級同步引用 AI 半徑參數，避免固定文字距離與 DataTable 參數分流。
-  * `Ch16.2 AIStrategy` 擴充追擊緩衝倍率、追擊中止時間、危急逃生距離、卡位預判時間、搶奪資源距離、低長度保護門檻等欄位；同時將 5 種策略的 `ChaseLeashRatio` 由 `12000` (120%) 修正為 `2000` (20%)。
-
-* **地圖主題與地圖池整理**：
-  * `Ch6.3` 地圖主題改以美術需求方案為準，統一收斂為 4 個主題：草原冒險、河岸水域、岩石峽谷、糖果樂園。
-  * 新增地圖池概念：單局開始時由地圖池隨機抽選地圖，地圖池數量可擴充。
-  * 修正地圖資料需求：每張地圖只綁定所屬主題與美術資源；岩石、緩速區等投放物件使用全域統一投放標準與參數，不依不同地圖各自綁定。
-
-* **緩速區與岩石規格整理**：
-  * `Ch6.2` 將玩法規格中的「河流」整理為「緩速區」，河流僅作為部分地圖的美術題材，不作為固定河道規則。
-  * 補充緩速區模組拼接、美術主題表現、隨機生成規則與蛇頭中心進入／離開效果範圍時的緩速套用規則。
-  * `Ch6.1` 補充岩石障礙物隨機投放規則，包含生成數量、尺寸、投放範圍與最小距離限制。
-  * `Ch5.1` 補充緩速區不屬於死亡碰撞對象，僅以蛇頭中心判定套用／解除緩速。
-
-* **地圖區域與投放規則收斂**：
-  * `Ch7.1` 緩速區說明改為引用 `Ch6.2`，避免重複描述緩速區定位、美術、生成與效果規則。
-  * `Ch7.1` 僅保留食物／地圖道具投放所需的區域判定與食物權重用途，緩速區詳細規格以 `Ch6.2` 為主。
-  * `Ch7.1` 新增地圖區域判定定義（緩速區、岩石區、平地區與重疊優先級判定）。
-
-* **地圖道具投放與分布規則**：
-  * `Ch7.5` 新增開局投放與每 20s 刷新機制，增加道具類型權重（均分 25%）及圈層投放分布權重（中心/中/外圈比例 50%/30%/20%）等規則。
-
-* **被動屬性與數據單位修正**：
-  * `Ch10.2` 被動屬性強化明細中將磁吸半徑單位修正為 px，巨大蘑菇與河流抗性修正為萬分比。
-  * `Ch16.4 PassiveSkill` 將磁鐵、巨大蘑菇等道具持續時間單位從秒 (s) 修正為毫秒 (ms)，數值改為 10000~20000 毫秒。
-
-* **參數命名一致性**：
-  * `Ch7.1` 地形權重表將 `河流區 / FOOD_DIST_RIVER` 改為 `緩速區 / FoodDeployWeight_SlowZone`。
-  * `Ch16.1 Module` 將 `RIVER_SLOW_MULTIPLIER` 改為 `SlowZoneSpeedFactor`，將 `FOOD_DIST_RIVER` 改為 `FoodDeployWeight_SlowZone`。
-  * 地圖物件生成最小安全偏移參數統一使用 `ObjectSpawnMinDist`。
-
-* **移除幽靈無敵相關規則**：
-  * 移除基礎屬性表（Ch 4.2）與遊戲資料表（Ch 16.1 Module）中的「復活無敵時間 (GHOST_TIME)」參數。
-  * 修正碰撞死亡判定（Ch 5.1）說明，移除「無敵結束重疊判定死亡」的文字描述。
-
-* **碰撞回彈規則**：
-  * `Ch5.1.2` 新增撞擊岩石與地圖邊界之回彈邏輯，定義為 180 度正面回彈。
-
-* **死亡重生點規則**：
-  * `Ch5.3` 補充死亡重生點座標選定規則，採隨機選點且不與岩石/邊界重疊（允許在緩速區）。
-
-* **開局出生點位置**：
-  * `Ch4.1` 新增開局 8 隻蛇的初始生成點與朝向邏輯（隨機選點且朝向最開闊處）。
-
-* **食物大小生成比例**：
-  * `Ch7.1` 新增食物大小生成比例規則，採加權隨機（條列式說明：小 60% / 中 30% / 大 10%），並於 Ch 16.1 Module 表新增 ID 76~78 權重參數。
-
-</details>
-
-
-<details>
-<summary><b>v18.0 (2026-06-25)</b></summary>
-
-死亡掉落池與 5.4 結構重整版
-
-* **死亡局內掉落池補充**：
-  * 新增蛇隻死亡後的局內掉落規則，死亡時會於蛇頭位置必定掉落金幣、星光卡包與活動道具等地圖道具。
-  * 掉落池、掉落權重與各類道具的出現條件皆可由資料表或設定檔控制，避免硬編碼。
-  * 金幣掉落量會依死亡蛇隻當前名次變動，名次對應金幣數量改為可配置參數。
-  * 活動道具僅在活動開啟期間納入死亡掉落池，無活動時不會掉落。
-
-* **局內掉落與平台掉落分流**：
-  * 補充局內死亡掉落與平台結算掉落的區隔說明，避免把死亡瞬間掉落與對局結束後獎勵混為同一流程。
-  * 平台結算仍維持原本的對局後獎勵、平台掉落與中離折減機制。
-
-* **死亡與殘骸規則整理**：
-  * `Ch5.4` 拆分為「殘骸結晶」與「道具」兩個小節，讓死亡後生成內容的說明更清楚。
-  * 道具保留時間沿用殘骸生命週期的 `10 秒` 保留與淡出邏輯，便於規格一致化。
-
-* **文件同步更新**：
-  * 本次內容同步寫入 `ch0` 作為版本變更紀錄，方便後續追蹤。
-
-* **移除上傳頭像功能**：
-  * `Ch12.2` 移除上傳頭像功能，改為啟動後直接套用帳號頭像。
-
-</details>
+V20 與更早版本的更新紀錄請見 [貪食蛇GDD Update Log](<貪食蛇GDD Update Log.md>)。
 
 ---
 
@@ -593,7 +485,7 @@ graph TD
 
 #### 4.3 基礎跑速與速度計算規則
 
-* **基礎跑速**：初始基礎跑速單位為 `BaseMoveSpeed = 4000`（等同於 `40.00 px/s`，即以 100 代表 1 px/s，由 [16.2 基礎核心參數](#161-module) 控制）。
+* **基礎跑速**：初始基礎跑速單位為 `BaseMoveSpeed = 4000`（等同於 `40.00 px/s`，即以 100 代表 1 px/s，由 [Ch16.1 Module](#161-module) 控制）。
 * **速度計算公式**：
 
 > [!IMPORTANT]
@@ -620,8 +512,8 @@ graph TD
 
 |                       Icon                       | 技能名稱                  | 控制模組                            | 解鎖等級             | 養成與最大等級                                                            | 基礎規格 / 冷卻                                     | 疲勞與超載規則                                    |
 | :-----------------------------------------------: | :------------------------ | :---------------------------------- | :------------------- | :------------------------------------------------------------------------ | :-------------------------------------------------- | :------------------------------------------------ |
-| ![衝刺](<./Reference Image/Ref_Icon_主動技-衝刺.png>) | **衝刺 (Dash)**     | [16.2 基礎核心參數](#161-module) | 無須解鎖 (初始 Lv 0) | **體力上限**：可升至 Lv4  <br> **體力回復速度**：可升至 Lv4 | 每秒消耗 `333` 點體力。加速 `+25%` 移動速度。   | 體力歸 0 進入超載：鎖定禁衝刺與回體，回滿後解鎖。 |
-| ![暴食](<./Reference Image/Ref_Icon_主動技-暴食.png>) | **暴食 (Gluttony)** | [16.2 基礎核心參數](#161-module) | 成長之路 Lv 1 解鎖   | **吸附範圍**：可升至 Lv4  <br> **冷卻時間縮短**：可升至 Lv4 | 瞬間釋放暴食力場，區域內食物於 `150ms` 內飛向蛇頭並完成吞食判定（由 `GluttonySuctionTravelTime` 控制）。 | 釋放後進入冷卻。單局無次數限制。                  |
+| ![衝刺](<./Reference Image/Ref_Icon_主動技-衝刺.png>) | **衝刺 (Dash)**     | [Ch16.1 Module](#161-module) | 無須解鎖 (初始 Lv 0) | **體力上限**：可升至 Lv4  <br> **體力回復速度**：可升至 Lv4 | 每秒消耗 `333` 點體力。加速 `+25%` 移動速度。   | 體力歸 0 進入超載：鎖定禁衝刺與回體，回滿後解鎖。 |
+| ![暴食](<./Reference Image/Ref_Icon_主動技-暴食.png>) | **暴食 (Gluttony)** | [Ch16.1 Module](#161-module) | 成長之路 Lv 1 解鎖   | **吸附範圍**：可升至 Lv4  <br> **冷卻時間縮短**：可升至 Lv4 | 瞬間釋放暴食力場，區域內食物於 `150ms` 內飛向蛇頭並完成吞食判定（由 `GluttonySuctionTravelTime` 控制）。 | 釋放後進入冷卻。單局無次數限制。                  |
 
 ##### 主動技能養成與數值參數表
 
@@ -706,22 +598,21 @@ graph TD
 - 蛇節中心間距依 [Ch4.5 蛇隻視覺節奏與尺寸對照表](#45-蛇隻視覺節奏與尺寸對照表)
 - 基礎視野倍率依 [Ch16.1 Module](#161-module)。
 
-**計算流程**：目前蛇身節數 → 自然體型倍率 → 渲染／碰撞尺寸 → 成長視野。
+**計算流程**：目前蛇身節數 → 自然體型倍率 → 最終體型倍率（巨大蘑菇）→ 渲染／碰撞尺寸與體型跟隨鏡頭 → 最終鏡頭倍率（鷹眼）。
 
->計算結果更新自然體型倍率、頭部／身體的渲染尺寸與當前碰撞半徑，以及最終視野倍率；本節新增的可調參數見下表。
+>計算結果更新自然體型倍率、最終體型倍率、頭部／身體的渲染尺寸與當前碰撞半徑，以及體型跟隨鏡頭倍率與最終鏡頭倍率；本節新增的可調參數見下表。
 
-**新增參數（Module 80–85）**
+**新增參數（Module 80–84）**
 
 | Module ID | 參數名稱 | 用途 | 預設值 | 單位 |
 | :---: | :--- | :--- | ---: | :--- |
 | 80 | `SnakeBodyGrowthScalePerSegment` | 每增加一節的自然體型倍率增量。 | `25` | 萬分比／節 |
 | 81 | `SnakeBodyGrowthScaleMax` | 自然體型倍率上限。 | `16000` | 萬分比 |
 | 82 | `SnakeBodyScaleTransitionTime` | 體型渲染尺寸與碰撞半徑的過渡時間。 | `250` | ms |
-| 83 | `SnakeGrowthVisionFollowRatio` | 自然體型倍率反映至成長視野的比例。 | `4000` | 萬分比 |
-| 84 | `SnakeGrowthVisionScaleMax` | 成長視野倍率上限。 | `12500` | 萬分比 |
-| 85 | `SnakeGrowthVisionTransitionTime` | 成長視野的過渡時間。 | `500` | ms |
+| 83 | `SnakeBodyVisionFollowRatio` | 最終體型倍率反映至體型跟隨鏡頭的比例。 | `4000` | 萬分比 |
+| 84 | `EagleEyeVisionTransitionTime` | 鷹眼鏡頭倍率的過渡時間。 | `500` | ms |
 
-以上新增參數的完整型別與數值見 [Ch16.1 Module](#161-module) 的 ID 80–85。
+以上新增參數的完整型別與數值見 [Ch16.1 Module](#161-module) 的 ID 80–84。
 
 ##### 4.7.2 體型倍率與碰撞尺寸
 
@@ -752,16 +643,16 @@ graph TD
 
 > [!IMPORTANT]
 >
-> **碰撞半徑**
+> **自然碰撞半徑**
 >
 > ```text
-> 當前碰撞半徑 = int(基礎碰撞半徑 * 自然體型倍率 / 10000 + 0.5)
+> 自然碰撞半徑 = int(基礎碰撞半徑 * 自然體型倍率 / 10000 + 0.5)
 > ```
 >
 > **取整規則**
 > 所有正數倍率與半徑計算採正數四捨五入：`int(x + 0.5)`。
 >
-> 渲染尺寸與碰撞半徑共用同一個自然體型倍率。
+> 渲染尺寸與自然碰撞半徑共用同一個自然體型倍率；巨大蘑菇生效時的最終尺寸與碰撞半徑見 4.7.4。
 
 **體型更新規則**
 
@@ -782,56 +673,77 @@ graph TD
 > [!NOTE]
 > 例：蛇身由 `50` 節增加到 `100` 節時，自然體型倍率由 `1.000x` 變為 `1.125x`，頭部半徑由 `12px` 變為 `14px`，身體半徑由 `8px` 變為 `9px`。
 
-##### 4.7.3 成長視野
+##### 4.7.3 體型跟隨鏡頭
 
-體型放大時，鏡頭只跟隨體型增加的一部分；體型放大 `1%`，視野最多跟隨放大 `0.4%`，且視野倍率不超過 `1.250x`。
+鏡頭只跟隨蛇隻最終體型增加的一部分；最終體型每放大 `1%`，鏡頭可視世界範圍跟隨增加 `0.4%`。體型跟隨鏡頭不設獨立上限，確保體型與鏡頭維持固定比例。
 
 > [!IMPORTANT]
 >
-> **成長視野公式**
+> **體型跟隨鏡頭公式**
 >
 > ```text
-> 成長視野倍率
-> = min(
->     BaseVisionScale + max(自然體型倍率 - BaseVisionScale, 0)
->     * SnakeGrowthVisionFollowRatio / BaseVisionScale,
->     SnakeGrowthVisionScaleMax
->   )
->
-> 最終視野倍率
-> = max(BaseVisionScale, 成長視野倍率)
+> 體型跟隨鏡頭倍率
+> = BaseVisionScale
+>   + max(當前最終體型倍率 - BaseVisionScale, 0)
+>   * SnakeBodyVisionFollowRatio / BaseVisionScale
 > ```
 >
 > **預設值**
 >
-> - 成長視野跟隨比例（`SnakeGrowthVisionFollowRatio`）：`4000 = 40%`。
-> - 成長視野倍率上限（`SnakeGrowthVisionScaleMax`）：`12500 = 1.250x`。
-> - 視野過渡時間（`SnakeGrowthVisionTransitionTime`）：`500ms`。
+> - 體型跟隨鏡頭比例（`SnakeBodyVisionFollowRatio`）：`4000 = 40%`。
 
 視野倍率代表鏡頭可視世界範圍倍率；例如 `1.050x` 代表可視世界範圍增加 `5%`，不是 UI 尺寸放大。
 
-以下表格為自然體型成長與成長視野倍率；例如 `1.125x` 代表體型放大 `12.5%`，`1.050x` 代表鏡頭拉遠 `5%`：
+以下表格為未使用巨大蘑菇時的公式套用結果；例如 `1.125x` 代表體型放大 `12.5%`，`1.050x` 代表鏡頭拉遠 `5%`：
 
 | 長度（蛇身節數） | `50` | `100` | `150` | `200` | `250` | `290` |
 | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| 體型倍率（體型放大） | `1.000x` | `1.125x` | `1.250x` | `1.375x` | `1.500x` | `1.600x` |
-| 視野倍率（鏡頭拉遠） | `1.000x` | `1.050x` | `1.100x` | `1.150x` | `1.200x` | `1.240x` |
+| 最終體型倍率 | `1.000x` | `1.125x` | `1.250x` | `1.375x` | `1.500x` | `1.600x` |
+| 體型跟隨鏡頭倍率 | `1.000x` | `1.050x` | `1.100x` | `1.150x` | `1.200x` | `1.240x` |
 
 > [!NOTE]
-> 例：蛇身達到 `290` 節時，自然體型倍率為 `1.600x`，成長視野倍率為 `1.240x`。
+> 例：蛇身達到 `290` 節且未使用巨大蘑菇時，最終體型倍率為 `1.600x`，體型跟隨鏡頭倍率為 `1.240x`；若使用滿級巨大蘑菇，最終體型倍率為 `2.400x`，體型跟隨鏡頭倍率為 `1.560x`。
 
-視野由舊倍率變為新倍率時，以 `500ms` 播放線性拉遠／恢復動畫。
+當最終體型變化時，體型跟隨鏡頭使用同一個 `250ms` 的當前插值體型逐幀計算，不另行播放鏡頭過渡動畫。
 
-**體型與視野更新規則**
+##### 4.7.4 道具交互規則
 
-- 吃食物、扣長、截斷或重生時，體型／碰撞與成長視野在同一事件、同一幀重新計算並開始過渡。
-- 過渡期間再次發生變化時，兩者各自從當前插值值重新設定目標；體型／碰撞依 `250ms` 完成，視野依 `500ms` 完成。
+* **巨大蘑菇**：自然體型倍率先依 4.7.2 計算並套用 `SnakeBodyGrowthScaleMax` 上限，再乘上 `ItemMushroom_Size`。渲染尺寸、頭部碰撞半徑、身體碰撞半徑與體型跟隨鏡頭皆使用同一個當前最終體型倍率。
+
+> [!IMPORTANT]
+>
+> ```text
+> 最終體型倍率
+> = 自然體型倍率 * ItemMushroom_Size / 10000
+>
+> 當前碰撞半徑
+> = int(基礎碰撞半徑 * 當前最終體型倍率 / 10000 + 0.5)
+> ```
+
+  自然體型倍率最高為 `1.600x`；巨大蘑菇的 `1.500x` 乘算後，最終體型倍率最高為 `2.400x`。巨大蘑菇開始、結束或被覆蓋時，最終體型、渲染尺寸、碰撞半徑與體型跟隨鏡頭皆以 `250ms` 從當前插值值線性過渡至新目標。
+
+* **鷹眼**：鷹眼套用在體型跟隨鏡頭倍率上，而非基礎視野。未使用鷹眼時，`ItemEyeScale` 視為 `10000 = 1.000x`。
+
+> [!IMPORTANT]
+>
+> ```text
+> 最終鏡頭倍率
+> = 體型跟隨鏡頭倍率 * ItemEyeScale / BaseVisionScale
+> ```
+
+  依預設值，蛇身 `290` 節並使用巨大蘑菇時，最終體型倍率為 `2.400x`、體型跟隨鏡頭倍率為 `1.560x`；鷹眼 `1.750x` 生效後，最終鏡頭倍率為 `2.730x`。鷹眼開始、結束或被覆蓋時，鷹眼倍率以 `500ms` 從當前插值值線性過渡至新目標。
+
+**體型與鏡頭更新規則**
+
+- 吃食物、扣長、截斷、重生，或巨大蘑菇開始、結束、被覆蓋時，重新計算最終體型倍率；渲染、碰撞與體型跟隨鏡頭在同一事件、同一幀開始 `250ms` 過渡。
+- 體型過渡期間再次發生變化時，最終體型從當前插值值重新設定目標；體型跟隨鏡頭持續依當前插值體型計算。
+- 鷹眼開始、結束或被覆蓋時，只以 `500ms` 過渡鷹眼倍率；過渡期間若體型改變，最終鏡頭仍以當前體型跟隨鏡頭倍率乘上當前鷹眼插值倍率計算。
 
 ---
 
 ### 5. 碰撞、死亡與重生復活規則
 #### 5.1 生死與碰撞判定矩陣
-> **實際碰撞半徑**：頭部與身體的當前碰撞半徑依 [Ch4.7 蛇隻體型成長與碰撞半徑](#47-蛇隻體型成長與碰撞半徑) 計算；本節只定義碰撞結果、死亡、截斷與扣長後果。
+> **實際碰撞半徑**：頭部與身體的碰撞判定使用 [Ch4.7 蛇隻體型成長與碰撞半徑](#47-蛇隻體型成長與碰撞半徑) 的當前插值半徑，不使用過渡目標半徑；本節只定義碰撞結果、死亡、截斷與扣長後果。
 
 
 局內生死邏輯最高指導原則為「撞身即死」（撞擊他人身體者必死）。
@@ -920,7 +832,7 @@ graph TD
 ##### 5.4.1 殘骸結晶
 
 * **殘骸尺寸與種類**：碎裂後每段殘骸半徑固定為 `8 px`，多個殘骸生成於同一區域時，需套用隨機位置偏移 `±2 px` 以避免完全重疊。死亡殘骸會全部轉化為專屬的「殘骸結晶 (Debris Crystal)」。每顆殘骸結晶的物理碰撞半徑為 `12 px`，實時生成時其渲染外觀尺寸隨機縮放為其基礎尺寸的 `1.0x ~ 1.2x`，以豐富視覺層次與立體感；其單顆積分固定為 `10` 分（詳見 [7.3 全域食物規格對照表](#73-積分與加分公式)）。
-* **死亡殘骸轉化**：轉化比例由 `DeathDebrisConversionRate = 50%`（由 [Ch16.2 Module](#161-module) 控制）決定。以死亡當下的目前蛇身節數計算殘骸顆數，沿死亡當下剩餘蛇身節點平均散落；若只剩頭部區，則不生成身體殘骸。
+* **死亡殘骸轉化**：轉化比例由 `DeathDebrisConversionRate = 50%`（由 [Ch16.1 Module](#161-module) 控制）決定。以死亡當下的目前蛇身節數計算殘骸顆數，沿死亡當下剩餘蛇身節點平均散落；若只剩頭部區，則不生成身體殘骸。
 
 > [!IMPORTANT]
 >
@@ -948,19 +860,20 @@ graph TD
 
 * **地圖尺寸**：寬度 `MapWidth = 2000px`，高度 `MapHeight = 2000px` （由 [Ch16.1 Module](#161-module) 控制）。
 * **岩石障礙物**：地圖中隨機投放無法穿透的 2D 障礙物（碰撞規則詳見 5.1），撞擊不致死，觸發回彈並扣減 50% 當前長度。岩石視覺可依地圖主題替換，但碰撞與阻擋規則一致。
-* **岩石生成規則**：每局依 `ROCK_SPAWN_COUNT_MIN`～`ROCK_SPAWN_COUNT_MAX` 隨機決定生成數量，尺寸於 `ROCK_SIZE_MIN`～`ROCK_SIZE_MAX` 間隨機。生成位置需落在 `ROCK_SPAWN_RECT` 或 `ROCK_SPAWN_RADIUS_RANGE` 定義的可投放範圍內，並遵守離出生點、邊界與其他岩石的最小距離限制。
+* **岩石生成規則**：每局依 `RockSpawnCountMin`～`RockSpawnCountMax` 隨機決定生成數量；每顆岩石尺寸依 `RockRadiusMin`～`RockRadiusMax` 隨機決定，所有尺寸均以半徑 `R（px）` 表示。岩石於地圖合法範圍內隨機投放，外緣須與其他岩石保留超過 `ObjectSpawnMinDist = 2px` 的額外安全間隙；與出生點及地圖邊界的既有安全規則維持不變。
 
 #### 6.2 緩速區設計
 
 * **緩速區定位**：緩速區是地圖障礙／地形效果物件，玩法效果為降低蛇隻移動速度。
-* **緩速區美術**：緩速區美術表現採模組拼接方式製作，暫定為固定方形尺寸拼接；實際尺寸、切片數量、邊緣／轉角／中心片等細節待美術規格補齊。GDD 驗收以效果範圍、投放規則與緩速倍率為準。
+* **緩速區美術**：緩速區美術表現採固定方形模組拼接；實際切片、邊緣／轉角／中心片等美術細節由美術需求文件定義。GDD 驗收以效果範圍、投放規則與緩速倍率為準。
 * **主題表現**：不同地圖可使用不同緩速區美術，例如：
   * 草原冒險為泥土／泥地
   * 河岸水域為水灘
   * 岩石峽谷為碎石地／砂地
   * 糖果樂園依主題配置對應緩速材質。
-* **緩速效果**：蛇頭中心進入緩速區效果範圍時，移動速度套用 `SlowZoneSpeedFactor = -5000`（即減速 50%，由 [Ch16.2 Module](#161-module) 控制）；蛇頭中心離開效果範圍時解除緩速。
-* **緩速區生成規則**：每局依 `SLOW_ZONE_SPAWN_COUNT_MIN`～`SLOW_ZONE_SPAWN_COUNT_MAX` 隨機決定生成數量，尺寸於 `SLOW_ZONE_SIZE_MIN`～`SLOW_ZONE_SIZE_MAX` 間隨機。生成位置需落在 `SLOW_ZONE_SPAWN_RECT` 或 `SLOW_ZONE_SPAWN_RADIUS_RANGE` 定義的可投放範圍內，並遵守離出生點、邊界與其他地圖物件的最小距離限制。
+* **緩速效果**：蛇頭中心進入緩速區效果範圍時，移動速度套用 `SlowZoneSpeedFactor = -5000`（即減速 50%，由 [Ch16.1 Module](#161-module) 控制）；蛇頭中心離開效果範圍時解除緩速。
+* **緩速區生成規則**：緩速區是由多個方形模組相鄰連通的帶狀區域，不是圓形離散單體。每條緩速區從合法格子開始，以四方向相鄰格隨機延伸；同一條帶內的格子可相鄰連通且不可重複。不同條緩速區的外緣須保留超過 `ObjectSpawnMinDist = 2px` 的間隙，不得連成同一片。岩石與緩速區允許重疊；蛇隻出生／重生可位於緩速區，但不得與岩石重疊。
+* **程式生成設定**：緩速區的條數、單格邊長及單條格子數，於程式實作生成邏輯時一併決定，並建立對應 Module 與預設值；本版 GDD 暫不於 Ch16.1 列出對應 Module。
 
 #### 6.3 隨機場景主題與地圖池
 
@@ -1021,7 +934,7 @@ graph TD
 
 #### 7.2 吃食物與吸附規則
 
-* **自動吸附半徑**：常態基礎吸附半徑為 `BaseSuctionRadius = 50px`（由 [16.2 基礎核心參數](#161-module) 控制）。當食物或殘骸進入此半徑時，依目前生效的吸附類型讀取飛行時間，以 Lerp 內插向蛇頭滑行，並在指定時間內完成吞食判定。
+* **自動吸附半徑**：常態基礎吸附半徑為 `BaseSuctionRadius = 50px`（由 [Ch16.1 Module](#161-module) 控制）。當食物或殘骸進入此半徑時，依目前生效的吸附類型讀取飛行時間，以 Lerp 內插向蛇頭滑行，並在指定時間內完成吞食判定。
 * **吸附飛行時間**：食物飛向蛇頭，並於下表時間內完成現有吞食判定。時間越短，吸附越快；暴食 > 地圖磁鐵 > 基本吸附。三項皆由 [16.1 Module](#161-module) 參數控制。
 
 | 吸附類型 | 飛向蛇頭並完成吞食判定時間 | 對應參數 |
@@ -1057,7 +970,7 @@ graph TD
   * 通過吞食地圖基礎食物或死者殘骸資源累積，並與擊殺積分共同構成對局總積分。
   * 只增不減；撞牆與截斷只影響目前蛇身長度，不倒扣累計吞食積分、排行榜積分或結算積分。
 * **本次生命週期長度成長進度（物理成長線）**：
-  * 吃食物後，食物分數會先累積在長度成長進度中；每湊滿「每節所需積分」`PointPerSegment = 10` 分（由 [16.2 基礎核心參數](#161-module) 控制），蛇身增加 1 節。
+  * 吃食物後，食物分數會先累積在長度成長進度中；每湊滿「每節所需積分」`PointPerSegment = 10` 分（由 [Ch16.1 Module](#161-module) 控制），蛇身增加 1 節。
   * 撞牆與截斷會直接移除目前蛇身節數；已被移除的節數不可依歷史累計吞食積分瞬間恢復。
 
 * **單次吞食得分加算公式**：
@@ -1077,7 +990,7 @@ graph TD
 > **體型同步**：本節只定義長度增加、扣除與重生規則；每次目前蛇身節數變更後，體型倍率、渲染尺寸與碰撞半徑依 [Ch4.7 蛇隻體型成長與碰撞半徑](#47-蛇隻體型成長與碰撞半徑) 重新計算。
 
 
-* **初始長度與重生重置**：新局開始時蛇身長度為 `BaseSnakeSegment = 50` 節（由 [16.2 基礎核心參數](#161-module) 控制）；玩家重生後，蛇身重置為此初始長度。
+* **初始長度與重生重置**：新局開始時蛇身長度為 `BaseSnakeSegment = 50` 節（由 [Ch16.1 Module](#161-module) 控制）；玩家重生後，蛇身重置為此初始長度。
 * **重生不加分**：重生只重置蛇身長度，不會額外增加對局分數或累計吞食積分。
 * **長度成長規則**：吃到新食物時，食物分數累積至本次生命週期的長度成長進度；每累積 10 分，蛇身增加 1 節。
 * **長度扣除規則**：撞牆或被截斷時，直接扣除目前蛇身節數；扣除後不可依歷史累計吞食積分瞬間恢復蛇身。
@@ -1119,12 +1032,12 @@ graph TD
 >
 > 相關資料表：[Ch16.4 PassiveSkill](#164-passiveskill)
 
-| Icon | 道具名稱 | 生效效果說明 | 數值與半徑參數 (DataTable 綁定變數) | 基礎持續時間 |
+| Icon | 道具名稱 | 生效效果說明 | 局內實際數值（滿級／Lv40） | 局內實際持續時間（滿級／Lv40） |
 | :--- | :--- | :--- | :--- | :--- |
-| ![磁鐵](<./Reference Image/Ref_Icon_道具-磁鐵.png>) | **磁鐵 <br> (Magnet)** | 啟動強制大範圍引力，自動吸附周圍食物向蛇頭飛行。 | 吸附半徑：`ItemMagnetRadius = 100px` <br> 吸附飛行時間：`MagnetSuctionTravelTime = 200ms` | 10s <br> (由 `ItemMagnetDuration` 控制) |
-| ![巨大蘑菇](<./Reference Image/Ref_Icon_道具-巨大蘑菇.png>) | **巨大蘑菇 <br> (Giant Mushroom)** | 啟動巨大化效果，同時提升蛇隻渲染尺寸與碰撞半徑，並降低衝刺速度，強調身體放大與高速移動感。 | 巨大化尺寸：`ItemMushroom_Size = 15000` (1.5x) <br> 跑速變化：`ItemMushroomSpeed = -2500` (-25%) | 10s <br> (由 `ItemMushroomDuration` 控制) |
-| ![幸運糖](<./Reference Image/Ref_Icon_道具-幸運糖.png>) | **幸運糖 <br> (Lucky Candy)** | 啟動得分倍率加成，提高吞食食物與殘骸時的收益。 | 得分倍率：`ItemCandyMultiplier = 3` (3倍) | 10s <br> (由 `ItemCandyDuration` 控制) |
-| ![鷹眼](<./Reference Image/Ref_Icon_道具-鷹眼.png>) | **鷹眼 <br> (Eagle Eye)** | 拉遠視野範圍，提升玩家觀察遠方地圖與目標的能力。 | 視野倍率：`ItemEyeScale = 13500` (1.35x) | 10s <br> (由 `ItemEyeDuration` 控制) |
+| ![磁鐵](<./Reference Image/Ref_Icon_道具-磁鐵.png>) | **磁鐵 <br> (Magnet)** | 啟動強制大範圍引力，自動吸附周圍食物向蛇頭飛行。 | 吸附半徑：`ItemMagnetRadius = 200px` <br> 吸附飛行時間：`MagnetSuctionTravelTime = 200ms` | 20s <br> (由 `ItemMagnetDuration` 控制) |
+| ![巨大蘑菇](<./Reference Image/Ref_Icon_道具-巨大蘑菇.png>) | **巨大蘑菇 <br> (Giant Mushroom)** | 啟動巨大化效果，同時提升蛇隻渲染尺寸與碰撞半徑，並依滿級數值調整衝刺速度。 | 巨大化尺寸：`ItemMushroom_Size = 15000` (1.5x) <br> 跑速變化：`ItemMushroomSpeed = 1500` (+15%) | 20s <br> (由 `ItemMushroomDuration` 控制) |
+| ![幸運糖](<./Reference Image/Ref_Icon_道具-幸運糖.png>) | **幸運糖 <br> (Lucky Candy)** | 啟動得分倍率加成，提高吞食食物與殘骸時的收益。 | 得分倍率：`ItemCandyMultiplier = 70000` (7倍) | 20s <br> (由 `ItemCandyDuration` 控制) |
+| ![鷹眼](<./Reference Image/Ref_Icon_道具-鷹眼.png>) | **鷹眼 <br> (Eagle Eye)** | 拉遠視野範圍，提升玩家觀察遠方地圖與目標的能力。 | 視野倍率：`ItemEyeScale = 17500` (1.75x) | 20s <br> (由 `ItemEyeDuration` 控制) |
 
 ##### 8.1.1 滿級屬性封裝與 HUD 限制
 
@@ -1169,7 +1082,7 @@ graph TD
 * **無 CD 限制**：高級道具本身無任何冷卻時間限制，僅受限於「持續時間」與「單局總次數」。
 * **按鈕狀態與反饋提示**：
 
-| 按鈕當前狀態                                                | UI 視覺與外包美術需求                                                        | 玩家點擊時之程式處理與阻擋邏輯                                                                                                                                        |        螢幕中央飄浮文字 (Floating Tip)        |
+| 按鈕當前狀態                                                | UI 視覺與美術需求                                                        | 玩家點擊時之程式處理與阻擋邏輯                                                                                                                                        |        螢幕中央飄浮文字 (Floating Tip)        |
 | :---------------------------------------------------------- | :--------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------: |
 | **A. 可使用狀態**  <br> *(次數>0 且 道具未生效)*  | 按鈕正常高亮，顯示剩餘次數。 <br> 下方顯示當前使用所需金幣。               | 1. 成功扣除當前需消耗的金幣數。 <br> 2. 該道具單局剩餘次數 **`-1`**。 <br> 3. 即刻發動道具滿級效果（持續 10 秒）。 <br> 4. 更新下次使用之等差消耗售價。 | **無**  <br> *(直接觸發使用與特效)* |
 | **B. 效果生效中**  <br> *(道具效果時效內)*        | 按鈕降低透明度（**半透明置灰 50%**）。 <br> 顯示剩餘次數與消耗提示。 | **【攔截點擊】**：效果期間內阻擋重複點擊與疊加消耗。不觸發效果，**不扣除金幣**。                                                                          |             `「效果生效中！」`             |
@@ -1427,7 +1340,7 @@ graph TD
   | 4 | 戰術追擊 / 截斷 | 目標位於該 AI 類型的 `ChaseRadius` 內，且符合追獵或截斷型 AI 的長度、角度與目標條件。 | 嘗試預判目標前進方向並切入；追擊中若距離超過 `ChaseRadius * (1 + ChaseLeashRatio / 10000)` 或時間超過 `ChaseAbortTime`，必須放棄。 |
   | 5 | 常態收集 | 無更高優先級事件。 | 依初始 AI 性格選擇食物、殘骸或安全路徑，保持連續移動與基本避障。 |
 
-* **AI 驗收原則**：外包可自行選擇 steering、取樣或尋路實作方式，但最終行為必須符合上表優先級；同一時間多個條件成立時，永遠以較高優先級覆蓋較低優先級。
+* **AI 驗收原則**：實作可自行選擇 steering、取樣或尋路方式，但最終行為必須符合上表優先級；同一時間多個條件成立時，永遠以較高優先級覆蓋較低優先級。
 * **適用對象範圍**：
 
   * 本動態切換規則適用於**所有電腦玩家（不論開局/重生時分配的是初階 BOT 還是何種高階 AI 檔案）**。
@@ -1897,97 +1810,100 @@ Server Log 以「玩家客訴查詢、營運統計、玩家資產與權益追蹤
 
 > 對應規格：[Ch4 基礎核心](#4-基礎核心與速度控制)｜[Ch6 地圖與環境](#6-地圖與環境系統)｜[Ch8 高級道具與覆蓋規則](#8-高級道具與覆蓋規則)｜[Ch14 好友房](#14-好友與社交組隊系統)｜[Ch15 異常處理](#15-異常處理與中離邊界條件-自己)
 
-| Module |  |  |  |  |  |  |  |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 輸出 | B |  |  |  | B | B |  |
-| 名稱 | ID |  |  |  | Name | Value |  |
-| 資料型態 | int |  |  |  | string | int |  |
-| 企劃名 | 編號 | 參數分類 | 參數描述 | 參數名稱 | 參數名稱調整後 | 參數值 | 單位 |
-|  | 1 | core | 基礎跑速單位，4000 代表 40.00 px/s | BASE_SPEED | BaseMoveSpeed | 4000 | 0.01 px/s |
-|  | 2 | core | 初始體力上限 | STAMINA_MAX | BaseMaxStamina | 1000 | 點 |
-|  | 3 | core | 衝刺每秒體力消耗 | STAMINA_DRAIN_SPEED | DashStaminaCostRate | 333 | 點/s |
-|  | 4 | core | 初始每秒體力回復 | STAMINA_REGEN_SPEED | BaseStaminaRecoverRate | 80 | 點/s |
-|  | 5 | core | 基礎吸附食物半徑 | BASE_SUCTION_RADIUS | BaseSuctionRadius | 50 | px |
-|  | 6 | core | 相機基礎視野倍率 | BASE_VISION_SCALE | BaseVisionScale | 10000 | 萬分比 |
-|  | 7 | core | 開局與重生初始長度 | INITIAL_LENGTH | BaseSnakeSegment | 50 | 節 |
-|  | 8 | core | 衝刺加速比例 | DASH_SPEED_BONUS | DashSpeedFactor | 250 | 萬分比 |
-|  | 9 | core | 初始暴食冷卻時間 | GLUTTONY_CD | GluttonyCD | 30 | s |
-|  | 10 | core | 初始暴食吸附半徑 | GLUTTONY_RADIUS | GluttonySuctionRadius | 200 | px |
-|  | 11 | core | 暴食吸附飛行時間 | GLUTTONY_SUCTION_TRAVEL_TIME | GluttonySuctionTravelTime | 150 | ms |
-|  | 12 | core | 磁鐵吸附飛行時間 | MAGNET_SUCTION_TRAVEL_TIME | MagnetSuctionTravelTime | 200 | ms |
-|  | 13 | core | 基礎吃食吸附飛行時間 | BASE_SUCTION_TRAVEL_TIME | BaseSuctionTravelTime | 300 | ms |
-|  | 14 | core | 每增加一節所需積分 | POINTS_PER_SECTION | PointPerSegment | 10 | 分 |
-|  | 15 | core | 成長之路最高等級 | GROWTH_ROAD_MAX_LEVEL | (不使用參數)讀已存在其他表格 | 60 | level |
-|  | 16 | mode | 單局限時 | GAME_DURATION | GameTime | 120 | s |
-|  | 17 | mode | 死亡復活倒數 | RESPAWN_TIME | RespawnTime | 5000 | ms |
-|  | 18 | mode | Solo 入場能量 | ENTRY_ENERGY_SOLO | EntryEnergy_Solo | 30 | 點 |
-|  | 19 | mode | 大亂鬥入場能量 | ENTRY_ENERGY_BRAWL | EntryEnergy_Brawl | 30 | 點 |
-|  | 20 | mode | 陣營對抗入場能量 | ENTRY_ENERGY_TEAM | EntryEnergy_Team | 30 | 點 |
-|  | 21 | mode | 擊殺敵蛇積分 | KILL_SCORE | KillScore | 100 | 分 |
-|  | 22 | mode | 每次擊殺額外熟練度 | KILL_MASTERY_BONUS | MasterBonus_Kill | 2 | 點 |
-|  | 23 | mode | SSS 評級額外熟練度 | RATING_BONUS_SSS | MasterBonus_SSS | 50 | 點 |
-|  | 24 | mode | SS 評級額外熟練度 | RATING_BONUS_SS | MasterBonus_SS | 30 | 點 |
-|  | 25 | mode | S 評級額外熟練度 | RATING_BONUS_S | MasterBonus_S | 10 | 點 |
-|  | 26 | map | 地圖寬度 | MAP_WIDTH | MapWidth | 2000 | px |
-|  | 27 | map | 地圖高度 | MAP_HEIGHT | MapHeight | 2000 | px |
-|  | 28 | map | 撞岩石或邊界長度扣除比例 | ROCK_BOUNCE_PENALTY_RATIO | ImpactBoundaryLengthDeductionRatio | 5000 | 萬分比 |
-|  | 29 | map | 緩速區速度修正 | SLOW_ZONE_SPEED_MULTIPLIER | SlowZoneSpeedFactor | -5000 | 萬分比 |
-|  | 30 | map | 岩石區食物分配權重 | FOOD_DIST_ROCK | FoodDeployWeight_RockZone | 5000 | 萬分比 |
-|  | 31 | map | 緩速區食物分配權重 | FOOD_DIST_SLOW_ZONE | FoodDeployWeight_SlowZone | 3000 | 萬分比 |
-|  | 32 | map | 平地區食物分配權重 | FOOD_DIST_PLAINS | FoodDeployWeight_LandZone | 2000 | 萬分比 |
-|  | 33 | map | 小食物積分 | FOOD_VAL_SMALL | FoodPoint_S | 1 | 分 |
-|  | 34 | map | 中食物積分 | FOOD_VAL_MEDIUM | FoodPoint_M | 3 | 分 |
-|  | 35 | map | 大食物積分 | FOOD_VAL_LARGE | FoodPoint_L | 5 | 分 |
-|  | 36 | map | 殘骸結晶積分 | FOOD_VAL_DEBRIS | FoodPoint_Crystal | 10 | 分 |
-|  | 37 | map | 開局食物總分 | INITIAL_FOOD_POINTS | InitialFoodPoints | 2000 | 分 |
-|  | 38 | map | 食物補足下限 | MIN_FOOD_POINTS | MinFoodPoints | 1000 | 分 |
-|  | 39 | map | 食物補充檢測週期 | FOOD_REPLENISH_INTERVAL | FoodReplenishInterval | 10000 | ms |
-|  | 40 | map | 死亡殘骸轉化比例 | DEBRIS_PERCENTAGE | DeathDebrisConversionRate | 5000 | 萬分比 |
-|  | 41 | map | 殘骸食物存在時間 | DEBRIS_LIFETIME | CrystalLifeTime | 10 | s |
-|  | 42 | item | 地圖道具刷新間隔 | ITEM_SPAWN_INTERVAL | ItemSpawnInterval | 20 | s |
-|  | 43 | item | 地圖道具同時存在上限 | ITEM_MAX_COUNT | ItemMaxCount | 12 | 個 |
-|  | 44 | item | 道具刷新預告時間 | ITEM_TEASER_TIME | ItemTeaserTime | 2 | s |
-|  | 45 | item | 同款道具價格倍率 | BOOSTER_PRICE_MULTIPLIER | BoosterPriceMultiplier | 15000 | 萬分比 |
-|  | 46 | item | 高級道具初始單局上限 | BOOSTER_LIMIT_INITIAL | BoosterInitialCount | 2 | 次 |
-|  | 47 | item | 高級道具最大單局上限 | BOOSTER_LIMIT_MAX | BoosterMaximumCount | 5 | 次 |
-|  | 48 | passive | 被動強化初始費用 | PASSIVE_UPGRADE_START_COST | PassiveUpgradeStartCost | 1000 | 金幣 |
-|  | 49 | passive | 被動強化最高費用 | PASSIVE_UPGRADE_END_COST | PassiveUpgradeEndCost | 300000 | 金幣 |
-|  | 50 | passive | S 曲線係數 | PASSIVE_UPGRADE_SHAPE_K | PassiveUpgradeShape_K | 240 | 萬分比 |
-|  | 51 | passive | S 曲線拐點 | PASSIVE_UPGRADE_INFLECTION_X0 | PassiveUpgradeInflection_X0 | 190 | 次 |
-|  | 52 | cosmetic | 表情貼圖顯示時間 | EMOTE_DURATION | EmoteDuration | 2500 | ms |
-|  | 53 | core | 蛇頭碰撞半徑 | SNAKE_HEAD_COLLISION_RADIUS | SnakeHeadCollisionRadius | 12 | px |
-|  | 54 | core | 蛇身碰撞半徑 | SNAKE_BODY_COLLISION_RADIUS | SnakeBodyCollisionRadius | 8 | px |
-|  | 55 | core | 蛇節視覺間距 | SNAKE_SECTION_SPACING | SnakeSegmentSpacing | 10 | px |
-|  | 56 | combat | 截斷判定避開蛇頭前段節數 | CUT_HEAD_SAFE_SECTIONS | CutHeadSafeSegment | 10 | 節 |
-|  | 57 | map | 地圖物件生成最小安全偏移 | OBJECT_SPAWN_MIN_DIST | ObjectSpawnMinDist | 2 | px |
-|  | 58 | item | 巨大蘑菇體型放大倍率 | ITEM_MUSHROOM_SIZE | ItemMushroom_Size | 15000 | 萬分比 |
-|  | 59 | ui | 局內排行榜顯示行數 | RANKING_DISPLAY_COUNT | RankingDisplayCount | 4 | 行 |
-|  | 60 | ui | 對局倒數警示門檻 | TIME_WARNING_THRESHOLD | TimeWarningThreshold | 30 | s |
-|  | 61 | mode | 中離最低評價獎勵比例 | EARLY_LEAVE_REWARD_RATIO | EarlyLeaveRewardRatio | 5000 | 萬分比 |
-|  | 62 | map | 殘骸分數捨去倍數 | DEBRIS_SCORE_ROUND_UNIT | CrystalScoreRoundUnit | 10 | 分 |
-|  | 63 | social | 房間碼位數 | ROOM_CODE_DIGITS | RoomCodeDigits | 5 | 位 |
-|  | 64 | social | 好友房最少開始人數 | ROOM_MIN_PLAYERS | RoomMinPlayers | 2 | 人 |
-|  | 65 | social | 好友房隊伍人數上限 | ROOM_MAX_PLAYERS | RoomMaxPlayers | 4 | 人 |
-|  | 66 | map | 岩石區判定半徑 | ROCK_REGION_RADIUS | RockRegionRadius | 100 | px |
-|  | 67 | item | 地圖磁鐵出現權重 | ITEM_WEIGHT_MAGNET | ItemMagnetSpawnWeight | 2500 | 萬分比 |
-|  | 68 | item | 地圖巨大蘑菇出現權重 | ITEM_WEIGHT_MUSHROOM | ItemMushroomSpawnWeight | 2500 | 萬分比 |
-|  | 69 | item | 地圖幸運糖出現權重 | ITEM_WEIGHT_CANDY | ItemCandySpawnWeight | 2500 | 萬分比 |
-|  | 70 | item | 地圖鷹眼出現權重 | ITEM_WEIGHT_EYE | ItemEyeSpawnWeight | 2500 | 萬分比 |
-|  | 71 | item | 地圖中心圈道具分布權重 | ITEM_DIST_CENTER | MapCenterItemSpawnWeight | 5000 | 萬分比 |
-|  | 72 | item | 地圖中圈道具分布權重 | ITEM_DIST_MID | MapMidItemSpawnWeight | 3000 | 萬分比 |
-|  | 73 | item | 地圖外圈道具分布權重 | ITEM_DIST_OUTER | MapOuterItemSpawnWeight | 2000 | 萬分比 |
-|  | 74 | item | 地圖中心圈半徑比例 | ITEM_CENTER_RADIUS_RATIO | MapCenterRadiusRatio | 3333 | 萬分比 |
-|  | 75 | item | 地圖中圈半徑比例 | ITEM_MID_RADIUS_RATIO | MapMidRadiusRatio | 6667 | 萬分比 |
-|  | 76 | map | 小食物生成權重 | FOOD_SPAWN_WEIGHT_SMALL | FoodSpawnWeight_S | 6000 | 萬分比 |
-|  | 77 | map | 中食物生成權重 | FOOD_SPAWN_WEIGHT_MEDIUM | FoodSpawnWeight_M | 3000 | 萬分比 |
-|  | 78 | map | 大食物生成權重 | FOOD_SPAWN_WEIGHT_LARGE | FoodSpawnWeight_L | 1000 | 萬分比 |
-|  | 79 | map | 撞擊岩石或邊界後的輸入鎖定時間 | IMPACT_BOUNDARY_INPUT_LOCK_DURATION | ImpactBoundaryInputLockDuration | 350 | ms |
-|  | 80 | core | 每超過初始蛇身節數 1 節所增加的自然體型倍率 | BODY_GROWTH_SCALE_PER_SEGMENT | SnakeBodyGrowthScalePerSegment | 25 | 萬分比／節 |
-|  | 81 | core | 蛇身依長度自然成長時可達的最大體型倍率 | BODY_GROWTH_SCALE_MAX | SnakeBodyGrowthScaleMax | 16000 | 萬分比 |
-|  | 82 | core | 蛇隻渲染尺寸與碰撞半徑由舊值過渡至新值的線性時間 | BODY_SCALE_TRANSITION_TIME | SnakeBodyScaleTransitionTime | 250 | ms |
-|  | 83 | ui | 自然體型倍率反映至成長視野的比例 | GROWTH_VISION_FOLLOW_RATIO | SnakeGrowthVisionFollowRatio | 4000 | 萬分比 |
-|  | 84 | ui | 成長視野倍率的最大上限 | GROWTH_VISION_SCALE_MAX | SnakeGrowthVisionScaleMax | 12500 | 萬分比 |
-|  | 85 | ui | 成長視野由舊值過渡至新值的線性時間 | GROWTH_VISION_TRANSITION_TIME | SnakeGrowthVisionTransitionTime | 500 | ms |
+| Module |  |  |  |  |  |  |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| 輸出 | B |  |  | B | B |  |
+| 名稱 | ID |  |  | Name | Value |  |
+| 資料型態 | int |  |  | string | int |  |
+| 企劃名 | 編號 | 參數分類 | 參數描述 | 參數名稱 | 參數值 | 單位 |
+|  | 1 | core | 基礎跑速單位，4000 代表 40.00 px/s | BaseMoveSpeed | 4000 | 0.01 px/s |
+|  | 2 | core | 初始體力上限 | BaseMaxStamina | 1000 | 點 |
+|  | 3 | core | 衝刺每秒體力消耗 | DashStaminaCostRate | 333 | 點/s |
+|  | 4 | core | 初始每秒體力回復 | BaseStaminaRecoverRate | 80 | 點/s |
+|  | 5 | core | 基礎吸附食物半徑 | BaseSuctionRadius | 50 | px |
+|  | 6 | core | 相機基礎視野倍率 | BaseVisionScale | 10000 | 萬分比 |
+|  | 7 | core | 開局與重生初始長度 | BaseSnakeSegment | 50 | 節 |
+|  | 8 | core | 衝刺加速比例 | DashSpeedFactor | 250 | 萬分比 |
+|  | 9 | core | 初始暴食冷卻時間 | GluttonyCD | 30 | s |
+|  | 10 | core | 初始暴食吸附半徑 | GluttonySuctionRadius | 200 | px |
+|  | 11 | core | 暴食吸附飛行時間 | GluttonySuctionTravelTime | 150 | ms |
+|  | 12 | core | 磁鐵吸附飛行時間 | MagnetSuctionTravelTime | 200 | ms |
+|  | 13 | core | 基礎吃食吸附飛行時間 | BaseSuctionTravelTime | 300 | ms |
+|  | 14 | core | 每增加一節所需積分 | PointPerSegment | 10 | 分 |
+|  | 15 | core | 成長之路最高等級 | (不使用參數)讀已存在其他表格 | 60 | level |
+|  | 16 | mode | 單局限時 | GameTime | 120 | s |
+|  | 17 | mode | 死亡復活倒數 | RespawnTime | 5000 | ms |
+|  | 18 | mode | Solo 入場能量 | EntryEnergy_Solo | 30 | 點 |
+|  | 19 | mode | 大亂鬥入場能量 | EntryEnergy_Brawl | 30 | 點 |
+|  | 20 | mode | 陣營對抗入場能量 | EntryEnergy_Team | 30 | 點 |
+|  | 21 | mode | 擊殺敵蛇積分 | KillScore | 100 | 分 |
+|  | 22 | mode | 每次擊殺額外熟練度 | MasterBonus_Kill | 2 | 點 |
+|  | 23 | mode | SSS 評級額外熟練度 | MasterBonus_SSS | 50 | 點 |
+|  | 24 | mode | SS 評級額外熟練度 | MasterBonus_SS | 30 | 點 |
+|  | 25 | mode | S 評級額外熟練度 | MasterBonus_S | 10 | 點 |
+|  | 26 | map | 地圖寬度 | MapWidth | 2000 | px |
+|  | 27 | map | 地圖高度 | MapHeight | 2000 | px |
+|  | 28 | map | 撞岩石或邊界長度扣除比例 | ImpactBoundaryLengthDeductionRatio | 5000 | 萬分比 |
+|  | 29 | map | 緩速區速度修正 | SlowZoneSpeedFactor | -5000 | 萬分比 |
+|  | 30 | map | 岩石區食物分配權重 | FoodDeployWeight_RockZone | 5000 | 萬分比 |
+|  | 31 | map | 緩速區食物分配權重 | FoodDeployWeight_SlowZone | 3000 | 萬分比 |
+|  | 32 | map | 平地區食物分配權重 | FoodDeployWeight_LandZone | 2000 | 萬分比 |
+|  | 33 | map | 小食物積分 | FoodPoint_S | 1 | 分 |
+|  | 34 | map | 中食物積分 | FoodPoint_M | 3 | 分 |
+|  | 35 | map | 大食物積分 | FoodPoint_L | 5 | 分 |
+|  | 36 | map | 殘骸結晶積分 | FoodPoint_Crystal | 10 | 分 |
+|  | 37 | map | 開局食物總分 | InitialFoodPoints | 2000 | 分 |
+|  | 38 | map | 食物補足下限 | MinFoodPoints | 1000 | 分 |
+|  | 39 | map | 食物補充檢測週期 | FoodReplenishInterval | 10000 | ms |
+|  | 40 | map | 死亡殘骸轉化比例 | DeathDebrisConversionRate | 5000 | 萬分比 |
+|  | 41 | map | 殘骸食物存在時間 | CrystalLifeTime | 10 | s |
+|  | 42 | item | 地圖道具刷新間隔 | ItemSpawnInterval | 20 | s |
+|  | 43 | item | 地圖道具同時存在上限 | ItemMaxCount | 12 | 個 |
+|  | 44 | item | 道具刷新預告時間 | ItemTeaserTime | 2 | s |
+|  | 45 | item | 同款道具價格倍率 | BoosterPriceMultiplier | 15000 | 萬分比 |
+|  | 46 | item | 高級道具初始單局上限 | BoosterInitialCount | 2 | 次 |
+|  | 47 | item | 高級道具最大單局上限 | BoosterMaximumCount | 5 | 次 |
+|  | 48 | passive | 被動強化初始費用 | PassiveUpgradeStartCost | 1000 | 金幣 |
+|  | 49 | passive | 被動強化最高費用 | PassiveUpgradeEndCost | 300000 | 金幣 |
+|  | 50 | passive | S 曲線係數 | PassiveUpgradeShape_K | 240 | 萬分比 |
+|  | 51 | passive | S 曲線拐點 | PassiveUpgradeInflection_X0 | 190 | 次 |
+|  | 52 | cosmetic | 表情貼圖顯示時間 | EmoteDuration | 2500 | ms |
+|  | 53 | core | 蛇頭碰撞半徑 | SnakeHeadCollisionRadius | 12 | px |
+|  | 54 | core | 蛇身碰撞半徑 | SnakeBodyCollisionRadius | 8 | px |
+|  | 55 | core | 蛇節視覺間距 | SnakeSegmentSpacing | 10 | px |
+|  | 56 | combat | 截斷判定避開蛇頭前段節數 | CutHeadSafeSegment | 10 | 節 |
+|  | 57 | map | 不同生成物件外緣的額外安全間隙；同一條緩速區內相鄰格不適用 | ObjectSpawnMinDist | 2 | px |
+|  | 58 | item | 巨大蘑菇體型放大倍率 | ItemMushroom_Size | 15000 | 萬分比 |
+|  | 59 | ui | 局內排行榜顯示行數 | RankingDisplayCount | 4 | 行 |
+|  | 60 | ui | 對局倒數警示門檻 | TimeWarningThreshold | 30 | s |
+|  | 61 | mode | 中離最低評價獎勵比例 | EarlyLeaveRewardRatio | 5000 | 萬分比 |
+|  | 62 | map | 殘骸分數捨去倍數 | CrystalScoreRoundUnit | 10 | 分 |
+|  | 63 | social | 房間碼位數 | RoomCodeDigits | 5 | 位 |
+|  | 64 | social | 好友房最少開始人數 | RoomMinPlayers | 2 | 人 |
+|  | 65 | social | 好友房隊伍人數上限 | RoomMaxPlayers | 4 | 人 |
+|  | 66 | map | 岩石區判定半徑 | RockRegionRadius | 100 | px |
+|  | 67 | item | 地圖磁鐵出現權重 | ItemMagnetSpawnWeight | 2500 | 萬分比 |
+|  | 68 | item | 地圖巨大蘑菇出現權重 | ItemMushroomSpawnWeight | 2500 | 萬分比 |
+|  | 69 | item | 地圖幸運糖出現權重 | ItemCandySpawnWeight | 2500 | 萬分比 |
+|  | 70 | item | 地圖鷹眼出現權重 | ItemEyeSpawnWeight | 2500 | 萬分比 |
+|  | 71 | item | 地圖中心圈道具分布權重 | MapCenterItemSpawnWeight | 5000 | 萬分比 |
+|  | 72 | item | 地圖中圈道具分布權重 | MapMidItemSpawnWeight | 3000 | 萬分比 |
+|  | 73 | item | 地圖外圈道具分布權重 | MapOuterItemSpawnWeight | 2000 | 萬分比 |
+|  | 74 | item | 地圖中心圈半徑比例 | MapCenterRadiusRatio | 3333 | 萬分比 |
+|  | 75 | item | 地圖中圈半徑比例 | MapMidRadiusRatio | 6667 | 萬分比 |
+|  | 76 | map | 小食物生成權重 | FoodSpawnWeight_S | 6000 | 萬分比 |
+|  | 77 | map | 中食物生成權重 | FoodSpawnWeight_M | 3000 | 萬分比 |
+|  | 78 | map | 大食物生成權重 | FoodSpawnWeight_L | 1000 | 萬分比 |
+|  | 79 | map | 撞擊岩石或邊界後的輸入鎖定時間 | ImpactBoundaryInputLockDuration | 350 | ms |
+|  | 80 | core | 每超過初始蛇身節數 1 節所增加的自然體型倍率 | SnakeBodyGrowthScalePerSegment | 25 | 萬分比／節 |
+|  | 81 | core | 蛇身依長度自然成長時可達的最大體型倍率 | SnakeBodyGrowthScaleMax | 16000 | 萬分比 |
+|  | 82 | core | 蛇隻渲染尺寸與碰撞半徑由舊值過渡至新值的線性時間 | SnakeBodyScaleTransitionTime | 250 | ms |
+|  | 83 | ui | 最終體型倍率反映至體型跟隨鏡頭的比例 | SnakeBodyVisionFollowRatio | 4000 | 萬分比 |
+|  | 84 | ui | 鷹眼鏡頭倍率由舊值過渡至新值的線性時間 | EagleEyeVisionTransitionTime | 500 | ms |
+|  | 86 | map | 每局岩石生成數量下限；初始值由程式端暫定並可調整 | RockSpawnCountMin |  | 個 |
+|  | 87 | map | 每局岩石生成數量上限；初始值由程式端暫定並可調整 | RockSpawnCountMax |  | 個 |
+|  | 88 | map | 岩石半徑下限 R；初始值由程式端暫定並可調整 | RockRadiusMin |  | px |
+|  | 89 | map | 岩石半徑上限 R；初始值由程式端暫定並可調整 | RockRadiusMax |  | px |
 
 #### 16.2 AIStrategy
 
@@ -2321,7 +2237,7 @@ Server Log 以「玩家客訴查詢、營運統計、玩家資產與權益追蹤
 
 ### 19. 美術與音效需求 [IGS]
 
-美術、UI、Icon、特效與音效外包需求已拆分為獨立文件，避免主 GDD 規則與外包製作規格混在一起維護。
+美術、UI、Icon、特效與音效需求已拆分為獨立文件，避免主 GDD 規則與製作規格混在一起維護。
 
 請見：[貪食蛇美術需求.md](貪食蛇美術需求.md)
 
