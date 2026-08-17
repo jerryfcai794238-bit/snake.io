@@ -35,10 +35,17 @@
 * **Ch6 地圖生成**：
   * 岩石尺寸統一以半徑 `R` 定義；緩速區採方形模組拼接的帶狀生成。
   * 緩速區所需的生成 Module 與預設值，於程式實作生成邏輯時一併建立。
+* **Ch7.3 幸運糖得分**：
+  * `ItemCandyMultiplier` 統一以萬分比計算；`70000` 代表 `7.000x`，吞食得分公式除以 `10000`。
 * **Ch16.1 與 GDK**：
-  * Module 表同步至 ID `91`，體型、鏡頭與岩石生成參數的編號一致。
+  * 被動強化成本五個 PCHIP 節點改為 Module `88–92`；原 Module `48–51` 保留空位、不再列為有效參數。
+  * 岩石生成參數遞延為 Module `93–96`；Module 表與 GDK 同步至 ID `96`。
 * **Ch8.1 道具數值與引用**：
   * 明確標示局內套用滿級數值；通用參數引用統一指向 `Ch16.1 Module`。
+* **Ch9.1 BOT 補位配比**：
+  * 固定模式優先依 `ModeBotComposition` 指定配比生成；`AIStrategy.SpawnWeight` 僅用於無固定配比的隨機補位與中離 AI 接手。
+* **Ch10.1 被動強化成本**：
+  * 成本依五個 PCHIP 節點計算並產出 `passive_upgrade_cost_curve.csv`；程式直接查表，調整任一節點後須重新產表驗證。
 
 </details>
 
@@ -977,7 +984,7 @@ graph TD
 > [!IMPORTANT]
 >
 > ```text
-> 吞食得分 = 食物基礎價值 * ItemCandyMultiplier (幸運糖得分倍率)
+> 吞食得分 = 食物基礎價值 * ItemCandyMultiplier（幸運糖得分倍率）/ 10000
 > ```
 
 * **擊殺積分（非成長競技線）**：
@@ -1196,7 +1203,7 @@ graph TD
 
 載入對局時，電腦對手會依據簡化的 5 種策略行為特徵進入戰場（由弱至強排序）：
 
-> 出現機率來源讀取：[Ch16.2 AIStrategy](#162-aistrategy) 的 `SpawnWeight` 欄位。
+> 無固定配比的隨機補位與玩家中離後的 AI 接手，策略抽選讀取 [Ch16.2 AIStrategy](#162-aistrategy) 的 `SpawnWeight` 欄位。
 
 | AI 策略類型             | 出現機率 | 核心尋路與移動特徵                                                                                   | 技能與道具使用邏輯                                                      |
 | :---------------------- | :------: | :--------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------- |
@@ -1211,6 +1218,8 @@ graph TD
 ##### 9.1.1 電腦 BOT 對局固定補位配比表
 
 > 來源讀取：[<ModeBotComposition表>](#166-modebotcomposition)。
+
+> 固定模式配比優先於 `AIStrategy.SpawnWeight`：模式有對應 `ModeBotComposition` 資料列時，依表中數量生成；只有無對應固定配比的隨機補位與玩家中離後的 AI 接手，才依 `SpawnWeight` 抽選策略。
 
 | 模式                      |  電腦數  | 初階 | 避險 | 收集 | 截斷 | 追獵 | 說明與限制                                             |
 | :------------------------ | :-------: | :--: | :--: | :--: | :--: | :--: | :----------------------------------------------------- |
@@ -1403,31 +1412,31 @@ graph TD
 * **被動強化使用說明**：
 
   * **隨機提升機制**：每次點擊【強化】時，系統會從 10 種被動屬性中，**隨機提升其中一個未達滿級 (Lv 40) 的屬性 1 等**。每個屬性的提升機率**完全均分**（皆為 10% 權重；若有屬性已達滿級，則由剩餘未滿級屬性均分機率）。
-* **強化消耗金幣公式 (節點平滑曲線)**：
-  每次強化的所需金幣基於整體已強化次數（$x$，範圍 1 至 400）通過分段單調三次 Hermite 曲線（PCHIP）計算，計算結果四捨五入至整數。此公式需精準命中指定費用節點，並確保費用不會隨強化次數下降：
+* **強化消耗金幣公式（節點平滑曲線）**：
+  每次強化的所需金幣基於整體已強化次數（$x$，範圍 1 至 400），依 [Ch16.1 Module](#161-module) 的五個成本節點進行分段單調三次 Hermite 曲線（PCHIP）計算，計算結果四捨五入至整數。此公式需精準命中指定費用節點，並確保費用不會隨強化次數下降。
 
 > [!IMPORTANT]
 >
 > ```text
-> C(x) = round(PCHIP(x))
+> 本次強化成本 = round(PCHIP((1, PassiveUpgradeStartCost), (100, PassiveUpgradeCostNode100), (200, PassiveUpgradeCostNode200), (300, PassiveUpgradeCostNode300), (400, PassiveUpgradeEndCost)))
 > ```
 
 * **參數設定**：
-  * 初始費用 $C(1) = 1,000$ 金幣
-  * 費用節點 $C(100) = 40,000$ 金幣
-  * 費用節點 $C(200) = 120,000$ 金幣
-  * 費用節點 $C(300) = 240,000$ 金幣
-  * 滿級費用 $C(400) = 300,000$ 金幣
+  * 第 1 次費用：`PassiveUpgradeStartCost = 1,000` 金幣（Module 88）。
+  * 第 100 次費用：`PassiveUpgradeCostNode100 = 40,000` 金幣（Module 89）。
+  * 第 200 次費用：`PassiveUpgradeCostNode200 = 120,000` 金幣（Module 90）。
+  * 第 300 次費用：`PassiveUpgradeCostNode300 = 240,000` 金幣（Module 91）。
+  * 第 400 次費用：`PassiveUpgradeEndCost = 300,000` 金幣（Module 92）。
 * **階段特徵與關鍵節點費用**：
   * **1 ~ 100 級（前期發育）**：費用從 1,000 金幣平滑升至 40,000 金幣。
   * **100 ~ 200 級（中期回收）**：費用從 40,000 金幣升至 120,000 金幣。
   * **200 ~ 300 級（後期壓力）**：費用從 120,000 金幣升至 240,000 金幣，作為主要金幣消耗段。
   * **300 ~ 400 級（滿級收斂）**：費用從 240,000 金幣放緩升至 300,000 金幣。
-* **扣費規則**：每次點擊強化，系統隨機判定提升的屬性後，依據**當前全部屬性已強化總次數 $x$（自 1 開始，最大 400）** 代入公式扣除對應金幣。詳細對照表請參閱 [passive_upgrade_cost_curve.csv](passive_upgrade_cost_curve.csv)。
+* **扣費規則**：每次點擊強化，系統隨機判定提升的屬性後，依據**當前全部屬性已強化總次數 $x$（自 1 開始，最大 400）**，從 [passive_upgrade_cost_curve.csv](passive_upgrade_cost_curve.csv) 讀取對應金額並扣除。
 * **屬性等級範圍**：10 種屬性初始皆為 0 級，單一屬性最大可強化至 40 級（共計 400 次強化）。
 
 > [!NOTE]
-> 公式實作不需要手算曲線，可直接查 `passive_upgrade_cost_curve.csv`。例如第 1 次強化消耗 `1,000` 金幣；第 50 次消耗 `16,141` 金幣，累積消耗 `385,040` 金幣；第 100 次消耗 `40,000` 金幣，累積消耗 `1,775,855` 金幣。
+> `passive_upgrade_cost_curve.csv` 由上述五個 Module 與 PCHIP 公式產出，程式不另行計算曲線。調整任一成本節點後，須重新產出 400 筆成本表並逐列驗證；例如第 1 次消耗 `1,000` 金幣、第 50 次消耗 `16,141` 金幣、累積消耗 `385,040` 金幣，第 100 次消耗 `40,000` 金幣、累積消耗 `1,775,855` 金幣。
 
 ##### 10.1.1 被動屬性強化介面與互動規則
 
@@ -1862,10 +1871,6 @@ Server Log 以「玩家客訴查詢、營運統計、玩家資產與權益追蹤
 |  | 45 | item | 同款道具價格倍率 | BoosterPriceMultiplier | 15000 | 萬分比 |
 |  | 46 | item | 高級道具初始單局上限 | BoosterInitialCount | 2 | 次 |
 |  | 47 | item | 高級道具最大單局上限 | BoosterMaximumCount | 5 | 次 |
-|  | 48 | passive | 被動強化初始費用 | PassiveUpgradeStartCost | 1000 | 金幣 |
-|  | 49 | passive | 被動強化最高費用 | PassiveUpgradeEndCost | 300000 | 金幣 |
-|  | 50 | passive | S 曲線係數 | PassiveUpgradeShape_K | 240 | 萬分比 |
-|  | 51 | passive | S 曲線拐點 | PassiveUpgradeInflection_X0 | 190 | 次 |
 |  | 52 | cosmetic | 表情貼圖顯示時間 | EmoteDuration | 2500 | ms |
 |  | 53 | core | 蛇頭碰撞半徑 | SnakeHeadCollisionRadius | 12 | px |
 |  | 54 | core | 蛇身碰撞半徑 | SnakeBodyCollisionRadius | 8 | px |
@@ -1902,10 +1907,15 @@ Server Log 以「玩家客訴查詢、營運統計、玩家資產與權益追蹤
 |  | 85 | ui | 最終體型倍率反映至體型跟隨鏡頭的比例 | SnakeBodyVisionFollowRatio | 4000 | 萬分比 |
 |  | 86 | ui | 鷹眼鏡頭倍率由舊值過渡至新值的線性時間 | EagleEyeVisionTransitionTime | 500 | ms |
 |  | 87 | ui | 鷹眼乘算後的最終鏡頭倍率上限 | SnakeFinalVisionScaleMax | 50000 | 萬分比 |
-|  | 88 | map | 每局岩石生成數量下限；初始值由程式端暫定並可調整 | RockSpawnCountMin |  | 個 |
-|  | 89 | map | 每局岩石生成數量上限；初始值由程式端暫定並可調整 | RockSpawnCountMax |  | 個 |
-|  | 90 | map | 岩石半徑下限 R；初始值由程式端暫定並可調整 | RockRadiusMin |  | px |
-|  | 91 | map | 岩石半徑上限 R；初始值由程式端暫定並可調整 | RockRadiusMax |  | px |
+|  | 88 | passive | 第 1 次被動強化成本 | PassiveUpgradeStartCost | 1000 | 金幣 |
+|  | 89 | passive | 第 100 次被動強化成本 | PassiveUpgradeCostNode100 | 40000 | 金幣 |
+|  | 90 | passive | 第 200 次被動強化成本 | PassiveUpgradeCostNode200 | 120000 | 金幣 |
+|  | 91 | passive | 第 300 次被動強化成本 | PassiveUpgradeCostNode300 | 240000 | 金幣 |
+|  | 92 | passive | 第 400 次被動強化成本 | PassiveUpgradeEndCost | 300000 | 金幣 |
+|  | 93 | map | 每局岩石生成數量下限；初始值由程式端暫定並可調整 | RockSpawnCountMin |  | 個 |
+|  | 94 | map | 每局岩石生成數量上限；初始值由程式端暫定並可調整 | RockSpawnCountMax |  | 個 |
+|  | 95 | map | 岩石半徑下限 R；初始值由程式端暫定並可調整 | RockRadiusMin |  | px |
+|  | 96 | map | 岩石半徑上限 R；初始值由程式端暫定並可調整 | RockRadiusMax |  | px |
 
 #### 16.2 AIStrategy
 
@@ -1976,7 +1986,7 @@ Server Log 以「玩家客訴查詢、營運統計、玩家資產與權益追蹤
 
 #### 16.6 ModeBotComposition
 
-> 對應規格：[Ch9.2 強度控制參數與物理控制](#92-強度控制參數與物理控制)
+> 對應規格：[Ch9.1.1 電腦 BOT 對局固定補位配比表](#911-電腦-bot-對局固定補位配比表)
 
 | ModeBotComposition |  |  |  |  |  |  |  |  |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |

@@ -63,10 +63,6 @@
 |  | 45 | item | 同款道具價格倍率 | BoosterPriceMultiplier | 15000 | 萬分比 |
 |  | 46 | item | 高級道具初始單局上限 | BoosterInitialCount | 2 | 次 |
 |  | 47 | item | 高級道具最大單局上限 | BoosterMaximumCount | 5 | 次 |
-|  | 48 | passive | 被動強化初始費用 | PassiveUpgradeStartCost | 1000 | 金幣 |
-|  | 49 | passive | 被動強化最高費用 | PassiveUpgradeEndCost | 300000 | 金幣 |
-|  | 50 | passive | S 曲線係數 | PassiveUpgradeShape_K | 240 | 萬分比 |
-|  | 51 | passive | S 曲線拐點 | PassiveUpgradeInflection_X0 | 190 | 次 |
 |  | 52 | cosmetic | 表情貼圖顯示時間 | EmoteDuration | 2500 | ms |
 |  | 53 | core | 蛇頭碰撞半徑 | SnakeHeadCollisionRadius | 12 | px |
 |  | 54 | core | 蛇身碰撞半徑 | SnakeBodyCollisionRadius | 8 | px |
@@ -103,10 +99,15 @@
 |  | 85 | ui | 最終體型倍率反映至體型跟隨鏡頭的比例 | SnakeBodyVisionFollowRatio | 4000 | 萬分比 |
 |  | 86 | ui | 鷹眼鏡頭倍率由舊值過渡至新值的線性時間 | EagleEyeVisionTransitionTime | 500 | ms |
 |  | 87 | ui | 鷹眼乘算後的最終鏡頭倍率上限 | SnakeFinalVisionScaleMax | 50000 | 萬分比 |
-|  | 88 | map | 每局岩石生成數量下限；初始值由程式端暫定並可調整 | RockSpawnCountMin |  | 個 |
-|  | 89 | map | 每局岩石生成數量上限；初始值由程式端暫定並可調整 | RockSpawnCountMax |  | 個 |
-|  | 90 | map | 岩石半徑下限 R；初始值由程式端暫定並可調整 | RockRadiusMin |  | px |
-|  | 91 | map | 岩石半徑上限 R；初始值由程式端暫定並可調整 | RockRadiusMax |  | px |
+|  | 88 | passive | 第 1 次被動強化成本 | PassiveUpgradeStartCost | 1000 | 金幣 |
+|  | 89 | passive | 第 100 次被動強化成本 | PassiveUpgradeCostNode100 | 40000 | 金幣 |
+|  | 90 | passive | 第 200 次被動強化成本 | PassiveUpgradeCostNode200 | 120000 | 金幣 |
+|  | 91 | passive | 第 300 次被動強化成本 | PassiveUpgradeCostNode300 | 240000 | 金幣 |
+|  | 92 | passive | 第 400 次被動強化成本 | PassiveUpgradeEndCost | 300000 | 金幣 |
+|  | 93 | map | 每局岩石生成數量下限；初始值由程式端暫定並可調整 | RockSpawnCountMin |  | 個 |
+|  | 94 | map | 每局岩石生成數量上限；初始值由程式端暫定並可調整 | RockSpawnCountMax |  | 個 |
+|  | 95 | map | 岩石半徑下限 R；初始值由程式端暫定並可調整 | RockRadiusMin |  | px |
+|  | 96 | map | 岩石半徑上限 R；初始值由程式端暫定並可調整 | RockRadiusMax |  | px |
 
 
 ## AIStrategy
