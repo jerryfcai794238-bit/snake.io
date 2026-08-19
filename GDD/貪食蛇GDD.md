@@ -45,7 +45,8 @@
 * **Ch9.1 BOT 補位配比**：
   * 固定模式優先依 `ModeBotComposition` 指定配比生成；`AIStrategy.SpawnWeight` 僅用於無固定配比的隨機補位與中離 AI 接手。
 * **Ch10.1 被動強化成本**：
-  * 成本依五個 PCHIP 節點計算並產出 `passive_upgrade_cost_curve.csv`；程式直接查表，調整任一節點後須重新產表驗證。
+  * 離線產表工具依 Module `88–92` 的五個 PCHIP 節點產出 `passive_upgrade_cost_curve.csv`；遊戲 runtime 僅依強化次數查表扣費。
+  * 已移除失效的舊 S 型成本表；調整任一節點後須重新產表並逐列驗證。
 
 </details>
 
@@ -1412,13 +1413,13 @@ graph TD
 * **被動強化使用說明**：
 
   * **隨機提升機制**：每次點擊【強化】時，系統會從 10 種被動屬性中，**隨機提升其中一個未達滿級 (Lv 40) 的屬性 1 等**。每個屬性的提升機率**完全均分**（皆為 10% 權重；若有屬性已達滿級，則由剩餘未滿級屬性均分機率）。
-* **強化消耗金幣公式（節點平滑曲線）**：
-  每次強化的所需金幣基於整體已強化次數（$x$，範圍 1 至 400），依 [Ch16.1 Module](#161-module) 的五個成本節點進行分段單調三次 Hermite 曲線（PCHIP）計算，計算結果四捨五入至整數。此公式需精準命中指定費用節點，並確保費用不會隨強化次數下降。
+* **強化消耗金幣產表規則（節點平滑曲線）**：
+  離線產表工具以 [Ch16.1 Module](#161-module) 的五個成本節點，依整體已強化次數 $x$（範圍 1 至 400）進行分段單調三次 Hermite 曲線（PCHIP）計算，並將結果四捨五入為整數後產出 `passive_upgrade_cost_curve.csv`。產表結果須精準命中指定費用節點，且費用不得隨強化次數下降。
 
 > [!IMPORTANT]
 >
 > ```text
-> 本次強化成本 = round(PCHIP((1, PassiveUpgradeStartCost), (100, PassiveUpgradeCostNode100), (200, PassiveUpgradeCostNode200), (300, PassiveUpgradeCostNode300), (400, PassiveUpgradeEndCost)))
+> 產表工具輸出成本 = round(PCHIP((1, PassiveUpgradeStartCost), (100, PassiveUpgradeCostNode100), (200, PassiveUpgradeCostNode200), (300, PassiveUpgradeCostNode300), (400, PassiveUpgradeEndCost)))
 > ```
 
 * **參數設定**：
@@ -1432,11 +1433,11 @@ graph TD
   * **100 ~ 200 級（中期回收）**：費用從 40,000 金幣升至 120,000 金幣。
   * **200 ~ 300 級（後期壓力）**：費用從 120,000 金幣升至 240,000 金幣，作為主要金幣消耗段。
   * **300 ~ 400 級（滿級收斂）**：費用從 240,000 金幣放緩升至 300,000 金幣。
-* **扣費規則**：每次點擊強化，系統隨機判定提升的屬性後，依據**當前全部屬性已強化總次數 $x$（自 1 開始，最大 400）**，從 [passive_upgrade_cost_curve.csv](passive_upgrade_cost_curve.csv) 讀取對應金額並扣除。
+* **執行期扣費規則**：每次點擊強化，系統隨機判定提升的屬性後，遊戲 runtime 依據**當前全部屬性已強化總次數 $x$（自 1 開始，最大 400）**，從 [passive_upgrade_cost_curve.csv](passive_upgrade_cost_curve.csv) 讀取對應金額並扣除。runtime 不讀取 Module `88–92`，也不計算 PCHIP。
 * **屬性等級範圍**：10 種屬性初始皆為 0 級，單一屬性最大可強化至 40 級（共計 400 次強化）。
 
 > [!NOTE]
-> `passive_upgrade_cost_curve.csv` 由上述五個 Module 與 PCHIP 公式產出，程式不另行計算曲線。調整任一成本節點後，須重新產出 400 筆成本表並逐列驗證；例如第 1 次消耗 `1,000` 金幣、第 50 次消耗 `16,141` 金幣、累積消耗 `385,040` 金幣，第 100 次消耗 `40,000` 金幣、累積消耗 `1,775,855` 金幣。
+> `passive_upgrade_cost_curve.csv` 由離線產表工具讀取上述五個 Module 並依 PCHIP 公式產出；遊戲 runtime 不另行計算曲線。調整任一成本節點後，須重新產出 400 筆成本表並逐列驗證；例如第 1 次消耗 `1,000` 金幣、第 50 次消耗 `16,141` 金幣、累積消耗 `385,040` 金幣，第 100 次消耗 `40,000` 金幣、累積消耗 `1,775,855` 金幣。
 
 ##### 10.1.1 被動屬性強化介面與互動規則
 
