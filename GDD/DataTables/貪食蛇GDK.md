@@ -26,9 +26,9 @@
 |  | 8 | core | 衝刺加速比例 | DashSpeedFactor | 2500 | 萬分比 |
 |  | 9 | core | 初始暴食冷卻時間 | GluttonyCD | 30 | s |
 |  | 10 | core | 初始暴食吸附半徑 | GluttonySuctionRadius | 200 | px |
-|  | 11 | core | 暴食吸附飛行時間 | GluttonySuctionTravelTime | 150 | ms |
-|  | 12 | core | 磁鐵吸附飛行時間 | MagnetSuctionTravelTime | 200 | ms |
-|  | 13 | core | 基礎吃食吸附飛行時間 | BaseSuctionTravelTime | 300 | ms |
+|  | 11 | core | 暴食吸附飛行時間；Dev Setting 可供測試覆寫，未覆寫時使用本預設值 | GluttonySuctionTravelTime | 350 | ms |
+|  | 12 | core | 磁鐵吸附飛行時間 | MagnetSuctionTravelTime | 400 | ms |
+|  | 13 | core | 基礎吃食吸附飛行時間 | BaseSuctionTravelTime | 450 | ms |
 |  | 14 | core | 每增加一節所需積分 | PointPerSegment | 10 | 分 |
 |  | 15 | core | 成長之路最高等級 | (不使用參數)讀已存在其他表格 | 60 | level |
 |  | 16 | mode | 單局限時 | GameTime | 120 | s |
@@ -41,8 +41,8 @@
 |  | 23 | mode | SSS 評級額外熟練度 | MasterBonus_SSS | 50 | 點 |
 |  | 24 | mode | SS 評級額外熟練度 | MasterBonus_SS | 30 | 點 |
 |  | 25 | mode | S 評級額外熟練度 | MasterBonus_S | 10 | 點 |
-|  | 26 | map | 地圖寬度 | MapWidth | 2000 | px |
-|  | 27 | map | 地圖高度 | MapHeight | 2000 | px |
+|  | 26 | map | 地圖寬度 | MapWidth | 2048 | px |
+|  | 27 | map | 地圖高度 | MapHeight | 2048 | px |
 |  | 28 | map | 撞岩石或邊界長度扣除比例 | ImpactBoundaryLengthDeductionRatio | 5000 | 萬分比 |
 |  | 29 | map | 緩速區速度修正 | SlowZoneSpeedFactor | -5000 | 萬分比 |
 |  | 30 | map | 岩石區食物分配權重 | FoodDeployWeight_RockZone | 5000 | 萬分比 |
