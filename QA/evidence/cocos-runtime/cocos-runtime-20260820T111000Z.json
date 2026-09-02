@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "runId": "cocos-runtime-20260820T111000Z",
+  "status": "blocked-env",
+  "startedAt": "2026-08-20T11:06:00.000Z",
+  "finishedAt": "2026-08-20T11:10:00.395Z",
+  "verificationSource": "真正 Cocos Runtime（環境阻塞，未進入 Editor）",
+  "message": "Windows Computer Use helper 持續回覆『Computer Use helper already has an active request』；依技能補救上限熔斷，未啟動或操作 Cocos，故不得沿用先前觀察判定通過。",
+  "gdd": {
+    "path": "GDD/貪食蛇GDD.md",
+    "version": "25",
+    "sha256": "f66f01652e6ce11c6903a164ceb94d7064d81ce7793e01b76caa7994af355023"
+  },
+  "build": {
+    "projectPath": "D:\\OLD-RD3\\partygo-client-snake-os",
+    "branch": "dev",
+    "commit": "f7d4007f060a846d0963b8caf2d5cc8c7fe4bd4f",
+    "cleanBefore": true,
+    "cleanAfter": true,
+    "readOnly": true
+  },
+  "attemptedCaseIds": [
+    "QA-FLW-001",
+    "QA-FLW-005",
+    "QA-FLW-006",
+    "QA-FLW-012",
+    "QA-MOV-001",
+    "QA-MOV-005",
+    "QA-MOV-006",
+    "QA-MOV-007",
+    "QA-MOV-008",
+    "QA-MOV-012",
+    "QA-COL-005"
+  ],
+  "executionResult": "blocked-during-test",
+  "limitations": [
+    "未取得本輪 Cocos Editor／Runtime 截圖、錄影、Console 或遊戲內觀察。",
+    "先前未完成的衝刺與操作紀錄不繼承為通過證據。",
+    "外包 checkout 測試前後皆為 dev@f7d4007f060a846d0963b8caf2d5cc8c7fe4bd4f 且 clean；本輪未寫入該目錄。"
+  ]
+}

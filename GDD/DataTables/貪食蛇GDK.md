@@ -290,9 +290,9 @@
 | 名稱 | ID |  | NameStrID |  | DescStrID | AssetID | AcquireType | AcquireParam0 | AcquireParam1 | DefaultUnlock | IsLimited |
 | 資料型態 | int |  | int |  | int | string | int | string | string | bool | bool |
 | 企劃名 | 編號 | 造型名稱 | 名稱字串表編號 | 造型描述 | 描述字串表編號 | 資源 ID | 獲得條件類型 | 參數{0} | 參數{1} | 預設解鎖 | 限時商品 |
-|  | 1 | 經典綠蛇 |  | 綠色、乾淨、最基礎的蛇身 |  | Skin-001 | | |  | true |  |
-|  | 2 | 藍莓蛇 |  | 藍紫色、果凍質感 |  | Skin-002 | | |  | false |  |
-|  | 3 | 草莓蛇 |  | 紅粉色、草莓籽點綴 |  | Skin-003 | | |  | false |  |
+|  | 1 | 經典紫蛇 |  | 高飽和深紫色，搭配亮黃色腹部或淺色外框；實色霧面、乾淨基礎 |  | Skin-001 | | |  | true |  |
+|  | 2 | 藍莓蛇 |  | 藍紫色、果凍質感 |  | Skin-002 | | |  | true |  |
+|  | 3 | 草莓蛇 |  | 紅粉色、草莓籽點綴 |  | Skin-003 | | |  | true |  |
 |  | 4 | 橘子蛇 |  | 橘色、果皮紋路 |  | Skin-004 | | |  | false |  |
 |  | 5 | 西瓜蛇 |  | 綠皮紅肉或西瓜條紋 |  | Skin-005 | | |  | false |  |
 |  | 6 | 蜂蜜蛇 |  | 黃金色、蜂蜜滴落感 |  | Skin-006 | | |  | false |  |

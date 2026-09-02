@@ -4,7 +4,10 @@
   "description": "Snake.io Demo based on GDD v1.4.0",
   "main": "index.html",
   "scripts": {
-    "dev": "npx -y serve -p 3000 ./"
+    "dev": "npx -y serve -p 3000 ./",
+    "qa:publish-notion": "node QA/runner/publish-notion-snapshot.mjs",
+    "qa:run": "node --experimental-transform-types --experimental-loader ./QA/runner/cocos-ts-loader.mjs QA/runner/run-cocos-logic.mjs",
+    "qa:verify-dashboard": "node QA/runner/verify-dashboard.mjs"
   },
   "keywords": [],
   "author": "",
