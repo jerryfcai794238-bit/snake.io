@@ -41,8 +41,8 @@
 |  | 23 | mode | SSS 評級額外熟練度 | MasterBonus_SSS | 50 | 點 |
 |  | 24 | mode | SS 評級額外熟練度 | MasterBonus_SS | 30 | 點 |
 |  | 25 | mode | S 評級額外熟練度 | MasterBonus_S | 10 | 點 |
-|  | 26 | map | 地圖寬度 | MapWidth | 2048 | px |
-|  | 27 | map | 地圖高度 | MapHeight | 2048 | px |
+|  | 26 | map | 地圖寬度 | MapWidth | 1536 | px |
+|  | 27 | map | 地圖高度 | MapHeight | 1536 | px |
 |  | 28 | map | 撞岩石或邊界長度扣除比例 | ImpactBoundaryLengthDeductionRatio | 5000 | 萬分比 |
 |  | 29 | map | 緩速區速度修正 | SlowZoneSpeedFactor | -5000 | 萬分比 |
 |  | 30 | map | 岩石區食物分配權重 | FoodDeployWeight_RockZone | 5000 | 萬分比 |
